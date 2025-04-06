@@ -48,13 +48,18 @@ public class Recipe {
 
     private Integer timeMinutes;
 
-    // 알러지
+    // 알러지 태그
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<RecipeAllergy> recipeAllergies = new ArrayList<>();
 
-    // 식재료
+    // 식재료 태그
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+
+    // 재료 JSON
+    @Lob
+    @Column(columnDefinition = "json")
+    private String ingredients;
 
     // 양념 JSON
     @Lob
