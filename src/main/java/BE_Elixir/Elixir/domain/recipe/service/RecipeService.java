@@ -73,4 +73,12 @@ public class RecipeService {
         return new RecipeResponseDTO(recipe);
 
     }
+
+    // 레시피 상세 조회
+    @Transactional(readOnly = true)
+    public RecipeResponseDTO getRecipeDetail(Long recipeId) {
+        Recipe recipe = recipeRepository.findWithAllById(recipeId)
+                .orElseThrow(() -> new RuntimeException("레시피가 존재하지 않습니다."));
+        return new RecipeResponseDTO(recipe);
+    }
 }

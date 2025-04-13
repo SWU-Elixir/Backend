@@ -29,4 +29,11 @@ public class RecipeController {
         RecipeResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages);
         return ResponseEntity.ok(response);
     }
+
+    // 레시피 상세 조회
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<RecipeResponseDTO> getRecipe(@PathVariable Long recipeId) {
+        RecipeResponseDTO response = recipeService.getRecipeDetail(recipeId);
+        return ResponseEntity.ok(response);
+    }
 }
