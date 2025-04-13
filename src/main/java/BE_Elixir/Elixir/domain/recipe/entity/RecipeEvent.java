@@ -1,9 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,23 +9,25 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeComment {
-
+// 댓글, 좋아요, 스크랩 통합
+public class RecipeEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // @ManyToOne // 일단 로그인 없이 진행 → 나중에 Member로 수정
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
-    /* Member 엔티티 생성 이후에 수정
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-    */
+    private boolean likeFlag;
+    private boolean scrapFlag;
+    private boolean commentFlag;
 
-    @Lob
+    @Column(length = 200)
     private String content;
 
     private LocalDateTime createdAt;
