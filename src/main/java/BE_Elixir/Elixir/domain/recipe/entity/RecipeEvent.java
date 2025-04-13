@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,5 +43,15 @@ public class RecipeEvent {
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public static RecipeEvent createRecipeComment(Recipe recipe, RecipeCommentDTO dto) {
+        RecipeEvent comment = new RecipeEvent();
+        comment.setRecipe(recipe);
+        comment.setMemberId(dto.getMemberId());
+        comment.setCommentFlag(true);
+        comment.setContent(dto.getContent());
+        comment.setCreatedAt(dto.getCreatedAt());
+        return comment;
     }
 }
