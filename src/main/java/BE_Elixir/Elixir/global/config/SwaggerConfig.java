@@ -12,7 +12,7 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    String DEFAULT_URL = "";
+    String DEFAULT_URL = "http://localhost:8080";
 
     @Bean
     public OpenAPI openAPI() {
