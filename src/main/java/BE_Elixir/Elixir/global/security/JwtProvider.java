@@ -30,7 +30,12 @@ public class JwtProvider {
 
     private final MemberRepository memberRepository;
     private final Key key;
-//    private final long validityInMilliseconds = 1000 * 60 * 60; // 1시간
+
+    @Value("${jwt.access-token-validity}")
+    private long accessTokenValidityInMs;
+
+    @Value("${jwt.refresh-token-validity}")
+    private long refreshTokenValidityInMs;
 
     // application.properties에서 secret 값 가져와서 key에 저장
     public JwtProvider(@Value("${jwt.secret}") String secretKey, MemberRepository memberRepository) {
@@ -41,7 +46,7 @@ public class JwtProvider {
 
     // Access Token 생성
     private String createAccessToken(String username, String authorities, long now) {
-        Date accessTokenExpiration = new Date(now + 1000 * 60 * 60);
+        Date accessTokenExpiration = new Date(now + accessTokenValidityInMs);
         return Jwts.builder()
                 .subject(username)
                 .claim("auth", authorities)
@@ -52,7 +57,7 @@ public class JwtProvider {
 
     // Refresh Token 생성
     private String createRefreshToken(long now) {
-        Date refreshTokenExpiration = new Date(now + 1000 * 60 * 60 * 24 * 14);
+        Date refreshTokenExpiration = new Date(now + refreshTokenValidityInMs);
         return Jwts.builder()
                 .expiration(refreshTokenExpiration)
                 .signWith(key)
