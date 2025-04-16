@@ -1,6 +1,6 @@
 package BE_Elixir.Elixir.global.security;
 
-import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.config.WhitelistProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.PrintWriter;
-import java.nio.file.AccessDeniedException;
 
 @Configuration
 @EnableWebSecurity
@@ -30,22 +29,14 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
 
+    // 권한 확인을 하지 않는 url
+    private final WhitelistProperties whitelistProperties;
+
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // 권한 확인을 하지 않는 url
-    private static final String[] PERMIT_ALL_PATTERNS = new String[] {
-            "/test",
-            "/swagger-ui/*",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/api-docs/**",
-            "/api/member/check-email",
-            "/api/member/signup",
-            "/api/auth/login"
-    };
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -70,10 +61,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 검사하지 않는 url
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(PERMIT_ALL_PATTERNS).permitAll()
+                        .requestMatchers(whitelistProperties.getWhitelist()).permitAll()
                         .anyRequest().authenticated())
                 // jwt 인증을 위해 직접 구현한 필터
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, whitelistProperties.getWhitelist()),
+                        UsernamePasswordAuthenticationFilter.class)
 
                 .exceptionHandling((exceptionConfig) ->
                         exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint).accessDeniedHandler(accessDeniedHandler)
@@ -84,7 +76,7 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint unauthorizedEntryPoint =
             ((request, response, authException) -> {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                String json = new ObjectMapper().writeValueAsString(ErrorCode.UNAUTHORIZED);
+                String json = new ObjectMapper().writeValueAsString(HttpStatus.UNAUTHORIZED);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 PrintWriter writer = response.getWriter();
                 writer.write(json);
@@ -95,7 +87,7 @@ public class SecurityConfig {
     private final AccessDeniedHandler accessDeniedHandler =
             ((request, response, accessDeniedException) -> {
                 response.setStatus(HttpStatus.FORBIDDEN.value());
-                String json = new ObjectMapper().writeValueAsString(ErrorCode.FORBIDDEN);
+                String json = new ObjectMapper().writeValueAsString(HttpStatus.FORBIDDEN);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 PrintWriter writer = response.getWriter();
                 writer.write(json);

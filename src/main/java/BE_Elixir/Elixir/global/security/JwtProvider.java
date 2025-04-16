@@ -116,7 +116,7 @@ public class JwtProvider {
 
         String email = claims.getSubject();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다. 이메일: " + email));
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다. email: " + email));
 
         MemberDetails principal = new MemberDetails(member);
 
