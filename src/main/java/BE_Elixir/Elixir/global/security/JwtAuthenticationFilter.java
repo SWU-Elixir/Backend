@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // 1. Request Header 에서 JWT 토큰 추출
+        // 1. Request Header 에서 JWT 토큰(Access Token) 추출
         String token = resolveToken((HttpServletRequest) request);
 
         if (token == null) {
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             log.warn("유효하지 않거나 만료된 JWT 토큰이 요청에 포함되어 있습니다.");
         }
 
-        // 2. validationToken으로 토큰 유효성 검사
+        // 2. validationToken()으로 토큰 유효성 검사
         if (token != null && jwtProvider.validateToken(token)) {
             try {
                 // 토큰이 유효할 경우 토큰에서 Authentication 객체를 갖고 와서 SecurityContext에 저장
