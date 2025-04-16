@@ -88,7 +88,7 @@ public class RecipeService {
                 .stream()
                 .map(comment -> new RecipeCommentDTO(
                         comment.getRecipe().getId(),
-                        comment.getId(),
+                        comment.getMemberId(),
                         comment.getContent(),
                         comment.getCreatedAt()
                 ))
