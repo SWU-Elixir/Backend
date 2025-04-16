@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.auth.controller.api;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -35,7 +36,7 @@ public interface AuthApi {
                     content = @Content(schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "로그인 실패: 이메일 또는 비밀번호가 일치하지 않습니다.")))
     })
-    ResponseEntity<?> login(@RequestBody LoginRequestDTO request);
+    ResponseEntity<CommonResponse<TokenResponseDTO>> login(@RequestBody LoginRequestDTO request);
 
     @Operation(summary = "로그아웃",
             description = "로그아웃합니다.",
@@ -48,7 +49,7 @@ public interface AuthApi {
                     content = @Content(schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "로그아웃 실패: 이미 만료된 토큰입니다.")))
     })
-    ResponseEntity<?> logout(
+    ResponseEntity<CommonResponse<?>> logout(
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
     );
@@ -70,7 +71,7 @@ public interface AuthApi {
                     content = @Content(schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Access Token 재발급 실패: 유효하지 않은 Refresh Token입니다.")))
     })
-    ResponseEntity<?> refresh (
+    ResponseEntity<CommonResponse<TokenResponseDTO>> refresh (
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
     );
