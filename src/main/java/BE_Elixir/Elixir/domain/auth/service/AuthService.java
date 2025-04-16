@@ -1,7 +1,10 @@
 package BE_Elixir.Elixir.domain.auth.service;
 
+import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
+import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
 import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
@@ -11,7 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -24,11 +27,10 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final MemberDetailsService memberDetailsService;
 
     // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
-        log.info("login");
-
         try {
             // email + password 기반 authentication 객체 생성
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -74,6 +76,28 @@ public class AuthService {
             log.info("Refresh Token 삭제 완료");
         } else {
             throw new RuntimeException("유효하지 않거나 만료된 Refresh Token");
+        }
+    }
+
+    // Refresh Token을 이용해 새로운 Access Token, Refresh Token을 발급
+    public AccessTokenDTO refreshAccessToken(String email, String refreshToken) {
+        try {
+            if (!jwtProvider.validateToken(refreshToken)) {
+                throw new RuntimeException("유효하지 않은 Refresh Token");
+            }
+
+            // 회원 인증 정보 추출
+            MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    email, "", memberDetails.getAuthorities());
+
+            return jwtProvider.generateAccessToken(authentication);
+        } catch (UsernameNotFoundException e) {
+            throw new RuntimeException("찾을 수 없는 회원", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("유효하지 않은 Refresh Token", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Access Token 재발급 중 오류가 발생했습니다.", e);
         }
     }
 }

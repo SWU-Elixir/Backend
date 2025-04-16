@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.global.security;
 
+import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
@@ -65,10 +66,14 @@ public class JwtProvider {
     }
 
     // 인증 정보 기반 Access Token 발급 (토큰 재발급 시)
-    public String generateAccessTokenToken(Authentication authentication) {
+    public AccessTokenDTO generateAccessToken(Authentication authentication) {
         String authorities = getAuthorities(authentication);
         long now = System.currentTimeMillis();
-        return createAccessToken(authentication.getName(), authorities, now);
+        String accessToken = createAccessToken(authentication.getName(), authorities, now);
+
+        return AccessTokenDTO.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     // 인증 정보 기반 Access Token + Refresh Token 발급 (로그인 시)
@@ -83,27 +88,6 @@ public class JwtProvider {
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .build();
-    }
-
-    // Refresh Token을 이용해 새로운 Access Token, Refresh Token을 발급
-    public TokenResponseDTO refreshAccessToken(String email, String refreshToken) {
-        if (!validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
-        }
-
-        Claims claims = parseClaims(refreshToken);
-        String username = claims.getSubject();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, "", null);
-
-        String newAccessToken = generateAccessTokenToken(authentication);
-
-        log.info("새로운 Access Token 발급: {}", newAccessToken);
-
-        return TokenResponseDTO.builder()
-                .grantType("Bearer")
-                .accessToken(newAccessToken)
-                .refreshToken(refreshToken)  // 기존 거 그대로 반환
                 .build();
     }
 
@@ -132,7 +116,7 @@ public class JwtProvider {
 
         String email = claims.getSubject();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다. 이메일: " + email));
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다. email: " + email));
 
         MemberDetails principal = new MemberDetails(member);
 

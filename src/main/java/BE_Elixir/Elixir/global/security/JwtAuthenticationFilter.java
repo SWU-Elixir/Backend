@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.List;
 
 // jwt 인증을 위한 커스텀 필터
 @Slf4j
@@ -20,10 +22,23 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtProvider;
+    private final String[] whitelist;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // 1. Request Header 에서 JWT 토큰 추출
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String requestURI = httpRequest.getRequestURI();
+
+        // 허용 경로는 필터 건너뛰기
+        for (String pattern : whitelist) {
+            if (pathMatcher.match(pattern, requestURI)) {
+                chain.doFilter(request, response);
+                return;
+            }
+        }
+
+        // 1. Request Header 에서 JWT 토큰(Access Token) 추출
         String token = resolveToken((HttpServletRequest) request);
 
         if (token == null) {
@@ -32,7 +47,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             log.warn("유효하지 않거나 만료된 JWT 토큰이 요청에 포함되어 있습니다.");
         }
 
-        // 2. validationToken으로 토큰 유효성 검사
+        // 2. validationToken()으로 토큰 유효성 검사
         if (token != null && jwtProvider.validateToken(token)) {
             try {
                 // 토큰이 유효할 경우 토큰에서 Authentication 객체를 갖고 와서 SecurityContext에 저장
