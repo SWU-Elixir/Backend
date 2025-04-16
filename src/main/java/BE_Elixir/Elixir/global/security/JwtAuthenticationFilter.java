@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.List;
 
 // jwt 인증을 위한 커스텀 필터
 @Slf4j
@@ -20,9 +22,22 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtProvider;
+    private final String[] whitelist;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String requestURI = httpRequest.getRequestURI();
+
+        // 허용 경로는 필터 건너뛰기
+        for (String pattern : whitelist) {
+            if (pathMatcher.match(pattern, requestURI)) {
+                chain.doFilter(request, response);
+                return;
+            }
+        }
+
         // 1. Request Header 에서 JWT 토큰(Access Token) 추출
         String token = resolveToken((HttpServletRequest) request);
 
