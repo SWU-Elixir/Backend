@@ -101,6 +101,7 @@ public class JwtProvider {
         log.info("새로운 Access Token 발급: {}", newAccessToken);
 
         return TokenResponseDTO.builder()
+                .grantType("Bearer")
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)  // 기존 거 그대로 반환
                 .build();
