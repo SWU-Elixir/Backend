@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.controller;
 
+import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
@@ -10,6 +11,7 @@ import BE_Elixir.Elixir.global.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,15 +24,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecipeController {
     private final RecipeService recipeService;
-    private final RecipeEventService recipeEventService;
 
     // 레시피 등록
     @PostMapping
     public ResponseEntity<RecipeResponseDTO> createRecipe(
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @RequestPart("dto") RecipeRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "recipeStepImages", required = false) List<MultipartFile> recipeStepImages
     ) throws IOException {
+        String email = memberDetails.getUsername();
         RecipeResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages);
         return ResponseEntity.ok(response);
     }
@@ -42,15 +45,6 @@ public class RecipeController {
         return ResponseEntity.ok(response);
     }
 
-    // 댓글 등록하기
-    @PostMapping("/{recipeId}/comment")
-    public ResponseEntity<RecipeCommentDTO> addComment(
-            @PathVariable Long recipeId,
-            @RequestBody RecipeCommentDTO requestDTO
-    ) {
-        requestDTO.setRecipeId(recipeId);
-        // 댓글 추가
-        RecipeCommentDTO createdComment = recipeEventService.addComment(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
-    }
+
+
 }
