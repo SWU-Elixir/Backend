@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.member.controller.api;
 import BE_Elixir.Elixir.domain.auth.dto.request.TokenRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +39,7 @@ public interface MemberApi {
             @ApiResponse(responseCode = "400", description = "회원가입 실패",
                     content = @Content(schema = @Schema(type = "string", example = "회원가입 실패: 이메일이 이미 존재합니다.")))
     })
-    ResponseEntity<?> signUp(@RequestBody SignUpRequestDTO request);
+    ResponseEntity<CommonResponse<?>> signUp(@RequestBody SignUpRequestDTO request);
 
     @Operation(summary = "회원탈퇴",
             description = "회원 정보를 삭제합니다.",
@@ -51,7 +52,7 @@ public interface MemberApi {
             @ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(type = "string", example = "회원탈퇴 중 오류가 발생했습니다.")))
     })
-    ResponseEntity<?> withdrawal(
+    ResponseEntity<CommonResponse<?>> withdrawal(
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
     );
