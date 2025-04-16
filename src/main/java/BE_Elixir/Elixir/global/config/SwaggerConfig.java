@@ -13,7 +13,7 @@ import java.util.List;
 
 @Configuration
 @SecurityScheme(
-        name = "Authorization",
+        name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT"
