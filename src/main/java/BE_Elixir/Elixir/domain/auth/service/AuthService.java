@@ -14,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -30,8 +31,6 @@ public class AuthService {
 
     // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
-        log.info("login");
-
         try {
             // email + password 기반 authentication 객체 생성
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -82,15 +81,23 @@ public class AuthService {
 
     // Refresh Token을 이용해 새로운 Access Token, Refresh Token을 발급
     public AccessTokenDTO refreshAccessToken(String email, String refreshToken) {
-        if (!jwtProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+        try {
+            if (!jwtProvider.validateToken(refreshToken)) {
+                throw new RuntimeException("유효하지 않은 Refresh Token");
+            }
+
+            // 회원 인증 정보 추출
+            MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    email, "", memberDetails.getAuthorities());
+
+            return jwtProvider.generateAccessToken(authentication);
+        } catch (UsernameNotFoundException e) {
+            throw new RuntimeException("찾을 수 없는 회원", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("유효하지 않은 Refresh Token", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Access Token 재발급 중 오류가 발생했습니다.", e);
         }
-
-        // 회원 인증 정보 츄츌
-        MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                email, "", memberDetails.getAuthorities());
-
-        return jwtProvider.generateAccessToken(authentication);
     }
 }
