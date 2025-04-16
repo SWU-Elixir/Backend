@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.controller;
 
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeEventService;
@@ -36,8 +37,8 @@ public class RecipeController {
 
     // 레시피 상세 조회
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeResponseDTO> getRecipe(@PathVariable Long recipeId) {
-        RecipeResponseDTO response = recipeService.getRecipeDetail(recipeId);
+    public ResponseEntity<RecipeDetailResponseDTO> getRecipe(@PathVariable Long recipeId) {
+        RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId);
         return ResponseEntity.ok(response);
     }
 

@@ -1,11 +1,14 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Ingredient;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.IngredientRepository;
+import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final RecipeEventRepository recipeEventRepository;
     private final IngredientRepository ingredientRepository;
     private final S3Service s3Service;
 
@@ -76,9 +80,20 @@ public class RecipeService {
 
     // 레시피 상세 조회
     @Transactional(readOnly = true)
-    public RecipeResponseDTO getRecipeDetail(Long recipeId) {
+    public RecipeDetailResponseDTO getRecipeDetail(Long recipeId) {
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
                 .orElseThrow(() -> new RuntimeException("레시피가 존재하지 않습니다."));
-        return new RecipeResponseDTO(recipe);
+        // 댓글 가져오기
+        List<RecipeCommentDTO> comments = recipeEventRepository.findAllByRecipeId(recipeId)
+                .stream()
+                .map(comment -> new RecipeCommentDTO(
+                        comment.getRecipe().getId(),
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return new RecipeDetailResponseDTO(recipe, comments);
     }
 }

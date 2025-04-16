@@ -4,7 +4,8 @@ import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class RecipeResponseDTO {
+public class RecipeDetailResponseDTO {
     private Long id;
     private Long memberId;
     private String title;
@@ -63,8 +64,10 @@ public class RecipeResponseDTO {
     private Boolean allergy_잣;
 
 
+    // 댓글 리스트
+    private List<RecipeCommentDTO> comments;
 
-    public RecipeResponseDTO(Recipe recipe) {
+    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentDTO> comments) {
         this.id = recipe.getId();
         this.memberId = recipe.getMemberId();
         this.title = recipe.getTitle();
@@ -117,6 +120,8 @@ public class RecipeResponseDTO {
         this.allergy_전복 = recipe.getAllergy_전복();
         this.allergy_홍합 = recipe.getAllergy_홍합();
         this.allergy_잣 = recipe.getAllergy_잣();
+
+        this.comments = comments;
     }
 
 }

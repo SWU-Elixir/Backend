@@ -1,42 +1,25 @@
-package BE_Elixir.Elixir.domain.member.entity;
+package BE_Elixir.Elixir.domain.member.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
+import BE_Elixir.Elixir.domain.member.entity.Member;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Member {
+public class SignUpRequestDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false, unique = true, nullable = false)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
-    private String password;  // 인코딩된 비밀번호
-
-    @Column(nullable = false, unique = true)
+    private String password;
     private String nickname;
-
     private String profile_url;
     private String gender;
     private Integer birth_year;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 
     // allergy fields
     private boolean allergy_egg;
@@ -81,4 +64,16 @@ public class Member {
     private boolean reason_antioxidant_boost;
     private boolean reason_blood_sugar_control;
     private boolean reason_inflammation_reduction;
+
+    public Member toEntity(String encodedPassword, List<String> roles) {
+        return Member.builder()
+                .email(this.email)
+                .password(encodedPassword)
+                .nickname(this.nickname)
+                .profile_url(this.profile_url)
+                .gender(this.gender)
+                .birth_year(this.birth_year)
+                .roles(roles)
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.dto;
 
+import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,4 +13,5 @@ public class RecipeCommentDTO {
     private Long memberId; // 나중엔 Member로 바꾸기
     private String content;
     private LocalDateTime createdAt;
+
 }

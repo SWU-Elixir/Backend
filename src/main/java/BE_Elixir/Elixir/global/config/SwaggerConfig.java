@@ -1,5 +1,7 @@
 package BE_Elixir.Elixir.global.config;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -10,9 +12,15 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
+@SecurityScheme(
+        name = "Authorization",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
+)
 public class SwaggerConfig {
 
-    String DEFAULT_URL = "";
+    String DEFAULT_URL = "http://localhost:8080";
 
     @Bean
     public OpenAPI openAPI() {
@@ -24,8 +32,8 @@ public class SwaggerConfig {
 
     public Info apiInfo() {
         return new Info()
-                .title("Swagger")
-                .description("REST API")
+                .title("Elixir API")
+                .description("API documentation for Elixir")
                 .version("1.0.0");
     }
 }

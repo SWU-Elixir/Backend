@@ -27,7 +27,7 @@ public class RecipeEventService {
         RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, requestDTO);
         recipeEventRepository.save(comment);
 
-        return new RecipeCommentDTO(comment.getId(), requestDTO.getMemberId(), requestDTO.getContent(), comment.getCreatedAt());
+        return new RecipeCommentDTO(requestDTO.getRecipeId(), requestDTO.getMemberId(), requestDTO.getContent(), comment.getCreatedAt());
     }
 
 }
