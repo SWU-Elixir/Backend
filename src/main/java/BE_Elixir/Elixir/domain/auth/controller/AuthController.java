@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.auth.controller;
 
 import BE_Elixir.Elixir.domain.auth.controller.api.AuthApi;
+import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.service.AuthService;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
@@ -82,7 +83,7 @@ public class AuthController implements AuthApi {
 
         try {
             String refreshToken = redisService.getRefreshToken(email);
-            TokenResponseDTO token = jwtProvider.refreshAccessToken(email, refreshToken);
+            AccessTokenDTO token = authService.refreshAccessToken(email, refreshToken);
 
             log.info("Access Token 재발급 성공 - email: {}", email);
             return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "Access Token 재발급 성공", token));

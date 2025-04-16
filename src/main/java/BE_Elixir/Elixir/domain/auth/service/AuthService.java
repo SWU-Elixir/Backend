@@ -1,7 +1,10 @@
 package BE_Elixir.Elixir.domain.auth.service;
 
+import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
+import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
 import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
@@ -11,7 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +26,7 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final MemberDetailsService memberDetailsService;
 
     // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
@@ -75,5 +78,19 @@ public class AuthService {
         } else {
             throw new RuntimeException("유효하지 않거나 만료된 Refresh Token");
         }
+    }
+
+    // Refresh Token을 이용해 새로운 Access Token, Refresh Token을 발급
+    public AccessTokenDTO refreshAccessToken(String email, String refreshToken) {
+        if (!jwtProvider.validateToken(refreshToken)) {
+            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+        }
+
+        // 회원 인증 정보 츄츌
+        MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                email, "", memberDetails.getAuthorities());
+
+        return jwtProvider.generateAccessToken(authentication);
     }
 }
