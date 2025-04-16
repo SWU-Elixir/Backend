@@ -62,7 +62,7 @@ public class AuthController implements AuthApi {
             authService.logout(email, accessToken, refreshToken);
             log.info("로그아웃 성공 - email: {}", email);
 
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),"로그아웃 성공", null));
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),"로그아웃 성공"));
         } catch (Exception e) {
             log.warn("로그아웃 실패 - email: {}, message: {}", email, e.getMessage());
             return ResponseEntity
@@ -74,7 +74,7 @@ public class AuthController implements AuthApi {
 
     // Access Token 재발급
     @PostMapping("/refresh")
-    public ResponseEntity<CommonResponse<TokenResponseDTO>> refresh (
+    public ResponseEntity<CommonResponse<AccessTokenDTO>> refresh (
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
     ) {
@@ -86,7 +86,9 @@ public class AuthController implements AuthApi {
             AccessTokenDTO token = authService.refreshAccessToken(email, refreshToken);
 
             log.info("Access Token 재발급 성공 - email: {}", email);
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "Access Token 재발급 성공", token));
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "Access Token 재발급 성공", token));
+
         } catch (Exception e) {
             log.warn("Access Token 재발급 실패 - email: {}, message: {}", email, e.getMessage());
             return ResponseEntity
