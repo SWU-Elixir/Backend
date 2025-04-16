@@ -44,7 +44,7 @@ public class MemberController implements MemberApi {
             Member member = memberService.signUp(request);
             log.info("회원가입 성공 - 회원 ID: {}", member.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(), "회원가입 성공 - member_id = " + member.getId(), null));
+                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(), "회원가입 성공 - memberId: " + member.getId()));
 
         } catch (Exception e) {
             log.error("회원가입 실패 - 이메일: {}, 메시지: {}", request.getEmail(), e.getMessage(), e);
@@ -61,14 +61,14 @@ public class MemberController implements MemberApi {
             HttpServletRequest request
     ) {
         String email = memberDetails.getUsername();
-        log.info("회원탈퇴 요청 - 이메일: {}", email);
+        log.info("회원탈퇴 요청 - email: {}", email);
 
         try {
             String accessToken = jwtProvider.resolveToken(request);
             String refreshToken = redisService.getRefreshToken(memberDetails.getUsername());
 
             memberService.withdraw(email, accessToken, refreshToken);
-            log.info("회원탈퇴 성공 - 이메일: {}", email);
+            log.info("회원탈퇴 성공 - email: {}", email);
 
             return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "회원탈퇴 성공"));
 
