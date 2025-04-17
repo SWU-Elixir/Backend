@@ -34,12 +34,12 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "로그인 성공",
+                                      "message": "이메일 중복 체크 성공",
                                       "data": true
                                     }
                                     """)))
     })
-    ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email);
+    ResponseEntity<CommonResponse<Boolean>> checkEmailDuplicate(@RequestParam String email);
 
     @Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
     @ApiResponses({
