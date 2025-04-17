@@ -27,58 +27,56 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    private String profile_url;
+    private String profileUrl;
     private String gender;
-    private Integer birth_year;
+    private Integer birthYear;
 
+    @Setter
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 
     // allergy fields
-    private boolean allergy_egg;
-    private boolean allergy_milk;
-    private boolean allergy_grain;
-    private boolean allergy_wheat_product;
-    private boolean allergy_dairy;
-    private boolean allergy_buckwheat;
-    private boolean allergy_peanut;
-    private boolean allergy_soybean;
-    private boolean allergy_wheat;
-    private boolean allergy_mackerel;
-    private boolean allergy_pork;
-    private boolean allergy_peach;
-    private boolean allergy_tomato;
-    private boolean allergy_sulfite;
-    private boolean allergy_walnut;
-    private boolean allergy_chicken;
-    private boolean allergy_beef;
-    private boolean allergy_squid;
-    private boolean allergy_shellfish;
-    private boolean allergy_oyster;
-    private boolean allergy_abalone;
-    private boolean allergy_mussel;
-    private boolean allergy_pine_nut;
+    @Setter private boolean allergyEgg = false;
+    @Setter private boolean allergyMilk = false;
+    @Setter private boolean allergyGrain = false;
+    @Setter private boolean allergyWheatProduct = false;
+    @Setter private boolean allergyDairy = false;
+    @Setter private boolean allergyBuckwheat = false;
+    @Setter private boolean allergyPeanut = false;
+    @Setter private boolean allergySoybean = false;
+    @Setter private boolean allergyWheat = false;
+    @Setter private boolean allergyMackerel = false;
+    @Setter private boolean allergyPork = false;
+    @Setter private boolean allergyPeach = false;
+    @Setter private boolean allergyTomato = false;
+    @Setter private boolean allergySulfite = false;
+    @Setter private boolean allergyWalnut = false;
+    @Setter private boolean allergyChicken = false;
+    @Setter private boolean allergyBeef = false;
+    @Setter private boolean allergySquid = false;
+    @Setter private boolean allergyShellfish = false;
+    @Setter private boolean allergyOyster = false;
+    @Setter private boolean allergyAbalone = false;
+    @Setter private boolean allergyMussel = false;
+    @Setter private boolean allergyPineNut = false;
 
     // meal style fields
-    private boolean meal_style_meat_based;
-    private boolean meal_style_vegetable_based;
-    private boolean meal_style_mixed;
+    @Setter private boolean mealStyleMeatBased = false;
+    @Setter private boolean mealStyleVegetableBased = false;
+    @Setter private boolean mealStyleMixed = false;
 
     // recipe style fields
-    private boolean recipe_style_korean;
-    private boolean recipe_style_chinese;
-    private boolean recipe_style_japanese;
-    private boolean recipe_style_western;
-    private boolean recipe_style_dessert;
-    private boolean recipe_style_beverage_tea;
-    private boolean recipe_style_sauce_jam;
+    @Setter private boolean recipeStyleKorean = false;
+    @Setter private boolean recipeStyleChinese = false;
+    @Setter private boolean recipeStyleJapanese = false;
+    @Setter private boolean recipeStyleWestern = false;
+    @Setter private boolean recipeStyleDessert = false;
+    @Setter private boolean recipeStyleBeverageTea = false;
+    @Setter private boolean recipeStyleSauceJam = false;
 
     // reason fields
-    private boolean reason_antioxidant_boost;
-    private boolean reason_blood_sugar_control;
-    private boolean reason_inflammation_reduction;
+    @Setter private boolean reasonAntioxidantBoost = false;
+    @Setter private boolean reasonBloodSugarControl = false;
+    @Setter private boolean reasonInflammationReduction = false;
 }
