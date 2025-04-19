@@ -1,12 +1,12 @@
 package BE_Elixir.Elixir.domain.member.service;
 
-import BE_Elixir.Elixir.domain.auth.dto.request.TokenRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.s3.S3Service;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final S3Service s3Service;
 
     // 이메일 중복 체크
     public boolean isEmailDuplicated(String email) {
@@ -35,15 +37,15 @@ public class MemberService {
     }
 
     // 회원가입 (USER 권한을 추가하여 데이터 추가)
-    public Member signUp(SignUpRequestDTO request) {
+    public Member signUp(SignUpRequestDTO request, MultipartFile profileImage) {
         List<String> roles = new ArrayList<>();
         roles.add("USER");
 
         try {
+            // Member entity 값 세팅
             Member member = request.toEntity(
                     passwordEncoder.encode(request.getPassword()), roles
             );
-
             member.setRoles(roles);
 
             // 설문조사 결과 세팅
@@ -71,7 +73,14 @@ public class MemberService {
                 applyReasons(member, reasons);
             }
 
+            // 프로필 이미지 업로드 및 url 세팅
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String imageUrl = s3Service.upload(profileImage, "member");
+                member.setProfileUrl(imageUrl);
+            }
+
             return memberRepository.save(member);
+
         } catch (DataIntegrityViolationException e) {
             if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {
                 throw new OccupiedException(ErrorCode.EXISTS_MEMBER);
