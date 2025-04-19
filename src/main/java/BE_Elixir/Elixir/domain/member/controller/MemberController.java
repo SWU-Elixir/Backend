@@ -28,11 +28,13 @@ public class MemberController implements MemberApi {
 
     // 이메일 중복 체크
     @GetMapping("/check-email")
-    public ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email) {
+    public ResponseEntity<CommonResponse<Boolean>> checkEmailDuplicate(@RequestParam String email) {
         log.info("이메일 중복 체크 요청: {}", email);
 
         boolean isDuplicate = memberService.isEmailDuplicated(email);
-        return ResponseEntity.ok(isDuplicate);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "이메일 중복 체크 성공", isDuplicate));
     }
 
     // 회원가입
