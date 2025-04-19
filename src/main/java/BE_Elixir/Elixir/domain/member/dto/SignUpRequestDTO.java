@@ -1,13 +1,11 @@
 package BE_Elixir.Elixir.domain.member.dto;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +15,6 @@ public class SignUpRequestDTO {
     private String email;
     private String password;
     private String nickname;
-    private String profileUrl;
     private String gender;
     private Integer birthYear;
 
@@ -26,13 +23,11 @@ public class SignUpRequestDTO {
     private List<String> recipeStyles;
     private List<String> reasons;
 
-
     public Member toEntity(String encodedPassword, List<String> roles) {
         return Member.builder()
                 .email(this.email)
                 .password(encodedPassword)
                 .nickname(this.nickname)
-                .profileUrl(this.profileUrl)
                 .gender(this.gender)
                 .birthYear(this.birthYear)
                 .roles(roles)

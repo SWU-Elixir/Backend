@@ -27,7 +27,7 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    private String profileUrl;
+    @Setter private String profileUrl;
     private String gender;
     private Integer birthYear;
 

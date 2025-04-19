@@ -1,7 +1,7 @@
 package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
-import BE_Elixir.Elixir.domain.member.dto.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -39,17 +40,20 @@ public class MemberController implements MemberApi {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse<?>> signUp(@RequestBody SignUpRequestDTO request) {
-        log.info("회원가입 요청 - 이메일: {}", request.getEmail());
+    public ResponseEntity<CommonResponse<?>> signUp(
+            @RequestPart("dto") SignUpRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    ) {
+        log.info("회원가입 요청 - 이메일: {}", dto.getEmail());
 
         try {
-            Member member = memberService.signUp(request);
+            Member member = memberService.signUp(dto, profileImage);
             log.info("회원가입 성공 - 회원 ID: {}", member.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(), "회원가입 성공 - memberId: " + member.getId()));
 
         } catch (Exception e) {
-            log.error("회원가입 실패 - 이메일: {}, 메시지: {}", request.getEmail(), e.getMessage(), e);
+            log.error("회원가입 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(CommonResponse.success(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
                             "회원가입 실패: " + e.getMessage(), null));
