@@ -33,6 +33,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         // 허용 경로는 필터 건너뛰기
         for (String pattern : whitelist) {
             if (pathMatcher.match(pattern, requestURI)) {
+                // 확인용
+                log.info("Whitelist 패턴에 일치: {}, URI: {}", pattern, requestURI);
                 chain.doFilter(request, response);
                 return;
             }
