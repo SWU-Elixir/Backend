@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.member.dto;
+package BE_Elixir.Elixir.domain.member.dto.request;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import lombok.*;
