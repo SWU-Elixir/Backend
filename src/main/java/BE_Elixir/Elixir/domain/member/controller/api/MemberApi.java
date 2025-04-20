@@ -95,4 +95,42 @@ public interface MemberApi {
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
     );
+
+
+    @Operation(summary = "회원 정보 조회",
+            description = "회원의 기본적인 정보(id, 이메일, 닉네임, 젠더, 생년)를 조회합니다",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "회원 정보 조회 성공",
+                                      "data": {
+                                        "id": 1,
+                                        "email": "example@naver.com",
+                                        "nickname": "example",
+                                        "gender": "female",
+                                        "birthYear": 2002,
+                                        "profileUrl": "https://s3elixir.s3..."
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "회원 정보 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "회원 정보 조회 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<MemberResponseDTO>> getMemberInfo(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request
+    );
 }
