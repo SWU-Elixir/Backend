@@ -1,7 +1,7 @@
 package BE_Elixir.Elixir.domain.member.controller.api;
 
-import BE_Elixir.Elixir.domain.auth.dto.request.TokenRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Tag(name = "Member API", description = "회원 관련 API")
@@ -64,7 +66,10 @@ public interface MemberApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<?>> signUp(@RequestBody SignUpRequestDTO request);
+    ResponseEntity<CommonResponse<?>> signUp(
+            @RequestPart("dto") SignUpRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    );
 
     @Operation(summary = "회원탈퇴",
             description = "회원 정보를 삭제합니다.",

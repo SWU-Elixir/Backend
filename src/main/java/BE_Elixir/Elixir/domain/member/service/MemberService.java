@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.member.service;
 
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
@@ -115,6 +116,23 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. email: " + email));
         memberRepository.delete(member);
+    }
+
+
+    // 회원 정보 조회
+    public MemberResponseDTO getMemberInfo(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. email: " + email));
+
+        // member 객체를 MemberResponseDTO 로 변환
+        return MemberResponseDTO.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .gender(member.getGender())
+                .birthYear(member.getBirthYear())
+                .profileUrl(member.getProfileUrl())
+                .build();
     }
 
 
