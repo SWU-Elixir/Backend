@@ -2,6 +2,7 @@ package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
@@ -84,6 +85,30 @@ public class MemberController implements MemberApi {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "회원탈퇴 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 회원 정보 조회 (이메일, 닉네임, 젠더, 생년, 프로필 url)
+    @GetMapping("")
+    public ResponseEntity<CommonResponse<MemberResponseDTO>> getMemberInfo(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request)
+    {
+        String email = memberDetails.getUsername();
+        log.info("회원 정보 조회 요청 - email: {}", email);
+
+        try {
+            MemberResponseDTO response = memberService.getMemberInfo(email);
+            log.info("회원 정보 조회 성공 - email: {}", email);
+
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "회원조회 성공", response));
+
+        } catch (Exception e) {
+            log.warn("회원 정보 조회 실패 - email: {}, message: {}", email, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "회원 정보 조회 실패 - " + e.getMessage()));
         }
     }
 }
