@@ -112,9 +112,13 @@ public class MemberService {
             throw new RuntimeException("유효하지 않거나 만료된 Refresh Token");
         }
 
-        // 회원 정보 및 삭제
+        // 회원 정보 조회
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. email: " + email));
+
+        // S3 버킷에서 프로필 이미지 삭제
+        s3Service.deleteS3(member.getProfileUrl(), "member");
+        // 회원 삭제
         memberRepository.delete(member);
     }
 
