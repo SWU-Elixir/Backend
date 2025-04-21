@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,9 +17,9 @@ public class RecipeEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @ManyToOne // 일단 로그인 없이 진행 → 나중에 Member로 수정
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
@@ -45,13 +46,19 @@ public class RecipeEvent {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static RecipeEvent createRecipeComment(Recipe recipe, RecipeCommentDTO dto) {
+    public static RecipeEvent createRecipeComment(Recipe recipe, RecipeCommentDTO dto, Member member) {
         RecipeEvent comment = new RecipeEvent();
         comment.setRecipe(recipe);
-        comment.setMemberId(dto.getMemberId());
+        comment.setMember(member);
         comment.setCommentFlag(true);
         comment.setContent(dto.getContent());
         comment.setCreatedAt(dto.getCreatedAt());
         return comment;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+        this.updatedAt = LocalDateTime.now(); // 변경 시간도 업데이트
+    }
+
 }

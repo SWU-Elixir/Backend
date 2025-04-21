@@ -25,9 +25,9 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -124,10 +124,10 @@ public class Recipe {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static Recipe from(RecipeRequestDTO dto) {
+    public static Recipe from(RecipeRequestDTO dto, Member member) {
         Recipe recipe = new Recipe();
 
-        recipe.setMemberId(dto.getMemberId());
+        recipe.setMember(member);
         recipe.setTitle(dto.getTitle());
         recipe.setDescription(dto.getDescription());
         recipe.setCategorySlowAging(dto.getCategorySlowAging());

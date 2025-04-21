@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.dto;
 
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Setter
 public class RecipeDetailResponseDTO {
     private Long id;
-    private Long memberId;
+    private String authorNickname;
     private String title;
     private String imageUrl;
     private String description;
@@ -69,7 +70,7 @@ public class RecipeDetailResponseDTO {
 
     public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentDTO> comments) {
         this.id = recipe.getId();
-        this.memberId = recipe.getMemberId();
+        this.authorNickname = recipe.getMember().getNickname();
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();

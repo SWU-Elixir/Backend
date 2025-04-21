@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.dto;
 
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
@@ -11,7 +12,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class RecipeRequestDTO {
-    private Long memberId;
+    private Member member;
     private String title;
     private String description;
     private CategorySlowAging categorySlowAging;
