@@ -1,6 +1,5 @@
 package BE_Elixir.Elixir.domain.recipe.dto;
 
-import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -66,9 +65,9 @@ public class RecipeDetailResponseDTO {
 
 
     // 댓글 리스트
-    private List<RecipeCommentDTO> comments;
+    private List<RecipeCommentResponseDTO> comments;
 
-    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentDTO> comments) {
+    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments) {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
         this.title = recipe.getTitle();

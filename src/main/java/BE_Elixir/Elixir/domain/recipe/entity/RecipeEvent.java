@@ -1,7 +1,8 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentCreateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentUpdateRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,13 +47,12 @@ public class RecipeEvent {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static RecipeEvent createRecipeComment(Recipe recipe, RecipeCommentDTO dto, Member member) {
+    public static RecipeEvent createRecipeComment(Recipe recipe, RecipeCommentCreateRequestDTO dto, Member member) {
         RecipeEvent comment = new RecipeEvent();
         comment.setRecipe(recipe);
         comment.setMember(member);
         comment.setCommentFlag(true);
         comment.setContent(dto.getContent());
-        comment.setCreatedAt(dto.getCreatedAt());
         return comment;
     }
 

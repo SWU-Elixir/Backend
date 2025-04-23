@@ -1,19 +1,13 @@
 package BE_Elixir.Elixir.domain.recipe.controller;
 
-import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
-
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
 import BE_Elixir.Elixir.domain.recipe.controller.api.RecipeApi;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.service.RecipeEventService;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
-import BE_Elixir.Elixir.global.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,9 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recipe")

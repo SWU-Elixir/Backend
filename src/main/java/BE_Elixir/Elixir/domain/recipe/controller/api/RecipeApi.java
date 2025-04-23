@@ -1,16 +1,13 @@
 package BE_Elixir.Elixir.domain.recipe.controller.api;
 
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

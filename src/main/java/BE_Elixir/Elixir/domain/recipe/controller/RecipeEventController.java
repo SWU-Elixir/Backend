@@ -4,7 +4,9 @@ package BE_Elixir.Elixir.domain.recipe.controller;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.controller.api.RecipeEventApi;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentCreateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentUpdateRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeEventService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import lombok.*;
@@ -23,15 +25,15 @@ public class RecipeEventController implements RecipeEventApi {
 
     // 댓글 등록하기
     @PostMapping("/{recipeId}/comment")
-    public ResponseEntity<CommonResponse<RecipeCommentDTO>> addComment(
+    public ResponseEntity<CommonResponse<RecipeCommentResponseDTO>> addComment(
             @PathVariable Long recipeId,
-            @RequestBody RecipeCommentDTO requestDTO,
+            @RequestBody RecipeCommentCreateRequestDTO requestDTO,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         try {
             Member member = memberDetails.getMember();
             requestDTO.setRecipeId(recipeId);
-            RecipeCommentDTO createdComment = recipeEventService.addComment(requestDTO, member);
+            RecipeCommentResponseDTO createdComment = recipeEventService.addComment(requestDTO, member);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
@@ -47,17 +49,17 @@ public class RecipeEventController implements RecipeEventApi {
 
     // 댓글 수정하기
     @PutMapping("/{recipeId}/comment/{commentId}")
-    public ResponseEntity<CommonResponse<RecipeCommentDTO>>editComment(
+    public ResponseEntity<CommonResponse<RecipeCommentResponseDTO>>editComment(
         @PathVariable Long recipeId,
         @PathVariable Long commentId,
-        @RequestBody RecipeCommentDTO requestDTO,
+        @RequestBody RecipeCommentUpdateRequestDTO requestDTO,
         @AuthenticationPrincipal MemberDetails memberDetails
     ){
         try {
             Member member = memberDetails.getMember();
             requestDTO.setRecipeId(recipeId);
-            requestDTO.setId(commentId);
-            RecipeCommentDTO editedComment = recipeEventService.editComment(requestDTO, member);
+            requestDTO.setCommentId(commentId);
+            RecipeCommentResponseDTO editedComment = recipeEventService.editComment(requestDTO, member);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),

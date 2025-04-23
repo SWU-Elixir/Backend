@@ -1,11 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.*;
 import BE_Elixir.Elixir.domain.recipe.entity.Ingredient;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
@@ -15,7 +11,6 @@ import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.s3.S3Service;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -89,9 +84,9 @@ public class RecipeService {
                 .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 댓글 가져오기
-        List<RecipeCommentDTO> comments = recipeEventRepository.findAllByRecipeId(recipeId)
+        List<RecipeCommentResponseDTO> comments = recipeEventRepository.findAllByRecipeId(recipeId)
                 .stream()
-                .map(RecipeCommentDTO::new)
+                .map(RecipeCommentResponseDTO::new)
                 .collect(Collectors.toList());
 
         return new RecipeDetailResponseDTO(recipe, comments);
