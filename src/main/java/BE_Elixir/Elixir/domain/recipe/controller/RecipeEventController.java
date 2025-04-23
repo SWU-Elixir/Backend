@@ -72,4 +72,25 @@ public class RecipeEventController implements RecipeEventApi {
                     ));
         }
     }
+
+    // 댓글 삭제하기
+    @DeleteMapping("/{recipeId}/comment/{commentId}")
+    public ResponseEntity<CommonResponse<String>> deleteComment(
+            @PathVariable Long recipeId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            recipeEventService.deleteComment(commentId, member);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "댓글 삭제 성공", "commentId: " + commentId + " 삭제 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "댓글 삭제 실패 " + e.getMessage()));
+        }
+    }
 }

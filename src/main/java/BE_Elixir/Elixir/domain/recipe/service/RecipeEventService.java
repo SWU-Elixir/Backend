@@ -58,4 +58,25 @@ public class RecipeEventService {
         existingComment.updateContent(requestDTO.getContent());
         return new RecipeCommentResponseDTO(existingComment);
     }
+
+    // 댓글 삭제하기
+    @Transactional
+    public void deleteComment(Long commentId, Member member) {
+        // 기존 댓글 조회
+        RecipeEvent existingComment = recipeEventRepository.findById(commentId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 댓글 작성자가 아닌 경우 예외 처리
+        if (!existingComment.getMember().getEmail().equals(member.getEmail())) {
+            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+        }
+
+        // 댓글(flag)이 맞는지 한 번 확인
+        if (!existingComment.isCommentFlag()) {
+            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+        }
+
+        // 댓글 삭제
+        recipeEventRepository.delete(existingComment);
+    }
 }

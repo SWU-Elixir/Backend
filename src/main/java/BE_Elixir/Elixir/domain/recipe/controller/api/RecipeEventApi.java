@@ -47,4 +47,18 @@ public interface RecipeEventApi {
             @RequestBody RecipeCommentUpdateRequestDTO requestDTO,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
+
+    @Operation(summary = "레시피 댓글 삭제", description = "레시피에 등록된 댓글을 삭제합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "500", description = "댓글 삭제 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<String>> deleteComment(
+            @PathVariable Long recipeId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }
