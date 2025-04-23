@@ -170,4 +170,42 @@ public class Recipe {
         return recipe;
     }
 
+    public void updateFrom(RecipeRequestDTO dto) {
+        this.title = dto.getTitle();
+        this.description = dto.getDescription();
+        this.categorySlowAging = dto.getCategorySlowAging();
+        this.categoryType = dto.getCategoryType();
+        this.difficulty = dto.getDifficulty();
+        this.timeHours = dto.getTimeHours();
+        this.timeMinutes = dto.getTimeMinutes();
+        this.ingredients = dto.getIngredients();
+        this.seasoning = dto.getSeasoning();
+        this.tips = dto.getTips();
+        this.stepDescriptions = dto.getStepDescriptions();
+
+        this.allergy_알류 = dto.getAllergy_알류();
+        this.allergy_우유 = dto.getAllergy_우유();
+        this.allergy_각류 = dto.getAllergy_각류();
+        this.allergy_밀류 = dto.getAllergy_밀류();
+        this.allergy_유제품 = dto.getAllergy_유제품();
+        this.allergy_메밀 = dto.getAllergy_메밀();
+        this.allergy_땅콩 = dto.getAllergy_땅콩();
+        this.allergy_대두 = dto.getAllergy_대두();
+        this.allergy_밀 = dto.getAllergy_밀();
+        this.allergy_고등어 = dto.getAllergy_고등어();
+        this.allergy_돼지고기 = dto.getAllergy_돼지고기();
+        this.allergy_복숭아 = dto.getAllergy_복숭아();
+        this.allergy_토마토 = dto.getAllergy_토마토();
+        this.allergy_아황산류 = dto.getAllergy_아황산류();
+        this.allergy_호두 = dto.getAllergy_호두();
+        this.allergy_닭고기 = dto.getAllergy_닭고기();
+        this.allergy_쇠고기 = dto.getAllergy_쇠고기();
+        this.allergy_오징어 = dto.getAllergy_오징어();
+        this.allergy_조개류 = dto.getAllergy_조개류();
+        this.allergy_굴 = dto.getAllergy_굴();
+        this.allergy_전복 = dto.getAllergy_전복();
+        this.allergy_홍합 = dto.getAllergy_홍합();
+        this.allergy_잣 = dto.getAllergy_잣();
+    }
+
 }

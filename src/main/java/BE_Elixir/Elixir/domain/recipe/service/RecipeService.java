@@ -96,4 +96,53 @@ public class RecipeService {
 
         return new RecipeDetailResponseDTO(recipe, comments);
     }
+
+    // 레시피 수정
+    @Transactional
+    public RecipeResponseDTO updateRecipe(
+            Long recipeId,
+            RecipeRequestDTO dto,
+            MultipartFile image,
+            List<MultipartFile> recipeStepImages,
+            Member member
+    ) throws IOException {
+        Recipe recipe = recipeRepository.findWithAllById(recipeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+
+        if (!recipe.getMember().getEmail().equals(member.getEmail())){
+            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION); // 권한 체크
+        }
+
+        // 기본 필드 업데이트
+        recipe.updateFrom(dto);
+
+        // 대표 이미지 업데이트
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = s3Service.upload(image, "recipe/main");
+            recipe.setImageUrl(imageUrl);
+        }
+
+        // 단계 이미지 업데이트
+        if (recipeStepImages != null && !recipeStepImages.isEmpty()) {
+            List<String> stepUrls = new ArrayList<>();
+            for (MultipartFile file : recipeStepImages) {
+                String url = s3Service.upload(file, "recipe/steps");
+                stepUrls.add(url);
+            }
+            recipe.setStepImageUrls(stepUrls);
+        }
+
+        // 재료 태그 재설정
+        List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
+                .map(id -> {
+                    Ingredient ingredient = ingredientRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
+                    return new RecipeIngredient(recipe, ingredient);
+                }).collect(Collectors.toList());
+
+        recipe.setIngredientTags(tagList);
+
+        recipeRepository.save(recipe);
+        return new RecipeResponseDTO(recipe);
+    }
 }

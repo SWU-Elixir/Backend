@@ -12,7 +12,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class RecipeRequestDTO {
-    private Member member;
     private String title;
     private String description;
     private CategorySlowAging categorySlowAging;

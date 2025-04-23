@@ -57,7 +57,9 @@ public class RecipeController implements RecipeApi {
 
     // 레시피 상세 조회
     @GetMapping("/{recipeId}")
-    public ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(@PathVariable Long recipeId) {
+    public ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(
+            @PathVariable Long recipeId
+    ) {
         try {
             RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId);
 
@@ -73,6 +75,27 @@ public class RecipeController implements RecipeApi {
         }
     }
 
-
+    // 레시피 수정
+    @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<?>> updateRecipe(
+            @PathVariable Long recipeId,
+            @RequestPart("dto") RecipeRequestDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "recipeStepImages", required = false) List<MultipartFile> recipeStepImages,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            RecipeResponseDTO response = recipeService.updateRecipe(recipeId, dto, image, recipeStepImages, member);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "레시피 수정 성공", response
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "레시피 수정 실패 - " + e.getMessage()));
+        }
+    }
 
 }
