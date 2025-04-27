@@ -99,4 +99,26 @@ public class RecipeEventService {
         scrap.setScrapFlag(true);
         recipeEventRepository.save(scrap);
     }
+
+    // 레시피 스크랩 취소하기
+    @Transactional
+    public void cancelScrapRecipe(Long recipeId, Member member) {
+        // 스크랩한 거 가져오기
+        RecipeEvent scrap = recipeEventRepository.findByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId())
+                .orElseThrow(() -> new OccupiedException(ErrorCode.SCRAP_NOT_FOUND));
+
+
+        // 스크랩한 사용자가 아닌 경우 예외 처리
+        if (!scrap.getMember().getEmail().equals(member.getEmail())) {
+            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+        }
+
+        // 스크랩(flag)이 맞는지 한 번 확인
+        if (!scrap.isScrapFlag()) {
+            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+        }
+
+        recipeEventRepository.delete(scrap);
+    }
+
 }

@@ -113,4 +113,24 @@ public class RecipeEventController implements RecipeEventApi {
                             "레시피 스크랩 실패: " + e.getMessage()));
         }
     }
+
+    // 스크랩 취소하기
+    @DeleteMapping("/{recipeId}/scrap")
+    public ResponseEntity<CommonResponse<String>> cancelScrapRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            recipeEventService.cancelScrapRecipe(recipeId, member);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "레시피 스크랩 취소 성공", "recipeId: " + recipeId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "레시피 스크랩 취소 실패: " + e.getMessage()));
+        }
+    }
 }

@@ -63,7 +63,7 @@ public interface RecipeEventApi {
     );
 
 
-    @Operation(summary = "레시피 스크랩", description = "레시피를 스크랩합니다.",
+    @Operation(summary = "레시피 스크랩하기", description = "레시피를 스크랩합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 스크랩 성공",
@@ -72,6 +72,19 @@ public interface RecipeEventApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     ResponseEntity<CommonResponse<String>> scrapRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    @Operation(summary = "레시피 스크랩 취소하기", description = "레시피 스크랩을 취소합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "댓글 스크랩 취소 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "500", description = "댓글 스크랩 취소 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<String>> cancelScrapRecipe(
             @PathVariable Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
