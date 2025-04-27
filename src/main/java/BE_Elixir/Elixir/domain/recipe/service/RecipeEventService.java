@@ -76,6 +76,8 @@ public class RecipeEventService {
             throw new OccupiedException(ErrorCode.INVALID_OPERATION);
         }
 
+        existingComment.setCommentFlag(false); // 댓글 플래그 끄기
+
         // 댓글 삭제
         recipeEventRepository.delete(existingComment);
     }
@@ -117,6 +119,8 @@ public class RecipeEventService {
         if (!scrap.isScrapFlag()) {
             throw new OccupiedException(ErrorCode.INVALID_OPERATION);
         }
+
+        scrap.setScrapFlag(false); // 스크랩 플래그 끄기
 
         recipeEventRepository.delete(scrap);
     }
