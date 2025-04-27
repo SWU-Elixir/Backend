@@ -50,10 +50,12 @@ public class RecipeController implements RecipeApi {
     // 레시피 상세 조회
     @GetMapping("/{recipeId}")
     public ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(
-            @PathVariable Long recipeId
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         try {
-            RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId);
+            Member member = memberDetails.getMember();
+            RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId, member);
 
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),

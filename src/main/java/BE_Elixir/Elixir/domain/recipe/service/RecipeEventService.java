@@ -79,4 +79,24 @@ public class RecipeEventService {
         // 댓글 삭제
         recipeEventRepository.delete(existingComment);
     }
+
+    // 레시피 스크랩하기
+    @Transactional
+    public void scrapRecipe(Long recipeId, Member member) {
+        // 레시피 존재 여부 확인
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+
+        // 기존에 스크랩한 게 있는지 확인
+        boolean alreadyScrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
+        if (alreadyScrapped) {
+            throw new OccupiedException(ErrorCode.ALREADY_SCRAPPED);
+        }
+
+        RecipeEvent scrap = new RecipeEvent();
+        scrap.setRecipe(recipe);
+        scrap.setMember(member);
+        scrap.setScrapFlag(true);
+        recipeEventRepository.save(scrap);
+    }
 }

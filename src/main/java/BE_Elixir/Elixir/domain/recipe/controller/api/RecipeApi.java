@@ -63,7 +63,10 @@ public interface RecipeApi {
             @ApiResponse(responseCode = "404", description = "레시피 없음",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
-    ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(@PathVariable Long recipeId);
+    ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 
 
     // 레시피 수정

@@ -86,6 +86,7 @@ public class Recipe {
     private LocalDateTime updatedAt;
 
     private Integer likes;
+    private Integer scraps;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeEvent> recipeEvents = new ArrayList<>();
@@ -120,6 +121,7 @@ public class Recipe {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.likes = 0;
+        this.scraps = 0;
     }
 
     @PreUpdate

@@ -34,7 +34,8 @@ public class RecipeResponseDTO {
     private List<String> stepImageUrls;
 
     private String tips;
-    private Integer likes;
+    private Integer likes;   // 좋아요 수
+    private Integer scraps;  // 스크랩 수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -91,6 +92,7 @@ public class RecipeResponseDTO {
 
         this.tips = recipe.getTips();
         this.likes = recipe.getLikes();
+        this.scraps = recipe.getScraps();
         this.createdAt = recipe.getCreatedAt();
         this.updatedAt = recipe.getUpdatedAt();
 

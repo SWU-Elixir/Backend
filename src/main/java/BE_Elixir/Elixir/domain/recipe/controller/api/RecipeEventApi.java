@@ -61,4 +61,18 @@ public interface RecipeEventApi {
             @PathVariable Long commentId,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
+
+
+    @Operation(summary = "레시피 스크랩", description = "레시피를 스크랩합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "댓글 스크랩 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "500", description = "댓글 스크랩 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<String>> scrapRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }

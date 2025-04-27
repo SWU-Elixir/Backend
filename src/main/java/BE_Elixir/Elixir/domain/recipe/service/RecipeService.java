@@ -79,7 +79,8 @@ public class RecipeService {
 
     // 레시피 상세 조회
     @Transactional(readOnly = true)
-    public RecipeDetailResponseDTO getRecipeDetail(Long recipeId) {
+    public RecipeDetailResponseDTO getRecipeDetail(Long recipeId, Member member) {
+        // 레시피 조회
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
 
@@ -89,7 +90,10 @@ public class RecipeService {
                 .map(RecipeCommentResponseDTO::new)
                 .collect(Collectors.toList());
 
-        return new RecipeDetailResponseDTO(recipe, comments);
+        // 좋아요 및 스크랩 여부 확인
+        boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
+        boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
+        return new RecipeDetailResponseDTO(recipe, comments, likedByCurrentUser, scrappedByCurrentUser);
     }
 
     // 레시피 수정
@@ -101,6 +105,7 @@ public class RecipeService {
             List<MultipartFile> recipeStepImages,
             Member member
     ) throws IOException {
+        // 레시피 조회
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
 

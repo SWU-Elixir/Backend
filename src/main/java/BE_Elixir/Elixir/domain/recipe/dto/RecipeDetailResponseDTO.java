@@ -35,6 +35,8 @@ public class RecipeDetailResponseDTO {
 
     private String tips;
     private Integer likes;
+    private Boolean likedByCurrentUser; // 현재 사용자가 좋아요를 눌렀는지
+    private Boolean scrappedByCurrentUser; // 현재 사용자가 스크랩을 눌렀는지
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -67,7 +69,7 @@ public class RecipeDetailResponseDTO {
     // 댓글 리스트
     private List<RecipeCommentResponseDTO> comments;
 
-    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments) {
+    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
         this.title = recipe.getTitle();
@@ -93,6 +95,8 @@ public class RecipeDetailResponseDTO {
 
         this.tips = recipe.getTips();
         this.likes = recipe.getLikes();
+        this.likedByCurrentUser = likedByCurrentUser; // 좋아요 여부
+        this.scrappedByCurrentUser = scrappedByCurrentUser; // 스크랩 여부
         this.createdAt = recipe.getCreatedAt();
         this.updatedAt = recipe.getUpdatedAt();
 

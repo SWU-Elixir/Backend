@@ -93,4 +93,24 @@ public class RecipeEventController implements RecipeEventApi {
                             "댓글 삭제 실패 " + e.getMessage()));
         }
     }
+
+    // 스크랩하기
+    @PostMapping("/{recipeId}/scrap")
+    public ResponseEntity<CommonResponse<String>> scrapRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            recipeEventService.scrapRecipe(recipeId, member);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                            "레시피 스크랩 성공", "recipeId: " + recipeId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "레시피 스크랩 실패: " + e.getMessage()));
+        }
+    }
 }
