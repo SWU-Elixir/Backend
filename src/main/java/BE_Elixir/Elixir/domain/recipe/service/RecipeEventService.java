@@ -139,5 +139,8 @@ public class RecipeEventService {
         like.setMember(member);
         like.setLikeFlag(true);
         recipeEventRepository.save(like);
+
+        // 좋아요 수 증가
+        recipe.setLikes(recipe.getLikes() + 1);
     }
 }
