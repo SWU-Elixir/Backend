@@ -16,5 +16,7 @@ public interface RecipeEventRepository extends JpaRepository<RecipeEvent, Long> 
 
     // 좋아요 존재 여부
     boolean existsByRecipeIdAndMemberIdAndLikeFlagTrue(Long recipeId, Long memberId);
+    // 좋아요 가져오기
+    Optional<RecipeEvent> findByRecipeIdAndMemberIdAndLikeFlagTrue(Long recipeId, Long memberId);
 }
 

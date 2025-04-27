@@ -143,4 +143,30 @@ public class RecipeEventService {
         // 좋아요 수 증가
         recipe.setLikes(recipe.getLikes() + 1);
     }
+
+    // 레시피 좋아요 취소하기
+    @Transactional
+    public void cancelLikeRecipe(Long recipeId, Member member) {
+        RecipeEvent like = recipeEventRepository.findByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId())
+                .orElseThrow(() -> new OccupiedException(ErrorCode.LIKE_NOT_FOUND));
+
+        // 좋아요한 사용자가 아닌 경우 예외 처리
+        if (!like.getMember().getEmail().equals(member.getEmail())) {
+            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+        }
+
+        // 좋아요(flag)가 맞는지 한 번 확인
+        if (!like.isLikeFlag()) {
+            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+        }
+
+        like.setLikeFlag(false); // 좋아요 플래그 끄기
+
+        // 좋아요 감소하기
+        Recipe recipe = like.getRecipe();
+        int currentLikes = recipe.getLikes();
+        if (currentLikes > 0) {
+            recipe.setLikes(currentLikes - 1);
+        }
+    }
 }

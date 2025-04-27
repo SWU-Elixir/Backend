@@ -153,4 +153,24 @@ public class RecipeEventController implements RecipeEventApi {
                             "레시피 좋아요 실패: " + e.getMessage()));
         }
     }
+
+    // 좋아요 취소하기
+    @DeleteMapping("/{recipeId}/like")
+    public ResponseEntity<CommonResponse<String>> cancelLikeRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            recipeEventService.cancelLikeRecipe(recipeId, member);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "레시피 좋아요 취소 성공", "recipeId: " + recipeId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "레시피 좋아요 취소 실패: " + e.getMessage()));
+        }
+    }
 }
