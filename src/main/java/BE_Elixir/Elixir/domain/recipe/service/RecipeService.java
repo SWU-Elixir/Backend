@@ -140,4 +140,24 @@ public class RecipeService {
         recipeRepository.save(recipe);
         return new RecipeResponseDTO(recipe);
     }
+
+    // 레시피 삭제
+    @Transactional
+    public void deleteRecipe(Long recipeId, Member member) {
+        Recipe recipe = recipeRepository.findWithAllById(recipeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+
+        // 작성자 본인만 삭제 가능
+        if (!recipe.getMember().getEmail().equals(member.getEmail())) {
+            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+        }
+
+        // 레시피에 달린 댓글 먼저 삭제
+        recipeEventRepository.deleteAllByRecipeId(recipeId);
+
+        // 레시피에 달린 재료 태그(RecipeIngredient) 모두 삭제
+        recipe.clearIngredientTags();
+
+        recipeRepository.delete(recipe);
+    }
 }

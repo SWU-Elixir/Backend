@@ -54,7 +54,7 @@ public class Recipe {
     private Integer timeMinutes;
 
     // 식재료 태그
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> ingredientTags;
 
     // 재료
@@ -86,6 +86,9 @@ public class Recipe {
     private LocalDateTime updatedAt;
 
     private Integer likes;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeEvent> recipeEvents = new ArrayList<>();
 
     // 알러지 정보
     private Boolean allergy_알류;
@@ -122,6 +125,12 @@ public class Recipe {
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void clearIngredientTags() {
+        if (this.ingredientTags != null) {
+            this.ingredientTags.clear();
+        }
     }
 
     public static Recipe from(RecipeRequestDTO dto, Member member) {
