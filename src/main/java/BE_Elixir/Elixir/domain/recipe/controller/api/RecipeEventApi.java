@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "Recipe Event API", description = "레시피 이벤트 관련 API")
 public interface RecipeEventApi {
+    // 댓글 등록하기
     @Operation(summary = "레시피 댓글 등록", description = "레시피에 댓글을 등록합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
@@ -33,6 +34,7 @@ public interface RecipeEventApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 댓글 수정하기
     @Operation(summary = "레시피 댓글 수정", description = "레시피에 등록된 댓글을 수정합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
@@ -48,6 +50,7 @@ public interface RecipeEventApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 댓글 삭제하기
     @Operation(summary = "레시피 댓글 삭제", description = "레시피에 등록된 댓글을 삭제합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
@@ -62,13 +65,13 @@ public interface RecipeEventApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-
+    // 스크랩하기
     @Operation(summary = "레시피 스크랩하기", description = "레시피를 스크랩합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "댓글 스크랩 성공",
+            @ApiResponse(responseCode = "201", description = "스크랩 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class))),
-            @ApiResponse(responseCode = "500", description = "댓글 스크랩 실패",
+            @ApiResponse(responseCode = "500", description = "스크랩 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     ResponseEntity<CommonResponse<String>> scrapRecipe(
@@ -76,15 +79,30 @@ public interface RecipeEventApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 스크랩 취소하기
     @Operation(summary = "레시피 스크랩 취소하기", description = "레시피 스크랩을 취소합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "댓글 스크랩 취소 성공",
+            @ApiResponse(responseCode = "201", description = "스크랩 취소 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class))),
-            @ApiResponse(responseCode = "500", description = "댓글 스크랩 취소 실패",
+            @ApiResponse(responseCode = "500", description = "스크랩 취소 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
     ResponseEntity<CommonResponse<String>> cancelScrapRecipe(
+            @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 좋아요하기
+    @Operation(summary = "레시피 좋아요하기", description = "레시피에 좋아요를 누릅니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "좋아요 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "500", description = "좋아요 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<String>> likeRecipe(
             @PathVariable Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
     );

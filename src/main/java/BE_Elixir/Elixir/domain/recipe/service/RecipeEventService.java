@@ -121,4 +121,23 @@ public class RecipeEventService {
         recipeEventRepository.delete(scrap);
     }
 
+    // 레시피 좋아요하기
+    @Transactional
+    public void likeRecipe(Long recipeId, Member member) {
+        // 레시피 존재 여부 확인
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+
+        // 기존에 좋아요한 게 있는지 확인
+        boolean alreadyLiked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
+        if (alreadyLiked) {
+            throw new OccupiedException(ErrorCode.ALREADY_LIKED);
+        }
+
+        RecipeEvent like = new RecipeEvent();
+        like.setRecipe(recipe);
+        like.setMember(member);
+        like.setLikeFlag(true);
+        recipeEventRepository.save(like);
+    }
 }
