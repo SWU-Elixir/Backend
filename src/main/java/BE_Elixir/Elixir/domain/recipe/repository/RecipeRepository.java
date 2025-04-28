@@ -19,6 +19,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Optional<Recipe> findWithAllById(@Param("id") Long id);
 
 
+    // 목록, 카테고리 별 조회
     Page<Recipe> findAll(Pageable pageable);
     Page<Recipe> findByCategoryType(CategoryType categoryType, Pageable pageable);
 
@@ -26,8 +27,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Page<Recipe> findByCategoryTypeAndCategorySlowAging(CategoryType categoryType, CategorySlowAging categorySlowAging, Pageable pageable);
 
-    // 제목에 keyword가 포함된 레시피 찾기
+    // 제목에 keyword가 포함된 레시피 찾기(검색 결과 조회)
     Page<Recipe> findByTitleContaining(String keyword, Pageable pageable);
+    Page<Recipe> findByTitleContainingAndCategoryType(String keyword, CategoryType categoryType, Pageable pageable);
+    Page<Recipe> findByTitleContainingAndCategorySlowAging(String keyword, CategorySlowAging categorySlowAging, Pageable pageable);
+    Page<Recipe> findByTitleContainingAndCategoryTypeAndCategorySlowAging(String keyword, CategoryType categoryType, CategorySlowAging categorySlowAging, Pageable pageable);
+
 
 }
 

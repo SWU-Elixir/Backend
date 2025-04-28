@@ -112,7 +112,12 @@ public class RecipeService {
     }
 
     // 카테고리로 필터링된 레시피 조회
-    public Page<RecipeHomeResponseDTO> getRecipeListByCategory(CategoryType categoryType, CategorySlowAging categorySlowAging, Pageable pageable, Member member) {
+    public Page<RecipeHomeResponseDTO> getRecipeListByCategory(
+            CategoryType categoryType,
+            CategorySlowAging categorySlowAging,
+            Pageable pageable,
+            Member member
+    ) {
         Page<Recipe> recipes;
 
         if (categoryType != null && categorySlowAging != null) {
@@ -132,8 +137,27 @@ public class RecipeService {
 
     // 레시피 검색 결과 조회
     @Transactional(readOnly = true)
-    public Page<RecipeHomeResponseDTO> searchRecipe(String keyword, Pageable pageable, Member member) {
-        Page<Recipe> recipes = recipeRepository.findByTitleContaining(keyword, pageable);
+    public Page<RecipeHomeResponseDTO> searchRecipe(
+            String keyword,
+            Pageable pageable,
+            CategoryType categoryType,
+            CategorySlowAging categorySlowAging,
+            Member member
+    ) {
+        Page<Recipe> recipes;
+
+        if (categoryType != null && categorySlowAging != null) {
+            recipes = recipeRepository.findByTitleContainingAndCategoryTypeAndCategorySlowAging(
+                    keyword, categoryType, categorySlowAging, pageable);
+        } else if (categoryType != null) {
+            recipes = recipeRepository.findByTitleContainingAndCategoryType(
+                    keyword, categoryType, pageable);
+        } else if (categorySlowAging != null) {
+            recipes = recipeRepository.findByTitleContainingAndCategorySlowAging(
+                    keyword, categorySlowAging, pageable);
+        } else {
+            recipes = recipeRepository.findByTitleContaining(keyword, pageable);
+        }
 
         return recipes.map(recipe -> {
             boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());

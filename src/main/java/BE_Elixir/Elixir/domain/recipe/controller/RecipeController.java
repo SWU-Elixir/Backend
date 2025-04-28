@@ -111,13 +111,15 @@ public class RecipeController implements RecipeApi {
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) CategoryType categoryType,
+            @RequestParam(required = false) CategorySlowAging categorySlowAging,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
             Member member = memberDetails.getMember();
 
-            Page<RecipeHomeResponseDTO> response = recipeService.searchRecipe(keyword, pageable, member);
+            Page<RecipeHomeResponseDTO> response = recipeService.searchRecipe(keyword, pageable, categoryType, categorySlowAging, member);
 
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
