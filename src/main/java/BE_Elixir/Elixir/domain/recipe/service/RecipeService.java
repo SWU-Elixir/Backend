@@ -130,6 +130,19 @@ public class RecipeService {
         });
     }
 
+    // 레시피 검색 결과 조회
+    @Transactional(readOnly = true)
+    public Page<RecipeHomeResponseDTO> searchRecipe(String keyword, Pageable pageable, Member member) {
+        Page<Recipe> recipes = recipeRepository.findByTitleContaining(keyword, pageable);
+
+        return recipes.map(recipe -> {
+            boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
+            boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+            return new RecipeHomeResponseDTO(recipe, liked, scrapped);
+        });
+    }
+
+
     // 레시피 수정
     @Transactional
     public RecipeResponseDTO updateRecipe(

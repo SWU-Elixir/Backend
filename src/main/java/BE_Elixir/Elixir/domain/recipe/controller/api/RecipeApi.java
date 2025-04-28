@@ -96,6 +96,29 @@ public interface RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 레시피 검색 결과 조회
+    @Operation(summary = "레시피 검색 결과 조회", description = "레시피의 검색 결과를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "레시피 검색 결과 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "레시피 검색 결과 조회 성공",
+                                      "data": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "레시피 없음",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<?>> getSearchRecipe(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 
     // 레시피 수정
     @Operation(summary = "레시피 수정", description = "레시피를 수정합니다.",

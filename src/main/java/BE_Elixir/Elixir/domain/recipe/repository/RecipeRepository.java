@@ -25,5 +25,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Page<Recipe> findByCategorySlowAging(CategorySlowAging categorySlowAging, Pageable pageable);
 
     Page<Recipe> findByCategoryTypeAndCategorySlowAging(CategoryType categoryType, CategorySlowAging categorySlowAging, Pageable pageable);
+
+    // 제목에 keyword가 포함된 레시피 찾기
+    Page<Recipe> findByTitleContaining(String keyword, Pageable pageable);
+
 }
 

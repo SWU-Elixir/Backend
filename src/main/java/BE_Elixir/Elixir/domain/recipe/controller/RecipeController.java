@@ -105,6 +105,32 @@ public class RecipeController implements RecipeApi {
         }
     }
 
+    // 레시피 검색 결과 조회
+    @GetMapping("/search")
+    public ResponseEntity<CommonResponse<?>> getSearchRecipe(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Member member = memberDetails.getMember();
+
+            Page<RecipeHomeResponseDTO> response = recipeService.searchRecipe(keyword, pageable, member);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "레시피 검색 성공", response
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "레시피 검색 실패 - " + e.getMessage()
+                    ));
+        }
+    }
 
     // 레시피 수정
     @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
