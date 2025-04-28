@@ -5,10 +5,14 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class RecipeHomeResponseDTO {
     private Long id;
     private String title;

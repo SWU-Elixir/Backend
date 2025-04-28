@@ -19,6 +19,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Optional<Recipe> findWithAllById(@Param("id") Long id);
 
 
+    Page<Recipe> findAll(Pageable pageable);
     Page<Recipe> findByCategoryType(CategoryType categoryType, Pageable pageable);
 
     Page<Recipe> findByCategorySlowAging(CategorySlowAging categorySlowAging, Pageable pageable);
