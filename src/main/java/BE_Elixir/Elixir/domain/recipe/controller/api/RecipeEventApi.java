@@ -83,7 +83,7 @@ public interface RecipeEventApi {
     @Operation(summary = "레시피 스크랩 취소하기", description = "레시피 스크랩을 취소합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "스크랩 취소 성공",
+            @ApiResponse(responseCode = "200", description = "스크랩 취소 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class))),
             @ApiResponse(responseCode = "500", description = "스크랩 취소 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
@@ -111,7 +111,7 @@ public interface RecipeEventApi {
     @Operation(summary = "레시피 좋아요 취소하기", description = "레시피에 누른 좋아요를 취소합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "좋아요 취소 성공",
+            @ApiResponse(responseCode = "200", description = "좋아요 취소 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class))),
             @ApiResponse(responseCode = "500", description = "좋아요 취소 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))

@@ -29,12 +29,12 @@ public interface RecipeApi {
     @Operation(summary = "레시피 등록", description = "레시피를 새로 등록합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "레시피 등록 성공",
+            @ApiResponse(responseCode = "201", description = "레시피 등록 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "code": "200 OK",
+                                      "status": 201,
+                                      "code": "201 OK",
                                       "message": "레시피 등록 성공",
                                       "data": true
                                     }
