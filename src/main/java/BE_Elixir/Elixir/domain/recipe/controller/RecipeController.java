@@ -4,11 +4,18 @@ import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.controller.api.RecipeApi;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
+import BE_Elixir.Elixir.global.enums.CategorySlowAging;
+import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +75,36 @@ public class RecipeController implements RecipeApi {
                     ));
         }
     }
+
+    // 추후에 추천레시피 구현 후, 사용자 별 추천 레시피 내용 조회 추가
+    // 레시피 목록(홈) 조회
+    @GetMapping
+    public ResponseEntity<CommonResponse<?>> getRecipes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) CategoryType categoryType,
+            @RequestParam(required = false) CategorySlowAging categorySlowAging,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Member member = memberDetails.getMember();
+        Page<RecipeHomeResponseDTO> response;
+
+        if (categoryType != null || categorySlowAging != null) {
+            response = recipeService.getRecipeListByCategory(categoryType, categorySlowAging, pageable, member);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "카테고리별 레시피 조회 성공", response
+            ));
+        } else {
+            response = recipeService.getRecipeList(pageable, member);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "전체 레시피 조회 성공", response
+            ));
+        }
+    }
+
 
     // 레시피 수정
     @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

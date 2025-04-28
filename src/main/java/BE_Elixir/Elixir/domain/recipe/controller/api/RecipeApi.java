@@ -3,6 +3,8 @@ package BE_Elixir.Elixir.domain.recipe.controller.api;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
+import BE_Elixir.Elixir.global.enums.CategorySlowAging;
+import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +68,31 @@ public interface RecipeApi {
     })
     ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(
             @PathVariable Long recipeId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 레시피 목록(홈) 조회
+    @Operation(summary = "레시피 목록(홈) 조회", description = "레시피의 목록(홈) 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "레시피 목록(홈) 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "레시피 목록(홈) 조회 성공",
+                                      "data": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "레시피 없음",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<?>> getRecipes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) CategoryType categoryType,
+            @RequestParam(required = false) CategorySlowAging categorySlowAging,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 

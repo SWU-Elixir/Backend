@@ -8,12 +8,16 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.enums.CategorySlowAging;
+import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.s3.S3Service;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -94,6 +98,36 @@ public class RecipeService {
         boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
         boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
         return new RecipeDetailResponseDTO(recipe, comments, likedByCurrentUser, scrappedByCurrentUser);
+    }
+
+    // 레시피 목록(홈) 조회
+    // 전체 레시피 조회
+    public Page<RecipeHomeResponseDTO> getRecipeList(Pageable pageable, Member member) {
+        Page<Recipe> recipes = recipeRepository.findAll(pageable);
+        return recipes.map(recipe -> {
+            boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
+            boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+            return new RecipeHomeResponseDTO(recipe, liked, scrapped);
+        });
+    }
+
+    // 카테고리로 필터링된 레시피 조회
+    public Page<RecipeHomeResponseDTO> getRecipeListByCategory(CategoryType categoryType, CategorySlowAging categorySlowAging, Pageable pageable, Member member) {
+        Page<Recipe> recipes;
+
+        if (categoryType != null && categorySlowAging != null) {
+            recipes = recipeRepository.findByCategoryTypeAndCategorySlowAging(categoryType, categorySlowAging, pageable);
+        } else if (categoryType != null) {
+            recipes = recipeRepository.findByCategoryType(categoryType, pageable);
+        } else {
+            recipes = recipeRepository.findByCategorySlowAging(categorySlowAging, pageable);
+        }
+
+        return recipes.map(recipe -> {
+            boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
+            boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+            return new RecipeHomeResponseDTO(recipe, liked, scrapped);
+        });
     }
 
     // 레시피 수정
