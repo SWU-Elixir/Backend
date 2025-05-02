@@ -3,12 +3,10 @@ package BE_Elixir.Elixir.domain.recipe.service;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
-import BE_Elixir.Elixir.domain.recipe.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import lombok.*;
-import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
