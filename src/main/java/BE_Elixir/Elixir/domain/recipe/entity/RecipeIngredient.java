@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 
+import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

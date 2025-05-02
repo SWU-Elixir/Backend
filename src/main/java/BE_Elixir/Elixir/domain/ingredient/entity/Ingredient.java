@@ -1,7 +1,6 @@
-package BE_Elixir.Elixir.domain.recipe.entity;
+package BE_Elixir.Elixir.domain.ingredient.entity;
 
 import jakarta.persistence.*;
-import BE_Elixir.Elixir.global.enums.IngredientCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,8 +16,4 @@ public class Ingredient {
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private IngredientCategory category;
 }
