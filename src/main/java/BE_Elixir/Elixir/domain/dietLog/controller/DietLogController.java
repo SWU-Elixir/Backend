@@ -26,7 +26,7 @@ public class DietLogController implements DietLogApi {
     private final DietLogService dietLogService;
 
     // 식단 기록하기
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> createDietLog(
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile image,
@@ -50,12 +50,33 @@ public class DietLogController implements DietLogApi {
        }
    }
 
+    // 식단 삭제하기
+    @DeleteMapping("/{DietLogId}")
+    public ResponseEntity<CommonResponse<?>> deleteDietLog(
+            @PathVariable("DietLogId") Long DietLogId,
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request
+    ) {
+        log.info("식단 기록 삭제 요청");
+        Long memberId = memberDetails.getId();
 
+        try {
+            dietLogService.deleteDietLog(DietLogId, memberId);
+            log.info("식단 삭제 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "식단 삭제 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId));
+
+        } catch (Exception e) {
+            log.error("식단 삭제 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.success(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "식단 삭제 실패: " + e.getMessage(), null));
+        }
+    }
 
     // 식단 수정하기
 
 
-    // 식단 삭제하기
 
 
     // 식단 상세 조회하기

@@ -70,6 +70,19 @@ public class DietLogService {
 
     // 식단 기록 삭제하기
     public void deleteDietLog(Long dietLogId, Long memberId) {
+        // 식단 기록 객체 찾기
+        DietLog dietLog = dietLogRepository.findById(dietLogId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
 
+        // 삭제 권한 확인 (잘못된 id가 들어올 일은 없겠지만, 본인의 식단 기록만 삭제 가능하도록)
+        if (!dietLog.getMember().getId().equals(memberId)) {
+            throw new SecurityException("해당 식단을 삭제할 권한이 없습니다.");
+        }
+
+        // S3 버킷에서 프로필 이미지 삭제
+        s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
+
+        // 회원 삭제
+        dietLogRepository.delete(dietLog);
     }
 }
