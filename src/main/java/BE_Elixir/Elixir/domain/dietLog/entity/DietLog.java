@@ -1,14 +1,17 @@
 package BE_Elixir.Elixir.domain.dietLog.entity;
 
+import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.global.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,8 +39,32 @@ public class DietLog {
     private int score;
 
     @OneToMany(mappedBy = "dietLog", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Setter
-    private List<DietLogIngredient> ingredientTags;
+    private List<DietLogIngredient> ingredientTags = new ArrayList<>();
 
     private LocalDateTime time;
+
+    public void setIngredientTags(List<DietLogIngredient> ingredientTags) {
+        this.ingredientTags.clear();
+        this.ingredientTags.addAll(ingredientTags);
+    }
+
+    // DietLogResponseDTO 로 변환
+    public DietLogResponseDTO convertToResponseDTO() {
+        List<Long> ingredientTagIds = this.getIngredientTags().stream()
+                .map(dietLogIngredient -> dietLogIngredient.getIngredient().getId())
+                .toList();
+
+        return DietLogResponseDTO.builder()
+                .id(this.getId())
+                .memberId(this.getMember().getId())
+                .name(this.getName())
+                .imageUrl(this.getImageUrl())
+                .type(this.getType().toString())
+                .score(this.getScore())
+                .ingredientTagId(ingredientTagIds)
+                .time(this.getTime())
+                .build();
+    }
+
+
 }
