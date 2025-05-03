@@ -8,7 +8,6 @@ import BE_Elixir.Elixir.domain.dietLog.entity.DietLogIngredient;
 import BE_Elixir.Elixir.domain.dietLog.repository.DietLogRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.enums.DietLogType;
@@ -38,7 +37,7 @@ public class DietLogService {
     private final S3Service s3Service;
 
     // 식단 기록하기
-    public DietLog createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) {
+    public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) {
         try {
             // 회원 조회
             Member member = memberRepository.findById(memberId)
@@ -68,10 +67,12 @@ public class DietLogService {
             // DietLog에 연관관계 설정
             dietLog.setIngredientTags(dietLogIngredients);
 
-            return dietLogRepository.save(dietLog);
+            dietLogRepository.save(dietLog);
+
+            return dietLog.convertToResponseDTO();
 
         } catch (Exception e) {
-            throw new RuntimeException("식단 기록 중 오류가 발생했습니다.", e);
+            throw new RuntimeException("식단 기록 중 오류가 발생했습니다. " + e.getMessage(), e);
         }
     }
 
@@ -86,12 +87,78 @@ public class DietLogService {
             throw new SecurityException("해당 식단을 삭제할 권한이 없습니다.");
         }
 
-        // S3 버킷에서 프로필 이미지 삭제
+        // S3 버킷에서 이미지 삭제
         s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
 
-        // 회원 삭제
+        // 식단 삭제
         dietLogRepository.delete(dietLog);
     }
+
+    // 식단 수정하기
+    public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) {
+        try {
+            // 기존 식단 조회
+            DietLog dietLog = dietLogRepository.findById(dietLogId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
+
+            // 권한 확인: 본인만 수정 가능
+            if (!dietLog.getMember().getId().equals(memberId)) {
+                throw new SecurityException("해당 식단을 수정할 권한이 없습니다.");
+            }
+
+            // 이름 수정
+            if (dto.getName() != null) {
+                dietLog.setName(dto.getName());
+            }
+
+            // 식단 타입 수정
+            if (dto.getType() != null) {
+                DietLogType typeEnum = DietLogType.valueOf(dto.getType().toUpperCase());
+                dietLog.setType(typeEnum);
+            }
+
+            // 시간 수정
+            if (dto.getTime() != null) {
+                dietLog.setTime(dto.getTime());
+            }
+
+            // 이미지 수정
+            if (image != null && !image.isEmpty()) {
+                // 기존 이미지 삭제
+                if (dietLog.getImageUrl() != null) {
+                    s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
+                }
+                // 새 이미지 업로드
+                String imageUrl = s3Service.upload(image, "diet_log");
+                dietLog.setImageUrl(imageUrl);
+            }
+
+            // 식단 점수 수정
+            if (dto.getScore() > 0) {
+                dietLog.setScore(dto.getScore());
+            }
+
+            // 재료 태그 수정
+            if (dto.getIngredientTagId() != null && !dto.getIngredientTagId().isEmpty()) {
+                List<Ingredient> ingredients = ingredientRepository.findAllById(dto.getIngredientTagId());
+
+                List<DietLogIngredient> newDietLogIngredients = ingredients.stream()
+                        .map(ingredient -> new DietLogIngredient(dietLog, ingredient))
+                        .toList();
+
+                dietLog.setIngredientTags(newDietLogIngredients);
+            }
+
+            dietLogRepository.save(dietLog);
+            log.info("update save까지 완료");
+            return dietLog.convertToResponseDTO();
+
+        } catch (Exception e) {
+            log.error("식단 수정 중 오류 발생", e);
+            throw new RuntimeException("식단 수정 중 오류가 발생했습니다. " + e.getMessage(), e);
+        }
+    }
+
 
     // 식단 기록 조회하기
     public DietLogResponseDTO getDietLog(Long dietLogId, Long memberId) {
@@ -99,21 +166,7 @@ public class DietLogService {
         DietLog dietLog = dietLogRepository.findById(dietLogId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
 
-        // DietLogIngredient -> Ingredient -> id 추출
-        List<Long> ingredientTagIds = dietLog.getIngredientTags().stream()
-                .map(dietLogIngredient -> dietLogIngredient.getIngredient().getId())
-                .toList();
-
-        return DietLogResponseDTO.builder()
-                .id(dietLog.getId())
-                .memberId(memberId)
-                .name(dietLog.getName())
-                .imageUrl(dietLog.getImageUrl())
-                .type(dietLog.getType().toString())
-                .score(dietLog.getScore())
-                .ingredientTagId(ingredientTagIds)
-                .time(dietLog.getTime())
-                .build();
+        return dietLog.convertToResponseDTO();
     }
 
     // 일별 식단 목록 조회하기
@@ -124,25 +177,8 @@ public class DietLogService {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        List<DietLog> dietLogs = dietLogRepository.findAllByMemberIdAndTimeBetween(memberId, startOfDay, endOfDay);
-
-        return dietLogs.stream()
-                .map(dietLog -> {
-                    List<Long> ingredientTagIds = dietLog.getIngredientTags().stream()
-                            .map(dietLogIngredient -> dietLogIngredient.getIngredient().getId())
-                            .toList();
-
-                    return DietLogResponseDTO.builder()
-                            .id(dietLog.getId())
-                            .memberId(memberId)
-                            .name(dietLog.getName())
-                            .imageUrl(dietLog.getImageUrl())
-                            .type(dietLog.getType().toString())
-                            .score(dietLog.getScore())
-                            .ingredientTagId(ingredientTagIds)
-                            .time(dietLog.getTime())
-                            .build();
-                })
+        return dietLogRepository.findAllByMemberIdAndTimeBetween(memberId, startOfDay, endOfDay).stream()
+                .map(DietLog::convertToResponseDTO)
                 .toList();
     }
 
@@ -160,4 +196,5 @@ public class DietLogService {
                 .collect(Collectors.toList());
 
     }
+
 }

@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +33,21 @@ public interface DietLogApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "식단 기록 성공 - 회원 Id: 1",
-                                      "data": null
+                                      "status": 201,
+                                      "code": "201 CREATED",
+                                      "message": "식단 기록 성공 - 회원 ID:1,  식단 ID: 8",
+                                      "data": {
+                                        "id": 8,
+                                        "memberId": 1,
+                                        "name": "포케",
+                                        "imageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/...",
+                                        "type": "아침",
+                                        "score": 2,
+                                        "ingredientTagId": [
+                                          123
+                                        ],
+                                        "time": "2025-05-04T16:32:49.637"
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "400", description = "식단 기록 실패",
@@ -51,11 +61,10 @@ public interface DietLogApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<?>> createDietLog(
+    ResponseEntity<CommonResponse<DietLogResponseDTO>> createDietLog(
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 
 
@@ -86,8 +95,50 @@ public interface DietLogApi {
     })
     ResponseEntity<CommonResponse<?>> deleteDietLog(
             @PathVariable("DietLogId") Long DietLogId,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    @Operation(summary = "식단 수정하기",
+            description = "기존에 기록되어 있던 식단을 수정합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "식단 수정 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "식단 수정 성공 - 회원 ID:1,  식단 ID: 8",
+                                      "data": {
+                                        "id": 8,
+                                        "memberId": 1,
+                                        "name": "샐러드",
+                                        "imageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/...",
+                                        "type": "점심",
+                                        "score": 1,
+                                        "ingredientTagId": [
+                                          200
+                                        ],
+                                        "time": "2025-05-04T16:33:16.929"
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "식단 수정 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 BAD_REQUEST",
+                                      "message": "식단 수정 실패: 식단 기록 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
+            @RequestPart("dietLogId") Long dietLogId,
+            @RequestPart("dto") DietLogRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile image,
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 
     @Operation(summary = "식단 기록 정보 조회",
@@ -129,8 +180,7 @@ public interface DietLogApi {
     })
     ResponseEntity<CommonResponse<DietLogResponseDTO>> getDietLog(
             @PathVariable("DietLogId") Long DietLogId,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 
     @Operation(summary = "일별 식단 목록 조회",
@@ -175,8 +225,7 @@ public interface DietLogApi {
     })
     ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getDietLogByDate(
             @PathVariable("date") LocalDate date,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 
     @Operation(summary = "월별 식단별 점수 조회",
@@ -214,8 +263,7 @@ public interface DietLogApi {
     ResponseEntity<CommonResponse<List<MonthlyDietScoreDTO>>> getMonthlyDietScores(
             @PathVariable("year") int year,
             @PathVariable("month") int month,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 
 }

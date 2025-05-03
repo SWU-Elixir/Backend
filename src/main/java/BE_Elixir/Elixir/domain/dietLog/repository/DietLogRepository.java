@@ -17,7 +17,7 @@ public interface DietLogRepository extends JpaRepository<DietLog, Long> {
 
 
     // 특정 사용자의 월별 식단 점수 조회
-    @Query("SELECT d FROM DietLog d WHERE d.member.id = :memberId AND MONTH(d.date) = :month AND YEAR(d.date) = :year")
+    @Query("SELECT d FROM DietLog d WHERE d.member.id = :memberId AND MONTH(d.time) = :month AND YEAR(d.time) = :year")
     List<DietLog> findByMemberIdAndYearAndMonth(
             @Param("memberId") Long memberId,
             @Param("month") int month,

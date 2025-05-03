@@ -4,12 +4,9 @@ import BE_Elixir.Elixir.domain.dietLog.controller.api.DietLogApi;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
-import BE_Elixir.Elixir.domain.dietLog.entity.DietLog;
 import BE_Elixir.Elixir.domain.dietLog.service.DietLogService;
-import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.global.response.CommonResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,20 +29,20 @@ public class DietLogController implements DietLogApi {
 
     // 식단 기록하기
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<?>> createDietLog(
+    public ResponseEntity<CommonResponse<DietLogResponseDTO>> createDietLog(
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile image,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
        log.info("식단 기록 요청");
        Long memberId = memberDetails.getId();
 
        try {
-           DietLog dietLog = dietLogService.createDietLog(dto, memberId, image);
-           log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, dietLog.getId());
+           DietLogResponseDTO responseDTO = dietLogService.createDietLog(dto, memberId, image);
+           log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, responseDTO.getId());
            return ResponseEntity.status(HttpStatus.CREATED)
-                   .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(), "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + dietLog.getId()));
+                   .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                           "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + responseDTO.getId(), responseDTO));
 
        } catch (Exception e) {
            log.error("식단 기록 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
@@ -59,8 +56,7 @@ public class DietLogController implements DietLogApi {
     @DeleteMapping("/{DietLogId}")
     public ResponseEntity<CommonResponse<?>> deleteDietLog(
             @PathVariable("DietLogId") Long DietLogId,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("식단 기록 삭제 요청");
         Long memberId = memberDetails.getId();
@@ -80,13 +76,36 @@ public class DietLogController implements DietLogApi {
     }
 
     // 식단 수정하기
+    @PatchMapping(name="/{dietLogId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
+            @RequestPart("dietLogId") Long dietLogId,
+            @RequestPart("dto") DietLogRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile image,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        log.info("식단 기록 수정 요청");
+        Long memberId = memberDetails.getId();
+
+        try {
+            DietLogResponseDTO responseDTO = dietLogService.updateDietLog(dietLogId, memberId, dto, image);
+            log.info("식단 수정 성공 - 회원 ID: {}, 식단 ID: {}", memberId, dietLogId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "식단 수정 성공 - 회원 ID:" + memberId + ",  식단 ID: " + dietLogId, responseDTO));
+
+        } catch (Exception e) {
+            log.error("식단 수정 실패 - 회원 ID: {}, 식단 ID: {}, 메시지: {}", memberId, e.getMessage(), dietLogId, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "식단 수정 실패: " + e.getMessage()));
+        }
+    }
 
     // 식단 조회하기
     @GetMapping("/{DietLogId}")
     public ResponseEntity<CommonResponse<DietLogResponseDTO>> getDietLog(
             @PathVariable("DietLogId") Long DietLogId,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("식단 조회 요청");
         Long memberId = memberDetails.getId();
@@ -110,8 +129,7 @@ public class DietLogController implements DietLogApi {
     @GetMapping("/by-date/{date}")
     public ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getDietLogByDate(
             @PathVariable("date") LocalDate date,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("일별 식단 목록 조회 요청");
         Long memberId = memberDetails.getId();
@@ -136,8 +154,7 @@ public class DietLogController implements DietLogApi {
     public ResponseEntity<CommonResponse<List<MonthlyDietScoreDTO>>> getMonthlyDietScores(
             @PathVariable("year") int year,
             @PathVariable("month") int month,
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("월별 식단별 점수 조회 요청");
         Long memberId = memberDetails.getId();
