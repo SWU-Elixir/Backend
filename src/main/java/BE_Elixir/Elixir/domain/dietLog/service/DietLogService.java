@@ -1,11 +1,14 @@
 package BE_Elixir.Elixir.domain.dietLog.service;
 
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
+import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
+import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
 import BE_Elixir.Elixir.domain.dietLog.entity.DietLog;
 import BE_Elixir.Elixir.domain.dietLog.entity.DietLogIngredient;
 import BE_Elixir.Elixir.domain.dietLog.repository.DietLogRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.enums.DietLogType;
@@ -16,7 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -84,5 +91,73 @@ public class DietLogService {
 
         // 회원 삭제
         dietLogRepository.delete(dietLog);
+    }
+
+    // 식단 기록 조회하기
+    public DietLogResponseDTO getDietLog(Long dietLogId, Long memberId) {
+        // 식단 기록 객체 찾기
+        DietLog dietLog = dietLogRepository.findById(dietLogId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
+
+        // DietLogIngredient -> Ingredient -> id 추출
+        List<Long> ingredientTagIds = dietLog.getIngredientTags().stream()
+                .map(dietLogIngredient -> dietLogIngredient.getIngredient().getId())
+                .toList();
+
+        return DietLogResponseDTO.builder()
+                .id(dietLog.getId())
+                .memberId(memberId)
+                .name(dietLog.getName())
+                .imageUrl(dietLog.getImageUrl())
+                .type(dietLog.getType().toString())
+                .score(dietLog.getScore())
+                .ingredientTagId(ingredientTagIds)
+                .time(dietLog.getTime())
+                .build();
+    }
+
+    // 일별 식단 목록 조회하기
+    public List<DietLogResponseDTO> getDietLogByDate(LocalDate date, Long memberId) {
+
+        // 해당 회원이 기록한 특정 날짜의 식단들을 조회 (DB에는 LocalDateTime으로 저장되어 있기 때문)
+        // 시작 시각: 00:00:00 / 종료 시각: 23:59:59.999999999
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        List<DietLog> dietLogs = dietLogRepository.findAllByMemberIdAndTimeBetween(memberId, startOfDay, endOfDay);
+
+        return dietLogs.stream()
+                .map(dietLog -> {
+                    List<Long> ingredientTagIds = dietLog.getIngredientTags().stream()
+                            .map(dietLogIngredient -> dietLogIngredient.getIngredient().getId())
+                            .toList();
+
+                    return DietLogResponseDTO.builder()
+                            .id(dietLog.getId())
+                            .memberId(memberId)
+                            .name(dietLog.getName())
+                            .imageUrl(dietLog.getImageUrl())
+                            .type(dietLog.getType().toString())
+                            .score(dietLog.getScore())
+                            .ingredientTagId(ingredientTagIds)
+                            .time(dietLog.getTime())
+                            .build();
+                })
+                .toList();
+    }
+
+    // 월별 식단 점수 조회
+    public List<MonthlyDietScoreDTO> getMonthlyDietScores(Long memberId, int year, int month) {
+        // 해당 월에 대한 모든 식단 조회
+        List<DietLog> dietLogs = dietLogRepository.findByMemberIdAndYearAndMonth(memberId, year, month);
+
+        return dietLogs.stream()
+                .map(dietLog -> MonthlyDietScoreDTO.builder()
+                        .id(dietLog.getId())
+                        .score(dietLog.getScore())
+                        .time(dietLog.getTime())
+                        .build())
+                .collect(Collectors.toList());
+
     }
 }

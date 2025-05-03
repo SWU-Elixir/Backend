@@ -2,6 +2,8 @@ package BE_Elixir.Elixir.domain.dietLog.controller;
 
 import BE_Elixir.Elixir.domain.dietLog.controller.api.DietLogApi;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
+import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
+import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
 import BE_Elixir.Elixir.domain.dietLog.entity.DietLog;
 import BE_Elixir.Elixir.domain.dietLog.service.DietLogService;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
@@ -16,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -69,21 +74,87 @@ public class DietLogController implements DietLogApi {
         } catch (Exception e) {
             log.error("식단 삭제 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.success(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
-                            "식단 삭제 실패: " + e.getMessage(), null));
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "식단 삭제 실패: " + e.getMessage()));
         }
     }
 
     // 식단 수정하기
 
+    // 식단 조회하기
+    @GetMapping("/{DietLogId}")
+    public ResponseEntity<CommonResponse<DietLogResponseDTO>> getDietLog(
+            @PathVariable("DietLogId") Long DietLogId,
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request
+    ) {
+        log.info("식단 조회 요청");
+        Long memberId = memberDetails.getId();
 
+        try {
+            DietLogResponseDTO responseDTO = dietLogService.getDietLog(DietLogId, memberId);
+            log.info("식단 조회 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "식단 조회 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId, responseDTO));
 
+        } catch (Exception e) {
+            log.error("식단 조회 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "식단 조회 실패: " + e.getMessage()));
+        }
+    }
 
-    // 식단 상세 조회하기
+    // 일별 식단 조회하기 (List<DietLogDTO>)
+    @GetMapping("/by-date/{date}")
+    public ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getDietLogByDate(
+            @PathVariable("date") LocalDate date,
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request
+    ) {
+        log.info("일별 식단 목록 조회 요청");
+        Long memberId = memberDetails.getId();
 
-    // 일별 식단 조회하기
+        try {
+            List<DietLogResponseDTO> responseDTO = dietLogService.getDietLogByDate(date, memberId);
+            log.info("일별 식단 목록 조회 성공 - 회원 ID: {}, 날짜: {}", memberId, date);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "일별 식단 목록 조회 성공 - 회원 ID:" + memberId + ",  날짜: " + date, responseDTO));
 
-    // 월별 식단별 점수 조회하기
+        } catch (Exception e) {
+            log.error("일별 식단 목록 조회 실패 - 회원 ID: {}, 날짜: {}, 메시지: {}", memberId, e.getMessage(), date, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "일별 식단 목록 조회 실패: " + e.getMessage()));
+        }
+    }
 
+    // 월별 식단별 점수 조회하기 (List<점수 DTO>)
+    @GetMapping("/monthly-score/{year}/{month}")
+    public ResponseEntity<CommonResponse<List<MonthlyDietScoreDTO>>> getMonthlyDietScores(
+            @PathVariable("year") int year,
+            @PathVariable("month") int month,
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            HttpServletRequest request
+    ) {
+        log.info("월별 식단별 점수 조회 요청");
+        Long memberId = memberDetails.getId();
+
+        try {
+            List<MonthlyDietScoreDTO> responseDTO = dietLogService.getMonthlyDietScores(memberId, year, month);
+            log.info("월별 식단별 점수 조회 성공 - 회원 ID: {}, 연도: {}, 월: {}", memberId, year, month);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "월별 식단별 점수 조회 성공 - 회원 ID:" + memberId + ",  연도: " + year + ", 월: " + month, responseDTO));
+
+        } catch (Exception e) {
+            log.error("월별 식단별 점수 조회 실패 - 회원 ID: {}, 연도: {}, 월: {}, 메시지: {}", memberId, e.getMessage(), year, month, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "월별 식단별 점수 조회 실패: " + e.getMessage()));
+        }
+    }
 
 }
