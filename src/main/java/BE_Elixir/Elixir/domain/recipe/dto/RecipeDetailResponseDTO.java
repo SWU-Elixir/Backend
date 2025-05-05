@@ -15,7 +15,7 @@ import java.util.Map;
 @Setter
 public class RecipeDetailResponseDTO {
     private Long id;
-    private Long memberId;
+    private String authorNickname;
     private String title;
     private String imageUrl;
     private String description;
@@ -35,6 +35,8 @@ public class RecipeDetailResponseDTO {
 
     private String tips;
     private Integer likes;
+    private Boolean likedByCurrentUser; // 현재 사용자가 좋아요를 눌렀는지
+    private Boolean scrappedByCurrentUser; // 현재 사용자가 스크랩을 눌렀는지
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -65,11 +67,11 @@ public class RecipeDetailResponseDTO {
 
 
     // 댓글 리스트
-    private List<RecipeCommentDTO> comments;
+    private List<RecipeCommentResponseDTO> comments;
 
-    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentDTO> comments) {
+    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
         this.id = recipe.getId();
-        this.memberId = recipe.getMemberId();
+        this.authorNickname = recipe.getMember().getNickname();
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();
@@ -93,6 +95,8 @@ public class RecipeDetailResponseDTO {
 
         this.tips = recipe.getTips();
         this.likes = recipe.getLikes();
+        this.likedByCurrentUser = likedByCurrentUser; // 좋아요 여부
+        this.scrappedByCurrentUser = scrappedByCurrentUser; // 스크랩 여부
         this.createdAt = recipe.getCreatedAt();
         this.updatedAt = recipe.getUpdatedAt();
 

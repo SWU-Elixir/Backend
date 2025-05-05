@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.dto;
 
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -14,7 +15,7 @@ import java.util.Map;
 @Setter
 public class RecipeResponseDTO {
     private Long id;
-    private Long memberId;
+    private String email;
     private String title;
     private String imageUrl;
     private String description;
@@ -33,7 +34,8 @@ public class RecipeResponseDTO {
     private List<String> stepImageUrls;
 
     private String tips;
-    private Integer likes;
+    private Integer likes;   // 좋아요 수
+    private Integer scraps;  // 스크랩 수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -66,7 +68,7 @@ public class RecipeResponseDTO {
 
     public RecipeResponseDTO(Recipe recipe) {
         this.id = recipe.getId();
-        this.memberId = recipe.getMemberId();
+        this.email = recipe.getMember().getEmail();
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();
@@ -90,6 +92,7 @@ public class RecipeResponseDTO {
 
         this.tips = recipe.getTips();
         this.likes = recipe.getLikes();
+        this.scraps = recipe.getScraps();
         this.createdAt = recipe.getCreatedAt();
         this.updatedAt = recipe.getUpdatedAt();
 
