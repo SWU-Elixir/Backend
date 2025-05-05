@@ -67,12 +67,13 @@ public class RecipeService {
         }
 
         // 재료 태그 설정
-        List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
-                .map(id -> {
-                    Ingredient ingredient = ingredientRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
+        List<RecipeIngredient> tagList = dto.getIngredientTagNames().stream()
+                .map(name -> {
+                    Ingredient ingredient = ingredientRepository.findByName(name)
+                            .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
                     return new RecipeIngredient(recipe, ingredient);
                 }).collect(Collectors.toList());
+
         recipe.setIngredientTags(tagList);
 
         recipeRepository.save(recipe);
@@ -226,10 +227,10 @@ public class RecipeService {
         }
 
         // 재료 태그 재설정
-        List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
-                .map(id -> {
-                    Ingredient ingredient = ingredientRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
+        List<RecipeIngredient> tagList = dto.getIngredientTagNames().stream()
+                .map(name -> {
+                    Ingredient ingredient = ingredientRepository.findByName(name)
+                            .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
                     return new RecipeIngredient(recipe, ingredient);
                 }).collect(Collectors.toList());
 

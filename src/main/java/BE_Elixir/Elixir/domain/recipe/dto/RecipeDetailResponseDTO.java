@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -26,7 +27,7 @@ public class RecipeDetailResponseDTO {
     private Integer timeMinutes;
 
     // 태그된 식재료 정보
-    private List<String> ingredientTags;
+    private List<String> ingredientTagNames;
     private Map<String, String> ingredients;
     private Map<String, String> seasoning;
 
@@ -59,9 +60,9 @@ public class RecipeDetailResponseDTO {
         this.timeMinutes = recipe.getTimeMinutes();
 
         // 식재료 태그
-        this.ingredientTags = recipe.getIngredientTags().stream()
+        this.ingredientTagNames = recipe.getIngredientTags().stream()
                 .map(tag -> tag.getIngredient().getName())
-                .toList();
+                .collect(Collectors.toList());
 
         this.ingredients = recipe.getIngredients();
         this.seasoning = recipe.getSeasoning();

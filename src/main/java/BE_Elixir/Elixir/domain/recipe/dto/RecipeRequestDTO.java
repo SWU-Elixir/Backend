@@ -20,8 +20,8 @@ public class RecipeRequestDTO {
     private Integer timeHours;
     private Integer timeMinutes;
 
-    // 태그용 식재료 id 리스트
-    private List<Long> ingredientTagIds;
+    // 태그용 식재료 리스트
+    private List<String> ingredientTagNames;
     private Map<String, String> ingredients; // 재료 (ex. "고등어" : "1개")
     private Map<String, String> seasoning;   // 양념 (ex. "간장" : "1T")
     private List<String> stepDescriptions; // 요리 순서
