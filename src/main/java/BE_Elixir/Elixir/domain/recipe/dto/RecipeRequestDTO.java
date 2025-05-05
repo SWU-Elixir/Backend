@@ -29,27 +29,9 @@ public class RecipeRequestDTO {
     private String tips;
 
     // 알러지 정보
-    private Boolean allergy_알류;
-    private Boolean allergy_우유;
-    private Boolean allergy_각류;
-    private Boolean allergy_밀류;
-    private Boolean allergy_유제품;
-    private Boolean allergy_메밀;
-    private Boolean allergy_땅콩;
-    private Boolean allergy_대두;
-    private Boolean allergy_밀;
-    private Boolean allergy_고등어;
-    private Boolean allergy_돼지고기;
-    private Boolean allergy_복숭아;
-    private Boolean allergy_토마토;
-    private Boolean allergy_아황산류;
-    private Boolean allergy_호두;
-    private Boolean allergy_닭고기;
-    private Boolean allergy_쇠고기;
-    private Boolean allergy_오징어;
-    private Boolean allergy_조개류;
-    private Boolean allergy_굴;
-    private Boolean allergy_전복;
-    private Boolean allergy_홍합;
-    private Boolean allergy_잣;
+    private List<String> allergies;
+
+    public List<String> getAllergies() {
+        return allergies;
+    }
 }
