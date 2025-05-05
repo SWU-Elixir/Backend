@@ -23,8 +23,8 @@ public class RecipeHomeResponseDTO {
     private CategoryType categoryType;
     
     private Difficulty difficulty;
-    private Integer timeHours;
-    private Integer timeMinutes;
+    // 통합 시간 필드
+    private Integer totalTimeMinutes;
     
     // 태그된 식재료 정보
     private List<String> ingredientTags;
@@ -40,8 +40,12 @@ public class RecipeHomeResponseDTO {
         this.categorySlowAging = recipe.getCategorySlowAging();
         this.categoryType = recipe.getCategoryType();
         this.difficulty = recipe.getDifficulty();
-        this.timeHours = recipe.getTimeHours();
-        this.timeMinutes = recipe.getTimeMinutes();
+
+        // 시간 계산: (시 * 60) + 분
+        Integer hours = recipe.getTimeHours() != null ? recipe.getTimeHours() : 0;
+        Integer minutes = recipe.getTimeMinutes() != null ? recipe.getTimeMinutes() : 0;
+        this.totalTimeMinutes = hours * 60 + minutes;
+
         this.ingredientTags = recipe.getIngredientTags().stream()
                 .map(recipeIngredient -> recipeIngredient.getIngredient().getName())  // Ingredient 안의 name
                 .collect(Collectors.toList());
@@ -49,5 +53,4 @@ public class RecipeHomeResponseDTO {
         this.likedByCurrentUser = likedByCurrentUser;
         this.scrappedByCurrentUser = scrappedByCurrentUser;
     }
-
 }
