@@ -1,11 +1,12 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
+
+import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.*;
-import BE_Elixir.Elixir.domain.recipe.entity.Ingredient;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
-import BE_Elixir.Elixir.domain.recipe.repository.IngredientRepository;
+import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
