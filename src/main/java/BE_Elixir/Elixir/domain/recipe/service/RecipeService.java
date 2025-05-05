@@ -223,18 +223,23 @@ public class RecipeService {
                 String url = s3Service.upload(file, "recipe/steps");
                 stepUrls.add(url);
             }
+            if (!stepUrls.isEmpty()) {
+                recipe.setStepImageUrls(stepUrls);
+            }
             recipe.setStepImageUrls(stepUrls);
         }
 
-        // 재료 태그 재설정
-        List<RecipeIngredient> tagList = dto.getIngredientTagNames().stream()
-                .map(name -> {
-                    Ingredient ingredient = ingredientRepository.findByName(name)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
-                    return new RecipeIngredient(recipe, ingredient);
-                }).collect(Collectors.toList());
+        recipe.getIngredientTags().clear(); // 참조 유지
 
-        recipe.setIngredientTags(tagList);
+        recipe.getIngredientTags().addAll(
+                dto.getIngredientTagNames().stream()
+                        .map(name -> {
+                            Ingredient ingredient = ingredientRepository.findByName(name)
+                                    .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
+                            return new RecipeIngredient(recipe, ingredient);
+                        })
+                        .collect(Collectors.toList())
+        );
 
         recipeRepository.save(recipe);
         return new RecipeResponseDTO(recipe);
