@@ -160,7 +160,7 @@ public class RecipeController implements RecipeApi {
     }
 
     // 레시피 수정
-    @PutMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{recipeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> updateRecipe(
             @PathVariable Long recipeId,
             @RequestPart("dto") RecipeRequestDTO dto,
