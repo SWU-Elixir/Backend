@@ -12,6 +12,7 @@ import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
+import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ public class RecipeService {
     private final RecipeEventRepository recipeEventRepository;
     private final IngredientRepository ingredientRepository;
     private final S3Service s3Service;
+    private final RedisRecipeService redisRecipeService;
 
     // 레시피 등록하기
     @Transactional
@@ -164,6 +166,16 @@ public class RecipeService {
             boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
             return new RecipeHomeResponseDTO(recipe, liked, scrapped);
         });
+    }
+
+    // 추후에 추천 검색어 추가
+    // 레시피 인기 검색어
+    @Transactional(readOnly = true)
+    public List<String> getPopularSearchKeywords() {
+        return redisRecipeService.getTopKeywords(5);
+    }
+    public void saveSearchKeyword(String keyword) {
+        redisRecipeService.incrementKeyword(keyword);
     }
 
 

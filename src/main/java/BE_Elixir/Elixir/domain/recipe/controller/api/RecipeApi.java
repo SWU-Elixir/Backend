@@ -122,6 +122,25 @@ public interface RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 레시피 인기 검색어 조회
+    @Operation(summary = "인기 검색어 조회", description = "인기 검색어를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "인기 검색어 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "인기 검색어 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> getSearchKeyword(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
     // 레시피 수정
     @Operation(summary = "레시피 수정", description = "레시피를 수정합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))

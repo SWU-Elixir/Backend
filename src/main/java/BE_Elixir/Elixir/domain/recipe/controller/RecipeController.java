@@ -116,6 +116,9 @@ public class RecipeController implements RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         try {
+            // 검색어 저장
+            recipeService.saveSearchKeyword(keyword);
+
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
             Member member = memberDetails.getMember();
 
@@ -130,6 +133,28 @@ public class RecipeController implements RecipeApi {
                     .body(CommonResponse.error(
                             HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "레시피 검색 실패 - " + e.getMessage()
+                    ));
+        }
+    }
+
+    // 추후에 추천 검색어 추가하기
+    // 레시피 인기 검색어
+    @GetMapping("/search/keyword")
+    public ResponseEntity<CommonResponse<?>> getSearchKeyword(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            List<String> popularKeywords = recipeService.getPopularSearchKeywords();
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "인기 검색어 조회 성공 ", popularKeywords
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "인기 검색어 조회 실패 - " + e.getMessage()
                     ));
         }
     }
