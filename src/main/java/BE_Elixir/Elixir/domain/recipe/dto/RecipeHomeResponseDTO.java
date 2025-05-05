@@ -48,6 +48,7 @@ public class RecipeHomeResponseDTO {
 
         this.ingredientTags = recipe.getIngredientTags().stream()
                 .map(recipeIngredient -> recipeIngredient.getIngredient().getName())  // Ingredient 안의 name
+                .limit(5) // 식재료 태그 5개로 제한
                 .collect(Collectors.toList());
         this.likes = recipe.getLikes();
         this.likedByCurrentUser = likedByCurrentUser;
