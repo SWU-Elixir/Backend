@@ -24,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,9 +109,13 @@ public class RecipeService {
     // 전체 레시피 조회
     public Page<RecipeHomeResponseDTO> getRecipeList(Pageable pageable, Member member) {
         Page<Recipe> recipes = recipeRepository.findAll(pageable);
+        // 좋아요 / 스크랩 한 레시피 ID Set 미리 조회
+        Set<Long> likedRecipeIds = new HashSet<>(recipeEventRepository.findLikedRecipeIdsByMemberId(member.getId()));
+        Set<Long> scrappedRecipeIds = new HashSet<>(recipeEventRepository.findScrappedRecipeIdsByMemberId(member.getId()));
+
         return recipes.map(recipe -> {
-            boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
-            boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+            boolean liked = likedRecipeIds.contains(recipe.getId());
+            boolean scrapped = scrappedRecipeIds.contains(recipe.getId());
             return new RecipeHomeResponseDTO(recipe, liked, scrapped);
         });
     }
@@ -131,9 +137,12 @@ public class RecipeService {
             recipes = recipeRepository.findByCategorySlowAging(categorySlowAging, pageable);
         }
 
+        Set<Long> likedRecipeIds = new HashSet<>(recipeEventRepository.findLikedRecipeIdsByMemberId(member.getId()));
+        Set<Long> scrappedRecipeIds = new HashSet<>(recipeEventRepository.findScrappedRecipeIdsByMemberId(member.getId()));
+
         return recipes.map(recipe -> {
-            boolean liked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
-            boolean scrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+            boolean liked = likedRecipeIds.contains(recipe.getId());
+            boolean scrapped = scrappedRecipeIds.contains(recipe.getId());
             return new RecipeHomeResponseDTO(recipe, liked, scrapped);
         });
     }
