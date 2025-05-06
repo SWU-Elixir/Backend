@@ -17,7 +17,8 @@ public enum ErrorCode {
     ALREADY_SCRAPPED(HttpStatus.FORBIDDEN.value(), "이미 스크랩한 레시피입니다."),
     SCRAP_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "스크랩한 레시피가 없습니다."),
     ALREADY_LIKED(HttpStatus.FORBIDDEN.value(), "이미 좋아요한 레시피입니다."),
-    LIKE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "좋아요한 레시피가 없습니다.");
+    LIKE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "좋아요한 레시피가 없습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "회원이 존재하지 않습니다");
     private final int status;
     private final String message;
 }

@@ -3,6 +3,8 @@ package BE_Elixir.Elixir.domain.member.controller.api;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeHomeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Tag(name = "Member API", description = "회원 관련 API")
@@ -137,5 +141,25 @@ public interface MemberApi {
     ResponseEntity<CommonResponse<MemberResponseDTO>> getMemberInfo(
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request
+    );
+
+
+    // 로그인한 사용자가 작성한 레시피 조회하기
+    @Operation(summary = "로그인한 사용자가 작성한 레시피 조회하기", description = "로그인한 사용자가 작성한 레시피를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내가 작성한 레시피 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "내가 작성한 레시피 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyRecipes(
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 }
