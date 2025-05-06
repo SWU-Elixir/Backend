@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.challenge.service;
 
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +45,14 @@ public class ChallengeService {
         challengeRepository.save(challenge);
 
         return new ChallengeResponseDTO(challenge);
+    }
+    
+    // 연도 별 챌린지 조회하기
+    @Transactional(readOnly = true)
+    public List<ChallengeListResponseDTO> getChallengesByYear(int year) {
+        List<Challenge> challenges = challengeRepository.findByYear(year);
+        return challenges.stream()
+                .map(ChallengeListResponseDTO::new)
+                .toList();
     }
 }

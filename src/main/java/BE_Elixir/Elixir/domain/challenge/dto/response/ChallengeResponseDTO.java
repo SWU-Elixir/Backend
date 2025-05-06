@@ -44,7 +44,7 @@ public class ChallengeResponseDTO {
         this.id = challenge.getId();
         this.name = challenge.getName();
         this.description = challenge.getDescription();
-        this.purpose = challenge.getPurpose(); 
+        this.purpose = challenge.getPurpose();
         this.startDate = challenge.getStartDate();
         this.endDate = challenge.getEndDate();
         this.month = challenge.getMonth();
