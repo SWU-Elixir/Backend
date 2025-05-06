@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.challenge.controller.api;
 
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
@@ -64,5 +65,27 @@ public interface ChallengeApi {
     })
     ResponseEntity<CommonResponse<List<ChallengeListResponseDTO>>> getChallengesByYear(
             @PathVariable int year
+    );
+    
+    
+    // 특정 챌린지 상세 조회하기
+    @Operation(summary = "특정 챌린지 조회", description = "특정 챌린지를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "특정 챌린지 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "특정 챌린지 조회 성공",
+                                      "data": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "500", description = "특정 챌린지 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<ChallengeDetailResponseDTO>> getChallengeDetail(
+            @PathVariable Long challengeId
     );
 }

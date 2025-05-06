@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.challenge.controller;
 
 import BE_Elixir.Elixir.domain.challenge.controller.api.ChallengeApi;
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.service.ChallengeService;
@@ -57,6 +58,23 @@ public class ChallengeController implements ChallengeApi {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             year + "년도 챌린지 목록 조회 실패 - " + e.getMessage()));
+        }
+
+    }
+    // 특정 챌린지 상세 조회하기
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<CommonResponse<ChallengeDetailResponseDTO>> getChallengeDetail(
+            @PathVariable Long challengeId
+    ) {
+        try {
+            ChallengeDetailResponseDTO result = challengeService.getChallengeDetail(challengeId);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "챌린지 상세 조회 성공", result));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "챌린지 상세 조회 실패 - " + e.getMessage()));
         }
     }
 }

@@ -1,11 +1,14 @@
 package BE_Elixir.Elixir.domain.challenge.service;
 
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeResponseDTO;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,5 +58,13 @@ public class ChallengeService {
         return challenges.stream()
                 .map(ChallengeListResponseDTO::new)
                 .toList();
+    }
+
+    // 특정 챌린지 상세조회하기
+    @Transactional(readOnly = true)
+    public ChallengeDetailResponseDTO getChallengeDetail(Long challengeId) {
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
+        return new ChallengeDetailResponseDTO(challenge);
     }
 }
