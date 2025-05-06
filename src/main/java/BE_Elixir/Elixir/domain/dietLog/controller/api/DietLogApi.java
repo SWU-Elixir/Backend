@@ -55,8 +55,8 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
-                                      "message": "식단 기록 실패: 식단 기록 중 오류가 발생했습니다.",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "식단 기록 실패: 오류 메시지",
                                       "data": null
                                     }
                                     """)))
@@ -87,7 +87,7 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
                                       "message": "식단 삭제 실패 - 해당 식단이 존재하지 않습니다. 식단 ID: 1",
                                       "data": null
                                     }
@@ -128,14 +128,14 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
-                                      "message": "식단 수정 실패: 식단 기록 중 오류가 발생했습니다.",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "식단 수정 실패: 오류 메시지",
                                       "data": null
                                     }
                                     """)))
     })
     ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
-            @RequestPart("dietLogId") Long dietLogId,
+            @PathVariable("dietLogId") Long dietLogId,
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile image,
             @AuthenticationPrincipal MemberDetails memberDetails
@@ -172,7 +172,7 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
                                       "message": "식단 조회 실패: 해당 식단이 존재하지 않습니다. 식단 ID: 2",
                                       "data": null
                                     }
@@ -217,7 +217,7 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
                                       "message": "일별 식단 목록 조회 실패: 해당 식단이 존재하지 않습니다. 식단 ID: 2",
                                       "data": null
                                     }
@@ -254,7 +254,7 @@ public interface DietLogApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 400,
-                                      "code": "400 BAD_REQUEST",
+                                      "code": "400 INTERNAL_SERVER_ERROR",
                                       "message": "월별 식단별 점수 조회 실패",
                                       "data": null
                                     }
