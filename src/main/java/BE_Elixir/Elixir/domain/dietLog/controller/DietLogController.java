@@ -31,26 +31,26 @@ public class DietLogController implements DietLogApi {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<DietLogResponseDTO>> createDietLog(
             @RequestPart("dto") DietLogRequestDTO dto,
-            @RequestPart(value = "profileImage", required = false) MultipartFile image,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-       log.info("식단 기록 요청");
-       Long memberId = memberDetails.getId();
+        log.info("식단 기록 요청");
+        Long memberId = memberDetails.getId();
 
-       try {
-           DietLogResponseDTO responseDTO = dietLogService.createDietLog(dto, memberId, image);
-           log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, responseDTO.getId());
-           return ResponseEntity.status(HttpStatus.CREATED)
-                   .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
-                           "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + responseDTO.getId(), responseDTO));
+        try {
+            DietLogResponseDTO responseDTO = dietLogService.createDietLog(dto, memberId, image);
+            log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, responseDTO.getId());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                            "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + responseDTO.getId(), responseDTO));
 
-       } catch (Exception e) {
-           log.error("식단 기록 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                   .body(CommonResponse.success(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
-                           "식단 기록 실패: " + e.getMessage(), null));
-       }
-   }
+        } catch (Exception e) {
+            log.error("식단 기록 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "식단 기록 실패: " + e.getMessage()));
+        }
+    }
 
     // 식단 삭제하기
     @DeleteMapping("/{DietLogId}")
@@ -69,8 +69,8 @@ public class DietLogController implements DietLogApi {
 
         } catch (Exception e) {
             log.error("식단 삭제 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "식단 삭제 실패: " + e.getMessage()));
         }
     }
@@ -78,9 +78,9 @@ public class DietLogController implements DietLogApi {
     // 식단 수정하기
     @PatchMapping(name="/{dietLogId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
-            @RequestPart("dietLogId") Long dietLogId,
+            @PathVariable("dietLogId") Long dietLogId,
             @RequestPart("dto") DietLogRequestDTO dto,
-            @RequestPart(value = "profileImage", required = false) MultipartFile image,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("식단 기록 수정 요청");
@@ -95,8 +95,8 @@ public class DietLogController implements DietLogApi {
 
         } catch (Exception e) {
             log.error("식단 수정 실패 - 회원 ID: {}, 식단 ID: {}, 메시지: {}", memberId, e.getMessage(), dietLogId, e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "식단 수정 실패: " + e.getMessage()));
         }
     }
@@ -111,7 +111,7 @@ public class DietLogController implements DietLogApi {
         Long memberId = memberDetails.getId();
 
         try {
-            DietLogResponseDTO responseDTO = dietLogService.getDietLog(DietLogId, memberId);
+            DietLogResponseDTO responseDTO = dietLogService.getDietLog(DietLogId);
             log.info("식단 조회 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
@@ -119,8 +119,8 @@ public class DietLogController implements DietLogApi {
 
         } catch (Exception e) {
             log.error("식단 조회 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "식단 조회 실패: " + e.getMessage()));
         }
     }
@@ -143,8 +143,8 @@ public class DietLogController implements DietLogApi {
 
         } catch (Exception e) {
             log.error("일별 식단 목록 조회 실패 - 회원 ID: {}, 날짜: {}, 메시지: {}", memberId, e.getMessage(), date, e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "일별 식단 목록 조회 실패: " + e.getMessage()));
         }
     }
@@ -168,8 +168,8 @@ public class DietLogController implements DietLogApi {
 
         } catch (Exception e) {
             log.error("월별 식단별 점수 조회 실패 - 회원 ID: {}, 연도: {}, 월: {}, 메시지: {}", memberId, e.getMessage(), year, month, e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "월별 식단별 점수 조회 실패: " + e.getMessage()));
         }
     }
