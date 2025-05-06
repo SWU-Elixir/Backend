@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.repository;
 
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +30,9 @@ public interface RecipeEventRepository extends JpaRepository<RecipeEvent, Long> 
     // 스크랩한 레시피 ID 목록 조회
     @Query("SELECT r.recipe.id FROM RecipeEvent r WHERE r.member.id = :memberId AND r.scrapFlag = true")
     List<Long> findScrappedRecipeIdsByMemberId(@Param("memberId") Long memberId);
+
+    // 로그인한 사용자가 스크랩한 레시피 조회
+    List<RecipeEvent> findByMemberAndScrapFlagTrue(Member member);
+
 }
 

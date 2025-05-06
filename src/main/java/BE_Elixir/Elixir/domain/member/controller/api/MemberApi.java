@@ -162,4 +162,23 @@ public interface MemberApi {
     ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyRecipes(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
+
+    // 로그인한 사용자가 스크랩한 레시피 조회하기
+    @Operation(summary = "로그인한 사용자가 스크랩한 레시피 조회하기", description = "로그인한 사용자가 스크랩한 레시피를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내가 스크랩한 레시피 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "내가 스크랩한 레시피 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyScrapRecipes(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }

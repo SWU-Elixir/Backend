@@ -6,6 +6,8 @@ import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
+import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
+import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
@@ -32,6 +34,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final RecipeEventRepository recipeEventRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
@@ -220,6 +223,21 @@ public class MemberService {
         return recipes.stream()
                 .map(recipe -> new RecipeImageResponseDTO(recipe.getId(), recipe.getImageUrl()))
                 .collect(Collectors.toList());
+    }
+
+    // 로그인한 사용자가 스크랩한 레시피 조회하기
+    public List<RecipeImageResponseDTO> getMyScrapRecipes(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<RecipeEvent> scraps = recipeEventRepository.findByMemberAndScrapFlagTrue(member);
+
+        return scraps.stream()
+                .map(event -> {
+                    Recipe recipe = event.getRecipe();
+                    return new RecipeImageResponseDTO(recipe.getId(), recipe.getImageUrl());
+                })
+                .toList();
     }
 
 

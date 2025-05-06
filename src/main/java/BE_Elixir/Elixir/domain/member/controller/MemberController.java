@@ -8,6 +8,8 @@ import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
@@ -138,5 +140,27 @@ public class MemberController implements MemberApi {
         }
     }
 
+
+    // 로그인한 사용자가 스크랩한 레시피 조회하기
+    @GetMapping("/recipe/scrap")
+    public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyScrapRecipes(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        String email = memberDetails.getUsername();
+
+        try {
+            List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(email);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "내가 스크랩한 레시피 조회 실패 - " + e.getMessage()));
+        }
+    }
 
 }
