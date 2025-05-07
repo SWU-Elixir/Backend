@@ -1,6 +1,5 @@
 package BE_Elixir.Elixir.domain.ingredient.entity;
 
-import BE_Elixir.Elixir.global.enums.IngredientType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
