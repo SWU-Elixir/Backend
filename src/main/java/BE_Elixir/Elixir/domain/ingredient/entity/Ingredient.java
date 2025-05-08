@@ -16,4 +16,9 @@ public class Ingredient {
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
+
+    private boolean isNova4;
+
+    private Integer challengeMonth;
+
 }
