@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.dietLog.repository;
 
 import BE_Elixir.Elixir.domain.dietLog.entity.DietLog;
+import BE_Elixir.Elixir.global.enums.DietLogType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +24,17 @@ public interface DietLogRepository extends JpaRepository<DietLog, Long> {
             @Param("month") int month,
             @Param("year") int year
     );
+
+    // 챌린지 목표 조건 확인
+    // - 특정 식사 종류(아침/점심/저녁) 기록
+    boolean existsByMemberIdAndTypeAndTimeAfter(Long memberId, DietLogType type, LocalDateTime time);
+    // 사용자가 기록한 식단에서 사용된 식재료 이름을 가져오는 메서드
+    @Query("SELECT DISTINCT dli.ingredient.name " +
+            "FROM DietLog dl " +
+            "JOIN dl.ingredientTags dli " +
+            "WHERE dl.member.id = :memberId AND dl.time > :openedAt")
+    List<String> findIngredientsByMemberIdAndTimeAfter(@Param("memberId") Long memberId, @Param("openedAt") LocalDateTime openedAt);
+    // - 이번 달에 기록한 식단의 개수
+    int countByMemberIdThisMonth(Long memberId);
 
 }

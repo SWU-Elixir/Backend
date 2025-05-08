@@ -48,4 +48,5 @@ public class Challenge {
     private String achievementImageUrl; // 업적 이미지
     private String grayAchievementImageUrl; // 업적 달성 안 한 이미지
 
+
 }

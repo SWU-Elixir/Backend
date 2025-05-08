@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +39,13 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     // 로그인한 사용자가 작성한 레시피 조회
     List<Recipe> findAllByMember(Member member);
 
+    // 챌린지 목표 조건 확인 - 제철 식재료를 포함한 레시피 등록
+    @Query("SELECT ri.ingredient.name " +
+            "FROM Recipe r " +
+            "JOIN r.ingredientTags ri " +
+            "WHERE r.member.id = :memberId " +
+            "AND r.createdAt >= :openedAt")
+    List<String> findIngredientsByMemberIdAndTimeAfter(@Param("memberId") Long memberId, @Param("openedAt") LocalDateTime openedAt);
 }
+
 

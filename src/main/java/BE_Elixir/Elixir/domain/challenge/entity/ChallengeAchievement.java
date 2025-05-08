@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
+@IdClass(ChallengeAchievementId.class)
 public class ChallengeAchievement {
 
     @Id
@@ -42,6 +43,9 @@ public class ChallengeAchievement {
     // 챌린지 최종 달성 여부
     private boolean challengeCompleted;
 
-    // 챌린지 달성 일시
+    // 챌린지 최종 달성 일시
     private LocalDateTime challengeCompletedAt;
+
+    // 챌린지 활성화된 시점 (기록 유효성 판단 기준)
+    private LocalDateTime openedAt;
 }

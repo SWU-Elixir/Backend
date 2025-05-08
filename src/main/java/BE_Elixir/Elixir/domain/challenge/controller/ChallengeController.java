@@ -77,4 +77,5 @@ public class ChallengeController implements ChallengeApi {
                             "챌린지 상세 조회 실패 - " + e.getMessage()));
         }
     }
+
 }
