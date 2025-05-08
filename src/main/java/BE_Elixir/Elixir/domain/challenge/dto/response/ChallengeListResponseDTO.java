@@ -7,7 +7,7 @@ import lombok.Getter;
 public class ChallengeListResponseDTO {
     private final Long id;
     private final String name;
-    private String month; // 월
+    private int month; // 월
     private int year; // 년도
 
     private String achievementName; // 업적 명

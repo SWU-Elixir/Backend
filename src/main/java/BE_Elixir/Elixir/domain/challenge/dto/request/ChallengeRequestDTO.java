@@ -15,7 +15,7 @@ public class ChallengeRequestDTO {
     private String purpose;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private String month;
+    private int month;
     private int year;
 
     private String step1Goal1Type;

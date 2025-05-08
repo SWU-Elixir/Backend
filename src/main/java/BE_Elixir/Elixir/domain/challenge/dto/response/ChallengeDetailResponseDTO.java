@@ -3,6 +3,8 @@ package BE_Elixir.Elixir.domain.challenge.dto.response;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 public class ChallengeDetailResponseDTO {
     private final String name;
@@ -20,8 +22,9 @@ public class ChallengeDetailResponseDTO {
     private final String step4Goal2Desc;
 
     private final String achievementName;
+    private final List<String> ingredients;
 
-    public ChallengeDetailResponseDTO(Challenge challenge) {
+    public ChallengeDetailResponseDTO(Challenge challenge, List<String> ingredients) {
         this.name = challenge.getName();
         this.period = String.format("%d월 %d일 ~ %d월 %d일",
                 challenge.getStartDate().getMonthValue(),
@@ -41,5 +44,6 @@ public class ChallengeDetailResponseDTO {
         this.step4Goal2Desc = challenge.getStep4Goal2Desc();
 
         this.achievementName = challenge.getAchievementName();
+        this.ingredients = ingredients;
     }
 }

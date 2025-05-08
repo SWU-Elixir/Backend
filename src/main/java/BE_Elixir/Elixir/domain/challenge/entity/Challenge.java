@@ -22,7 +22,7 @@ public class Challenge {
     private String purpose; // 챌린지 목적
     private LocalDateTime startDate; // 시작 일시
     private LocalDateTime endDate; // 끝나는 일시
-    private String month; // 월
+    private int month; // 월
     private int year; // 년도
 
     // 유형과 설명은 문자열로 저장
