@@ -49,7 +49,7 @@ public class ChallengeEventListener {
         );
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener
     public void handleEvent(Object event) {
         Long memberId = null;
 
@@ -63,6 +63,7 @@ public class ChallengeEventListener {
             memberId = ((RecipeEvent) event).getMemberId();
         }
 
+        // 챌린지 정보 조회
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
@@ -74,10 +75,14 @@ public class ChallengeEventListener {
             return;
         }
 
-        // 챌린지에 대한 사용자의 달성 상태 정보 조회 (없으면 예외 발생)
+        // 챌린지에 대한 사용자의 달성 상태 정보 조회
         ChallengeAchievement achievement = challengeAchievementRepository
                 .findByChallengeIdAndMemberId(challenge.getId(), memberId)
-                .orElseThrow(() -> new IllegalArgumentException("챌린지 달성 정보가 없습니다."));
+                .orElse(null);
+
+        if (achievement == null) {
+            return;
+        }
 
         // 해당 챌린지가 열린 시간 (이 시간 이후의 기록만 유효)
         LocalDateTime openedAt = achievement.getOpenedAt();
@@ -122,6 +127,7 @@ public class ChallengeEventListener {
     private void handleGoal(ChallengeGoalType goalType, Long memberId, LocalDateTime openedAt, Consumer<Boolean> resultSetter) {
         boolean achieved = false;
 
+        // 챌린지 정보 조회
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
