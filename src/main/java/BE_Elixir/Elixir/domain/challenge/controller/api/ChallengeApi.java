@@ -3,7 +3,9 @@ package BE_Elixir.Elixir.domain.challenge.controller.api;
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeProgressResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
+import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,5 +90,26 @@ public interface ChallengeApi {
     })
     ResponseEntity<CommonResponse<ChallengeDetailResponseDTO>> getChallengeDetail(
             @PathVariable Long challengeId
+    );
+
+    // 로그인한 사용자의 현재 진행 상황 조회
+    @Operation(summary = "사용자의 현재 진행 상황 조회", description = "사용자의 현재 진행 상황을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자의 현재 진행 상황 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 현재 진행 상황 조회 성공",
+                                      "data": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "500", description = "사용자의 현재 진행 상황 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<ChallengeProgressResponseDTO>> getProgress(
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 }
