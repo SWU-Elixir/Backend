@@ -63,12 +63,17 @@ public class ChallengeEventListener {
             memberId = ((RecipeEvent) event).getMemberId();
         }
 
-        // 해당 사용자의 현재 진행 중인 챌린지 조회
-        Challenge challenge = challengeRepository.findCurrentByMemberId(memberId).orElse(null);
+        LocalDate now = LocalDate.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        Challenge challenge = challengeRepository
+                .findByYearAndMonth(year, month)
+                .orElse(null);
 
         if (challenge == null) {
             return;
         }
+
         // 챌린지에 대한 사용자의 달성 상태 정보 조회 (없으면 예외 발생)
         ChallengeAchievement achievement = challengeAchievementRepository
                 .findByChallengeIdAndMemberId(challenge.getId(), memberId)
@@ -117,18 +122,22 @@ public class ChallengeEventListener {
     private void handleGoal(ChallengeGoalType goalType, Long memberId, LocalDateTime openedAt, Consumer<Boolean> resultSetter) {
         boolean achieved = false;
 
-        // 해당 사용자의 현재 진행 중인 챌린지 조회
-        Challenge challenge = challengeRepository.findCurrentByMemberId(memberId).orElse(null);
+        LocalDate now = LocalDate.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        Challenge challenge = challengeRepository
+                .findByYearAndMonth(year, month)
+                .orElse(null);
 
         if (challenge == null) {
             return;
         }
 
         // 챌린지 월 가져오기
-        int month = challenge.getMonth();
+        int challengeMonth = challenge.getMonth();
 
         // 제철 식재료 가져오기
-        List<Ingredient> ingredients = ingredientRepository.findByChallengeMonth(month);
+        List<Ingredient> ingredients = ingredientRepository.findByChallengeMonth(challengeMonth);
         List<String> ingredientNames = ingredients.stream()
                 .map(Ingredient::getName)
                 .collect(Collectors.toList());

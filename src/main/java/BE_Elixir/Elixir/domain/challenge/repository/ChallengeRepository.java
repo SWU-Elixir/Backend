@@ -18,11 +18,4 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     // 연도&달로 현재 챌린지 조회
     Optional<Challenge> findByYearAndMonth(int year, int month);
 
-    // 현재 진행 중인 챌린지를 찾는 메서드
-    @Query("SELECT c FROM Challenge c " +
-            "JOIN ChallengeAchievement ca ON ca.challengeId = c.id " +
-            "WHERE ca.memberId = :memberId " +
-            "AND c.startDate <= CURRENT_TIMESTAMP " +
-            "AND c.endDate >= CURRENT_TIMESTAMP")
-    Optional<Challenge> findCurrentByMemberId(@Param("memberId") Long memberId);
 }
