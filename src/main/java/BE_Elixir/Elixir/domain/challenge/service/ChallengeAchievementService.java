@@ -37,24 +37,28 @@ public class ChallengeAchievementService {
         return ChallengeProgressResponseDTO.from(challenge, achievement);
     }
 
+    // 주어진 memberId에 대해 해당하는 챌린지 달성 정보를 생성하거나, 기존 정보를 반환
     public ChallengeAchievement createIfNotExists(Long memberId) {
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
 
+        // 현재 연도와 월에 해당하는 챌린지 조회
         Challenge challenge = challengeRepository
                 .findByYearAndMonth(year, month)
                 .orElseThrow(() -> new IllegalArgumentException("이번 달의 챌린지를 찾을 수 없습니다."));
 
+        // 해당 챌린지와 회원 ID에 대한 챌린지 달성 정보 조회
         return challengeAchievementRepository
                 .findByChallengeIdAndMemberId(challenge.getId(), memberId)
                 .orElseGet(() -> {
+                    // 챌린지 달성 정보가 없으면 새로 생성
                     ChallengeAchievement achievement = new ChallengeAchievement();
                     achievement.setMemberId(memberId);
                     achievement.setChallengeId(challenge.getId());
                     achievement.setOpenedAt(LocalDateTime.now());
 
-                    // step1 활성화만 true, 나머지는 false (시작 시 기본값)
+                    // 기본적으로 1단계 목표 활성화 설정 (다른 단계는 비활성화)
                     achievement.setStep1Goal1Active(true);
                     achievement.setStep1Goal2Active(true);
 
