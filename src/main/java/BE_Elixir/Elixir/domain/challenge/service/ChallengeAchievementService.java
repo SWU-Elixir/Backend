@@ -5,6 +5,7 @@ import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,11 @@ public class ChallengeAchievementService {
 
     private final ChallengeRepository challengeRepository;
     private final ChallengeAchievementRepository challengeAchievementRepository;
+
+    @Transactional
+    public void save(ChallengeAchievement achievement) {
+        challengeAchievementRepository.save(achievement); // DB 반영
+    }
 
     // 로그인한 사용자의 현재 진행 상황 조회
     public ChallengeProgressResponseDTO getProgress(
