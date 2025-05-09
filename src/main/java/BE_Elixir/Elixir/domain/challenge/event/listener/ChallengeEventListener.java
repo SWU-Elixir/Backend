@@ -3,7 +3,7 @@ package BE_Elixir.Elixir.domain.challenge.event.listener;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.event.events.DietLogEvent;
-import BE_Elixir.Elixir.domain.challenge.event.events.RecipeCreatedEvent;
+import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.dietLog.repository.DietLogRepository;
@@ -18,7 +18,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -57,8 +56,8 @@ public class ChallengeEventListener {
         }
 
         // 이벤트가 RecipeCreatedEvent일 경우
-        else if (event instanceof RecipeCreatedEvent) {
-            memberId = ((RecipeCreatedEvent) event).getMemberId();
+        else if (event instanceof RecipeEvent) {
+            memberId = ((RecipeEvent) event).getMemberId();
         }
 
         // 해당 사용자의 현재 진행 중인 챌린지 조회 (없으면 예외 발생)
