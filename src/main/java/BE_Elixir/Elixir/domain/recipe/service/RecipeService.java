@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
 
+import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.*;
@@ -15,6 +16,7 @@ import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import BE_Elixir.Elixir.global.s3.S3Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +41,7 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final S3Service s3Service;
     private final RedisRecipeService redisRecipeService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 레시피 등록하기
     @Transactional
@@ -83,8 +87,10 @@ public class RecipeService {
                 .map(ri -> ri.getIngredient().getName())
                 .collect(Collectors.toList());
 
-        return new RecipeResponseDTO(recipe);
+        // 챌린지 달성을 위한 이벤트 발행
+        eventPublisher.publishEvent(new RecipeEvent(member.getId(), recipe.getId(), LocalDateTime.now()));
 
+        return new RecipeResponseDTO(recipe);
     }
 
     // 레시피 상세 조회

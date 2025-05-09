@@ -1,5 +1,7 @@
 package BE_Elixir.Elixir.domain.dietLog.service;
 
+import BE_Elixir.Elixir.domain.challenge.event.events.DietLogEvent;
+import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
@@ -15,6 +17,7 @@ import BE_Elixir.Elixir.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +39,7 @@ public class DietLogService {
     private final MemberRepository memberRepository;
     private final IngredientRepository ingredientRepository;
     private final S3Service s3Service;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 식단 기록하기
     public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) throws IOException{
@@ -69,6 +73,9 @@ public class DietLogService {
         dietLog.setIngredientTags(dietLogIngredients);
 
         dietLogRepository.save(dietLog);
+
+        // 챌린지 달성을 위한 이벤트 발행
+        eventPublisher.publishEvent(new DietLogEvent(member.getId(), dietLog.getId(), dietLog.getType(), LocalDateTime.now()));
 
         return dietLog.convertToResponseDTO();
     }
