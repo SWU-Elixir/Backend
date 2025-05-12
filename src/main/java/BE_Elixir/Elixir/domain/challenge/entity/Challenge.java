@@ -20,8 +20,8 @@ public class Challenge {
     private String name; // 챌린지 명
     private String description; // 챌린지 설명
     private String purpose; // 챌린지 목적
-    private LocalDateTime startDate; // 시작 일시
-    private LocalDateTime endDate; // 끝나는 일시
+    // private LocalDateTime startDate; // 시작 일시
+    // private LocalDateTime endDate; // 끝나는 일시
     private int month; // 월
     private int year; // 년도
 

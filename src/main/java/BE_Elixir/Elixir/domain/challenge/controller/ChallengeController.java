@@ -3,10 +3,7 @@ package BE_Elixir.Elixir.domain.challenge.controller;
 
 import BE_Elixir.Elixir.domain.challenge.controller.api.ChallengeApi;
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
-import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
-import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
-import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeProgressResponseDTO;
-import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.*;
 import BE_Elixir.Elixir.domain.challenge.service.ChallengeAchievementService;
 import BE_Elixir.Elixir.domain.challenge.service.ChallengeService;
 import BE_Elixir.Elixir.domain.member.entity.Member;
@@ -101,5 +98,25 @@ public class ChallengeController implements ChallengeApi {
                             memberDetails.getUsername() + " 사용자의 현재 진행 상황 조회 실패 - " + e.getMessage()));
         }
     }
+
+    // 챌린지 최종 완료 여부 조회
+    @GetMapping("/completion")
+    public ResponseEntity<CommonResponse<ChallengeCompletedResponseDTO>> getChallengeCompletion(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            ChallengeCompletedResponseDTO dto = challengeAchievementService.getChallengeCompletion(member.getId());
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "챌린지 최종 완료 여부 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "챌린지 최종 완료 여부 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
 
 }
