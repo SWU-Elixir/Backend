@@ -13,8 +13,8 @@ public class ChallengeRequestDTO {
     private String name;
     private String description;
     private String purpose;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    //private LocalDateTime startDate;
+    //private LocalDateTime endDate;
     private int month;
     private int year;
 
@@ -45,8 +45,8 @@ public class ChallengeRequestDTO {
         challenge.setName(dto.name);
         challenge.setDescription(dto.description);
         challenge.setPurpose(dto.purpose);
-        challenge.setStartDate(dto.startDate);
-        challenge.setEndDate(dto.endDate);
+        //challenge.setStartDate(dto.startDate);
+        //challenge.setEndDate(dto.endDate);
         challenge.setMonth(dto.month);
         challenge.setYear(dto.year);
 

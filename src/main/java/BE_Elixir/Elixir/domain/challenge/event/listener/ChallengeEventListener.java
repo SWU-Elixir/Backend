@@ -84,10 +84,10 @@ public class ChallengeEventListener {
             return;
         }
 
-        // 해당 챌린지가 열린 시간 (이 시간 이후의 기록만 유효)
+        // 챌린지의 단계 별 세부 목표 열린 시간 (이 시간 이후의 기록만 유효)
         LocalDateTime openedAt = achievement.getOpenedAt();
 
-        // 챌린지 단계별 목표 유형들 (총 8개) 가져오기
+        // 챌린지 단계 별 목표 유형들 (총 8개) 가져오기
         List<ChallengeGoalType> goalTypes = parseGoalTypes(challenge);
 
         // 각 목표의 활성화 상태를 리스트로 구성 (false인 항목은 평가하지 않음)
@@ -119,6 +119,20 @@ public class ChallengeEventListener {
             handleGoal(goalType, memberId, openedAt, resultSetter);
         }
 
+        // 목표 달성 결과에 따라 다음 단계 활성화
+        if (achievement.isStep1Goal1Achieved() && achievement.isStep1Goal2Achieved()) {
+            achievement.setStep2Goal1Active(true);
+            achievement.setStep2Goal2Active(true);
+        }
+        if (achievement.isStep2Goal1Achieved() && achievement.isStep2Goal2Achieved()) {
+            achievement.setStep3Goal1Active(true);
+            achievement.setStep3Goal2Active(true);
+        }
+        if (achievement.isStep3Goal1Achieved() && achievement.isStep3Goal2Achieved()) {
+            achievement.setStep4Goal1Active(true);
+            achievement.setStep4Goal2Active(true);
+        }
+        
         // 서비스에서 달성 정보 저장
         challengeAchievementService.save(achievement);
     }

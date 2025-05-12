@@ -19,7 +19,8 @@ public enum ErrorCode {
     ALREADY_LIKED(HttpStatus.FORBIDDEN.value(), "이미 좋아요한 레시피입니다."),
     LIKE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "좋아요한 레시피가 없습니다."),
     MEMBER_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "회원이 존재하지 않습니다"),
-    CHALLENGE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "존재하지 않는 챌린지입니다.");
+    CHALLENGE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "챌린지를 찾을 수 없습니다."),
+    CHALLENGE_ACHIEVEMENT_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "챌린지 기록이 없습니다.");
     private final int status;
     private final String message;
 }

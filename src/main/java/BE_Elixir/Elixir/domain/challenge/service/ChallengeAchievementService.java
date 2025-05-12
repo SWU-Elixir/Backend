@@ -1,10 +1,13 @@
 package BE_Elixir.Elixir.domain.challenge.service;
 
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeCompletedResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeProgressResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.exception.OccupiedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class ChallengeAchievementService {
         ChallengeAchievement achievement = createIfNotExists(memberId);
 
         Challenge challenge = challengeRepository.findById(achievement.getChallengeId())
-                .orElseThrow(() -> new IllegalStateException("챌린지 ID로 챌린지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
 
         return ChallengeProgressResponseDTO.from(challenge, achievement);
     }
@@ -46,7 +49,7 @@ public class ChallengeAchievementService {
         // 현재 연도와 월에 해당하는 챌린지 조회
         Challenge challenge = challengeRepository
                 .findByYearAndMonth(year, month)
-                .orElseThrow(() -> new IllegalArgumentException("이번 달의 챌린지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
 
         // 해당 챌린지와 회원 ID에 대한 챌린지 달성 정보 조회
         return challengeAchievementRepository
@@ -66,4 +69,39 @@ public class ChallengeAchievementService {
                 });
     }
 
+    // 챌린지 최종 완료 여부 조회
+    @Transactional
+    public ChallengeCompletedResponseDTO getChallengeCompletion(Long memberId) {
+
+        ChallengeAchievement achievement = createIfNotExists(memberId);
+
+        Challenge challenge = challengeRepository.findById(achievement.getChallengeId())
+                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+
+        // 세부 목표 8개 달성 여부
+        boolean allAchieved = achievement.isAllGoalsAchieved();
+
+        if (allAchieved && !achievement.isChallengeCompleted()) {
+            achievement.setChallengeCompleted(true);
+            achievement.setChallengeCompletedAt(LocalDateTime.now());
+            challengeAchievementRepository.save(achievement);
+        }
+
+        if (achievement.isChallengeCompleted()) {
+            return new ChallengeCompletedResponseDTO(
+                    challenge.getAchievementName(),
+                    "챌린지를 완료했습니다!",
+                    challenge.getAchievementImageUrl(),
+                    true
+            );
+        } else {
+            return new ChallengeCompletedResponseDTO(
+                    challenge.getAchievementName(),
+                    "아직 챌린지를 달성하지 못했습니다.",
+                    null,
+                    false
+            );
+        }
+    }
 }

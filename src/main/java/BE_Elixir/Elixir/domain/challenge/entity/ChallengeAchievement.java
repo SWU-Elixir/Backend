@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -48,4 +49,16 @@ public class ChallengeAchievement {
 
     // 챌린지 활성화된 시점 (기록 유효성 판단 기준)
     private LocalDateTime openedAt;
+
+
+    // 캡슐화(챌린지 최종 달성 여부)
+    public boolean isAllGoalsAchieved() {
+        return Stream.of(
+                step1Goal1Achieved, step1Goal2Achieved,
+                step2Goal1Achieved, step2Goal2Achieved,
+                step3Goal1Achieved, step3Goal2Achieved,
+                step4Goal1Achieved, step4Goal2Achieved
+        ).allMatch(Boolean::booleanValue);
+    }
+
 }

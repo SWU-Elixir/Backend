@@ -13,8 +13,8 @@ public class ChallengeResponseDTO {
     private String name;
     private String description;
     private String purpose;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    //private LocalDateTime startDate;
+    //private LocalDateTime endDate;
     private int month;
     private int year;
 
@@ -45,8 +45,8 @@ public class ChallengeResponseDTO {
         this.name = challenge.getName();
         this.description = challenge.getDescription();
         this.purpose = challenge.getPurpose();
-        this.startDate = challenge.getStartDate();
-        this.endDate = challenge.getEndDate();
+        //this.startDate = challenge.getStartDate();
+        //this.endDate = challenge.getEndDate();
         this.month = challenge.getMonth();
         this.year = challenge.getYear();
         this.step1Goal1Type = challenge.getStep1Goal1Type();

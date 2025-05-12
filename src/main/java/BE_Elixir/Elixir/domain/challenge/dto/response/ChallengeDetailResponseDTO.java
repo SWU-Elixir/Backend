@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.challenge.dto.response;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -26,11 +27,17 @@ public class ChallengeDetailResponseDTO {
 
     public ChallengeDetailResponseDTO(Challenge challenge, List<String> ingredients) {
         this.name = challenge.getName();
+
+        int year = challenge.getYear();
+        int month = challenge.getMonth();
+
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
         this.period = String.format("%d월 %d일 ~ %d월 %d일",
-                challenge.getStartDate().getMonthValue(),
-                challenge.getStartDate().getDayOfMonth(),
-                challenge.getEndDate().getMonthValue(),
-                challenge.getEndDate().getDayOfMonth());
+                startDate.getMonthValue(), startDate.getDayOfMonth(),
+                endDate.getMonthValue(), endDate.getDayOfMonth());
+
         this.description = challenge.getDescription();
         this.purpose = challenge.getPurpose();
 
