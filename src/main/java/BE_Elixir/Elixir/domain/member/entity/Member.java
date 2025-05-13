@@ -31,6 +31,9 @@ public class Member {
     private String gender;
     private Integer birthYear;
 
+    // 업적
+    private String title;
+
     @Setter
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
