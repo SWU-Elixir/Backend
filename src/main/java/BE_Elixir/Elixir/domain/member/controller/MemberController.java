@@ -2,6 +2,7 @@ package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
@@ -163,4 +164,25 @@ public class MemberController implements MemberApi {
         }
     }
 
+    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
+    @GetMapping("/achievement")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        String email = memberDetails.getUsername();
+
+        try {
+            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(email);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "모든 챌린지 업적 조회 성공", achievements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "업적 조회 실패 - " + e.getMessage()));
+        }
+    }
 }

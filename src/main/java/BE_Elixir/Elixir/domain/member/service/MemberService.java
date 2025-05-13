@@ -1,6 +1,11 @@
 package BE_Elixir.Elixir.domain.member.service;
 
+import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
+import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
@@ -24,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +41,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final ChallengeRepository challengeRepository;
+    private final ChallengeAchievementRepository challengeAchievementRepository;
     private final RecipeEventRepository recipeEventRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -240,5 +249,42 @@ public class MemberService {
                 .toList();
     }
 
+    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
+    public List<MemberAchievementResponseDTO> getAllAchievements(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
+        // 전체 챌린지 조회 (연도/월 기준)
+        List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
+
+        // 사용자의 챌린지 달성 정보 조회
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        Map<Long, ChallengeAchievement> achievementMap = achievements.stream()
+                .collect(Collectors.toMap(
+                        ChallengeAchievement::getChallengeId,
+                        a -> a
+                ));
+        return allChallenges.stream()
+                .map(challenge -> {
+                    ChallengeAchievement achievement = achievementMap.get(challenge.getId());
+
+                    // 달성여부
+                    boolean completed = (achievement != null) && achievement.isStep4Goal1Achieved() && achievement.isStep4Goal2Achieved();
+
+                    // 달성할 경우 컬러이미지, 달성하지 않았을 경우 흑백이미지
+                    String imageUrl = completed ?
+                            challenge.getAchievementImageUrl() :
+                            challenge.getGrayAchievementImageUrl();
+
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            imageUrl,
+                            completed
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }
