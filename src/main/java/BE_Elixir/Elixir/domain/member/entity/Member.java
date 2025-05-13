@@ -40,6 +40,9 @@ public class Member {
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
 
+    // 업적
+    private String title;
+
     @Setter
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
