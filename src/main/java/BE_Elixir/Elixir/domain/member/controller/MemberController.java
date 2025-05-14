@@ -167,22 +167,6 @@ public class MemberController implements MemberApi {
         }
     }
 
-<<<<<<< HEAD
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @GetMapping("/achievement")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(email);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "모든 챌린지 업적 조회 성공", achievements));
-=======
-
     // 팔로우 하기
     @PostMapping("/{targetMemberId}/follow")
     public ResponseEntity<CommonResponse<?>> follow(
@@ -197,32 +181,11 @@ public class MemberController implements MemberApi {
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
                     "팔로우 성공"));
->>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-<<<<<<< HEAD
-                            "업적 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @GetMapping("/achievement/top3")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(email);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "최근 업적 3개 조회 성공", top3Achievements));
-=======
                             "팔로우 실패 - " + e.getMessage()));
         }
     }
@@ -241,15 +204,11 @@ public class MemberController implements MemberApi {
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
                     "언팔로우 성공"));
->>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-<<<<<<< HEAD
-                            "최근 업적 3개 조회 실패 - " + e.getMessage()));
-=======
                             "언팔로우 실패 - " + e.getMessage()));
         }
     }
@@ -338,7 +297,52 @@ public class MemberController implements MemberApi {
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "특정 사용자의 팔로워 목록 조회 실패 - " + e.getMessage()));
->>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
+        }
+    }
+
+
+    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
+    @GetMapping("/achievement")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        String email = memberDetails.getUsername();
+
+        try {
+            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(email);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "모든 챌린지 업적 조회 성공", achievements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "업적 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
+    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
+    @GetMapping("/achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        String email = memberDetails.getUsername();
+
+        try {
+            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(email);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "최근 업적 3개 조회 성공", top3Achievements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "최근 업적 3개 조회 실패 - " + e.getMessage()));
         }
     }
 }

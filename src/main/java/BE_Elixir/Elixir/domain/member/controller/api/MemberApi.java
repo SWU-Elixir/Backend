@@ -5,7 +5,6 @@ import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -182,5 +181,254 @@ public interface MemberApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    
+    // 팔로우 하기
+    @Operation(summary = "팔로우 하기",
+            description = "현재 사용자가 다른 사용자를 팔로우합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "팔로우 하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "팔로우 하기 성공",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "팔로우 하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "팔로우 하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> follow(
+            @PathVariable("targetMemberId") Long followingId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 언팔로우 하기
+    @Operation(summary = "언팔로우 하기",
+            description = "현재 사용자가 다른 사용자를 언팔로우합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "언팔로우 하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "언팔로우 하기 성공",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "언팔로우 하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "언팔로우 하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> unfollow(
+            @PathVariable("targetMemberId") Long followingId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // (현재 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
+    @Operation(summary = "현재 사용자의 팔로잉 목록 조회하기",
+            description = "현재 사용자가 팔로우하는 회원 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "현재 사용자의 팔로잉 목록 조회하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "현재 사용자의 팔로잉 목록 조회하기 성공",
+                                      "data": [
+                                          {
+                                            "id": 1,
+                                            "nickname": "example",
+                                            "profileUrl": "https://s3elixir.s3...",
+                                            "title": "봄동마스터"
+                                          }, ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "현재 사용자의 팔로잉 목록 조회하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "현재 사용자의 팔로잉 목록 조회하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowing(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // (현재 사용자의) 팔로워 목록 조회하기 (사용자를 팔로잉하는 목록)
+    @Operation(summary = "현재 사용자의 팔로워 목록 조회하기",
+            description = "현재 사용자를 팔로우하는 회원 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "현재 사용자의 팔로워 목록 조회하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "현재 사용자의 팔로워 목록 조회하기 성공",
+                                      "data": [
+                                          {
+                                            "id": 1,
+                                            "nickname": "example",
+                                            "profileUrl": "https://s3elixir.s3...",
+                                            "title": "봄동마스터"
+                                          }, ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "현재 사용자의 팔로워 목록 조회하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "현재 사용자의 팔로워 목록 조회하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollower(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // (특정 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
+    @Operation(summary = "특정 사용자의 팔로잉 목록 조회하기",
+            description = "특정 사용자가 팔로우하는 회원 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "특정 사용자의 팔로잉 목록 조회하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "특정 사용자의 팔로잉 목록 조회하기 성공",
+                                      "data": [
+                                          {
+                                            "id": 1,
+                                            "nickname": "example",
+                                            "profileUrl": "https://s3elixir.s3...",
+                                            "title": "봄동마스터"
+                                          }, ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "특정 사용자의 팔로잉 목록 조회하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "특정 사용자의 팔로잉 목록 조회하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowingByMemberId(
+            @PathVariable("targetMemberId") Long targetMemberId
+    );
+
+    // (특정 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
+    @Operation(summary = "특정 사용자의 팔로워 목록 조회하기",
+            description = "특정 사용자를 팔로우하는 회원 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "특정 사용자의 팔로워 목록 조회하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "특정 사용자의 팔로워 목록 조회하기 성공",
+                                      "data": [
+                                          {
+                                            "id": 1,
+                                            "nickname": "example",
+                                            "profileUrl": "https://s3elixir.s3...",
+                                            "title": "봄동마스터"
+                                          }, ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "특정 사용자의 팔로워 목록 조회하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "특정 사용자의 팔로워 목록 조회하기 중 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowerByMemberId(
+            @PathVariable("targetMemberId") Long targetMemberId
+    );
+
+
+    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
+    @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 정보 조회하기", description = "로그인한 사용자의 모든 챌린지 업적 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+
+    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
+    @Operation(summary = "로그인한 사용자의 달성한 업적 최신 3개 조회하기", description = "로그인한 사용자의 달성한 업적 최신 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
 }
