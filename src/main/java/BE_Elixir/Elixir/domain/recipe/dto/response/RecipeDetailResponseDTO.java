@@ -28,7 +28,7 @@ public class RecipeDetailResponseDTO {
     private Integer timeMinutes;
 
     // 태그된 식재료 정보
-    private List<String> ingredientTagNames;
+    private List<Long> ingredientTagIds;
     private Map<String, String> ingredients;
     private Map<String, String> seasoning;
 
@@ -61,8 +61,8 @@ public class RecipeDetailResponseDTO {
         this.timeMinutes = recipe.getTimeMinutes();
 
         // 식재료 태그
-        this.ingredientTagNames = recipe.getIngredientTags().stream()
-                .map(tag -> tag.getIngredient().getName())
+        this.ingredientTagIds = recipe.getIngredientTags().stream()
+                .map(tag -> tag.getIngredient().getId())
                 .collect(Collectors.toList());
 
         this.ingredients = recipe.getIngredients();
