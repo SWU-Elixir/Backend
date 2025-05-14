@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.recipe.dto;
+package BE_Elixir.Elixir.domain.recipe.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

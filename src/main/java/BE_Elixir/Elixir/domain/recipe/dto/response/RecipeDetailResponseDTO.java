@@ -1,5 +1,6 @@
-package BE_Elixir.Elixir.domain.recipe.dto;
+package BE_Elixir.Elixir.domain.recipe.dto.response;
 
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -16,7 +17,9 @@ import java.util.stream.Collectors;
 @Setter
 public class RecipeDetailResponseDTO {
     private Long id;
-    private String authorNickname;
+    private String authorNickname; // 작성자의 닉네임
+    private String authorTitle; // 작성자의 칭호
+    private Boolean authorFollowByCurrentUser; // 현재 사용자가 작성자를 팔로우했는지 여부
     private String title;
     private String imageUrl;
     private String description;
@@ -27,7 +30,7 @@ public class RecipeDetailResponseDTO {
     private Integer timeMinutes;
 
     // 태그된 식재료 정보
-    private List<String> ingredientTagNames;
+    private List<Long> ingredientTagIds;
     private Map<String, String> ingredients;
     private Map<String, String> seasoning;
 
@@ -47,9 +50,11 @@ public class RecipeDetailResponseDTO {
     // 댓글 리스트
     private List<RecipeCommentResponseDTO> comments;
 
-    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
+    public RecipeDetailResponseDTO(Recipe recipe, Boolean authorFollowByCurrentUser, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
+        this.authorTitle = recipe.getMember().getTitle();
+        this.authorFollowByCurrentUser = authorFollowByCurrentUser;
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();
@@ -60,8 +65,8 @@ public class RecipeDetailResponseDTO {
         this.timeMinutes = recipe.getTimeMinutes();
 
         // 식재료 태그
-        this.ingredientTagNames = recipe.getIngredientTags().stream()
-                .map(tag -> tag.getIngredient().getName())
+        this.ingredientTagIds = recipe.getIngredientTags().stream()
+                .map(tag -> tag.getIngredient().getId())
                 .collect(Collectors.toList());
 
         this.ingredients = recipe.getIngredients();

@@ -1,8 +1,8 @@
 package BE_Elixir.Elixir.domain.recipe.controller.api;
 
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeDetailResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.response.CommonResponse;

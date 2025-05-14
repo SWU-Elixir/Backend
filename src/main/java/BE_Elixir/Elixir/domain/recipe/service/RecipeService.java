@@ -2,9 +2,14 @@ package BE_Elixir.Elixir.domain.recipe.service;
 
 
 import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
+import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.recipe.dto.*;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeHomeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
@@ -39,6 +44,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final RecipeEventRepository recipeEventRepository;
     private final IngredientRepository ingredientRepository;
+    private final FollowRepository followRepository;
     private final S3Service s3Service;
     private final RedisRecipeService redisRecipeService;
     private final ApplicationEventPublisher eventPublisher;
@@ -71,10 +77,10 @@ public class RecipeService {
         }
 
         // 재료 태그 설정
-        List<RecipeIngredient> tagList = dto.getIngredientTagNames().stream()
-                .map(name -> {
-                    Ingredient ingredient = ingredientRepository.findByName(name)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
+        List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
+                .map(id -> {
+                    Ingredient ingredient = ingredientRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
                     return new RecipeIngredient(recipe, ingredient);
                 }).collect(Collectors.toList());
 
@@ -100,16 +106,21 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
 
+        // 레시피 작성자
+        Member authorRecipe = recipe.getMember();
+
         // 댓글 가져오기
         List<RecipeCommentResponseDTO> comments = recipeEventRepository.findAllByRecipeId(recipeId)
                 .stream()
                 .map(RecipeCommentResponseDTO::new)
                 .collect(Collectors.toList());
 
+        // 작성자 팔로우 여부 확인
+        boolean authorFollowByCurrentUser = followRepository.existsByFollowerAndFollowing(member, authorRecipe);
         // 좋아요 및 스크랩 여부 확인
         boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
         boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
-        return new RecipeDetailResponseDTO(recipe, comments, likedByCurrentUser, scrappedByCurrentUser);
+        return new RecipeDetailResponseDTO(recipe, authorFollowByCurrentUser, comments, likedByCurrentUser, scrappedByCurrentUser);
     }
 
     // 레시피 목록(홈) 조회
@@ -238,10 +249,10 @@ public class RecipeService {
         recipe.getIngredientTags().clear(); // 참조 유지
 
         recipe.getIngredientTags().addAll(
-                dto.getIngredientTagNames().stream()
-                        .map(name -> {
-                            Ingredient ingredient = ingredientRepository.findByName(name)
-                                    .orElseThrow(() -> new RuntimeException("재료 없음: " + name));
+                dto.getIngredientTagIds().stream()
+                        .map(id -> {
+                            Ingredient ingredient = ingredientRepository.findById(id)
+                                    .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
                             return new RecipeIngredient(recipe, ingredient);
                         })
                         .collect(Collectors.toList())

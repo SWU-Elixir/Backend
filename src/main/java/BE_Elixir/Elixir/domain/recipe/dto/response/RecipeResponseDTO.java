@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.recipe.dto;
+package BE_Elixir.Elixir.domain.recipe.dto.response;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
@@ -27,7 +27,7 @@ public class RecipeResponseDTO {
     private Integer timeMinutes;
 
     // 태그된 식재료 정보
-    private List<String> ingredientTagNames;
+    private List<Long> ingredientTagIds;
     private Map<String, String> ingredients;
     private Map<String, String> seasoning;
 
@@ -62,8 +62,8 @@ public class RecipeResponseDTO {
         this.timeMinutes = recipe.getTimeMinutes();
 
         // 식재료 태그
-        this.ingredientTagNames = recipe.getIngredientTags().stream()
-                .map(ri -> ri.getIngredient().getName())
+        this.ingredientTagIds = recipe.getIngredientTags().stream()
+                .map(tag -> tag.getIngredient().getId())
                 .collect(Collectors.toList());
 
         this.ingredients = recipe.getIngredients();
