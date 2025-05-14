@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 public class RecipeCommentResponseDTO {
     private Long commentId;
     private Long recipeId;
-    private String email;
+    private String nickName; // 댓글 작성자의 닉네임
+    private String title; // 댓글 작성자의 칭호
 
     private String content;
     private LocalDateTime createdAt;
@@ -21,7 +22,7 @@ public class RecipeCommentResponseDTO {
     public RecipeCommentResponseDTO(RecipeEvent recipeEvent) {
         this.commentId = recipeEvent.getId();
         this.recipeId = recipeEvent.getRecipe().getId(); // 직접 접근
-        this.email = recipeEvent.getMember().getEmail();
+        this.nickName = recipeEvent.getMember().getNickname();
         this.content = recipeEvent.getContent();
         this.createdAt = recipeEvent.getCreatedAt();
         this.updatedAt = recipeEvent.getUpdatedAt();

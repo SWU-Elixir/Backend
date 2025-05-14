@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 @Setter
 public class RecipeDetailResponseDTO {
     private Long id;
-    private String authorNickname;
+    private String authorNickname; // 작성자의 닉네임
+    private String authorTitle; // 작성자의 칭호
     private String title;
     private String imageUrl;
     private String description;
@@ -51,6 +52,7 @@ public class RecipeDetailResponseDTO {
     public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
+        this.authorTitle = recipe.getMember().getTitle();
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();
