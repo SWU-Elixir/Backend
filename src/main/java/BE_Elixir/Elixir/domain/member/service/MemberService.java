@@ -287,4 +287,48 @@ public class MemberService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
+    public List<MemberAchievementResponseDTO> getTop3Achievements(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        // 챌린지 ID만 가져오기
+        Set<Long> challengeIds = achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .map(ChallengeAchievement::getChallengeId)
+                .collect(Collectors.toSet());
+
+        // challengeId에 해당하는 챌린지를 한 번에 조회
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+
+        // challengeId → Challenge 매핑
+        Map<Long, Challenge> challengeMap = challenges.stream()
+                .collect(Collectors.toMap(Challenge::getId, c -> c));
+
+        // 업적 필터 + 정렬 + DTO 변환
+        List<MemberAchievementResponseDTO> top3Achievements = achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .sorted((a1, a2) -> {
+                    Challenge c1 = challengeMap.get(a1.getChallengeId());
+                    Challenge c2 = challengeMap.get(a2.getChallengeId());
+                    int compareYear = Integer.compare(c2.getYear(), c1.getYear());
+                    return (compareYear != 0) ? compareYear : Integer.compare(c2.getMonth(), c1.getMonth());
+                })
+                .limit(3)
+                .map(a -> {
+                    Challenge challenge = challengeMap.get(a.getChallengeId());
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            challenge.getAchievementImageUrl(), // 컬러 이미지
+                            true
+                    );
+                })
+                .collect(Collectors.toList());
+        return top3Achievements;
+    }
 }
