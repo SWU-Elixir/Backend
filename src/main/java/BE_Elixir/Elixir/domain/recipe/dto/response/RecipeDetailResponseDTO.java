@@ -19,6 +19,7 @@ public class RecipeDetailResponseDTO {
     private Long id;
     private String authorNickname; // 작성자의 닉네임
     private String authorTitle; // 작성자의 칭호
+    private Boolean authorFollowByCurrentUser; // 현재 사용자가 작성자를 팔로우했는지 여부
     private String title;
     private String imageUrl;
     private String description;
@@ -49,10 +50,11 @@ public class RecipeDetailResponseDTO {
     // 댓글 리스트
     private List<RecipeCommentResponseDTO> comments;
 
-    public RecipeDetailResponseDTO(Recipe recipe, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
+    public RecipeDetailResponseDTO(Recipe recipe, Boolean authorFollowByCurrentUser, List<RecipeCommentResponseDTO> comments, Boolean likedByCurrentUser, Boolean scrappedByCurrentUser) {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
         this.authorTitle = recipe.getMember().getTitle();
+        this.authorFollowByCurrentUser = authorFollowByCurrentUser;
         this.title = recipe.getTitle();
         this.imageUrl = recipe.getImageUrl();
         this.description = recipe.getDescription();
