@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.member.controller.api;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
@@ -18,9 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -183,42 +182,5 @@ public interface MemberApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 정보 조회하기", description = "로그인한 사용자의 모든 챌린지 업적 정보를 조회합니다.",
-            security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
-                                      "data": true
-                                    }
-                                    """)))
-    })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    );
-
-
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @Operation(summary = "로그인한 사용자의 달성한 업적 최신 3개 조회하기", description = "로그인한 사용자의 달성한 업적 최신 3개를 조회합니다.",
-            security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
-                                      "data": true
-                                    }
-                                    """)))
-    })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    );
+    
 }

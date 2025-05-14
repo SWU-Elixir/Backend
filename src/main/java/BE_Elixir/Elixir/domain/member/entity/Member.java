@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.member.entity;
 
+import BE_Elixir.Elixir.domain.follow.entity.Follow;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,14 @@ public class Member {
     @Setter private String profileUrl;
     private String gender;
     private Integer birthYear;
+
+    // 회원이 팔로잉하는 경우
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followings = new ArrayList<>();
+
+    // 회원을 팔로우하는 경우
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followers = new ArrayList<>();
 
     // 업적
     private String title;

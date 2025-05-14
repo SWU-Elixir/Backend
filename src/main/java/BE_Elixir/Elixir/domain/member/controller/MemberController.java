@@ -1,9 +1,11 @@
 package BE_Elixir.Elixir.domain.member.controller;
 
+import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
@@ -33,6 +35,7 @@ import java.util.List;
 public class MemberController implements MemberApi {
 
     private final MemberService memberService;
+    private final FollowService followService;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
 
@@ -164,6 +167,7 @@ public class MemberController implements MemberApi {
         }
     }
 
+<<<<<<< HEAD
     // 로그인한 사용자의 모든 챌린지 업적 정보 조회
     @GetMapping("/achievement")
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
@@ -177,11 +181,29 @@ public class MemberController implements MemberApi {
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
                     "모든 챌린지 업적 조회 성공", achievements));
+=======
+
+    // 팔로우 하기
+    @PostMapping("/{targetMemberId}/follow")
+    public ResponseEntity<CommonResponse<?>> follow(
+            @PathVariable("targetMemberId") Long followingId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long followerId = memberDetails.getId();
+
+        try {
+            followService.follow(followerId, followingId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "팔로우 성공"));
+>>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+<<<<<<< HEAD
                             "업적 조회 실패 - " + e.getMessage()));
         }
     }
@@ -200,12 +222,123 @@ public class MemberController implements MemberApi {
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
                     "최근 업적 3개 조회 성공", top3Achievements));
+=======
+                            "팔로우 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 언팔로우 하기
+    @DeleteMapping("/{targetMemberId}/follow")
+    public ResponseEntity<CommonResponse<?>> unfollow(
+            @PathVariable("targetMemberId") Long followingId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long followerId = memberDetails.getId();
+
+        try {
+            followService.unfollow(followerId, followingId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "언팔로우 성공"));
+>>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+<<<<<<< HEAD
                             "최근 업적 3개 조회 실패 - " + e.getMessage()));
+=======
+                            "언팔로우 실패 - " + e.getMessage()));
+        }
+    }
+
+    // (현재 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
+    @GetMapping("/following")
+    public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowing(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        try {
+            List<MemberSummaryDTO> dto = followService.getFollowings(memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "현 사용자의 팔로잉 목록 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "현 사용자의 팔로잉 목록 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
+    // (현재 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
+    @GetMapping("/follower")
+    public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollower(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        try {
+            List<MemberSummaryDTO> dto = followService.getFollowers(memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "현 사용자의 팔로워 목록 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "현 사용자의 팔로워 목록 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
+    // (특정 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
+    @GetMapping("/{targetMemberId}/following")
+    public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowingByMemberId(
+            @PathVariable("targetMemberId") Long targetMemberId
+    ) {
+        try {
+            List<MemberSummaryDTO> dto = followService.getFollowings(targetMemberId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "특정 사용자의 팔로잉 목록 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "특정 사용자의 팔로잉 목록 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
+    // (특정 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
+    @GetMapping("/{targetMemberId}/follower")
+    public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowerByMemberId(
+            @PathVariable("targetMemberId") Long targetMemberId
+    ) {
+        try {
+            List<MemberSummaryDTO> dto = followService.getFollowers(targetMemberId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "특정 사용자의 팔로워 목록 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "특정 사용자의 팔로워 목록 조회 실패 - " + e.getMessage()));
+>>>>>>> 6bbd11ebac007ac9446af6469faf129db1413113
         }
     }
 }
