@@ -1,6 +1,11 @@
 package BE_Elixir.Elixir.domain.member.service;
 
+import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
+import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
@@ -24,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +41,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final ChallengeRepository challengeRepository;
+    private final ChallengeAchievementRepository challengeAchievementRepository;
     private final RecipeEventRepository recipeEventRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -240,5 +249,86 @@ public class MemberService {
                 .toList();
     }
 
+    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
+    public List<MemberAchievementResponseDTO> getAllAchievements(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
+        // 전체 챌린지 조회 (연도/월 기준)
+        List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
+
+        // 사용자의 챌린지 달성 정보 조회
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        Map<Long, ChallengeAchievement> achievementMap = achievements.stream()
+                .collect(Collectors.toMap(
+                        ChallengeAchievement::getChallengeId,
+                        a -> a
+                ));
+        return allChallenges.stream()
+                .map(challenge -> {
+                    ChallengeAchievement achievement = achievementMap.get(challenge.getId());
+
+                    // 달성여부
+                    boolean completed = (achievement != null) && achievement.isStep4Goal1Achieved() && achievement.isStep4Goal2Achieved();
+
+                    // 달성할 경우 컬러이미지, 달성하지 않았을 경우 흑백이미지
+                    String imageUrl = completed ?
+                            challenge.getAchievementImageUrl() :
+                            challenge.getGrayAchievementImageUrl();
+
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            imageUrl,
+                            completed
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
+    public List<MemberAchievementResponseDTO> getTop3Achievements(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        // 챌린지 ID만 가져오기
+        Set<Long> challengeIds = achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .map(ChallengeAchievement::getChallengeId)
+                .collect(Collectors.toSet());
+
+        // challengeId에 해당하는 챌린지를 한 번에 조회
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+
+        // challengeId → Challenge 매핑
+        Map<Long, Challenge> challengeMap = challenges.stream()
+                .collect(Collectors.toMap(Challenge::getId, c -> c));
+
+        // 업적 필터 + 정렬 + DTO 변환
+        List<MemberAchievementResponseDTO> top3Achievements = achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .sorted((a1, a2) -> {
+                    Challenge c1 = challengeMap.get(a1.getChallengeId());
+                    Challenge c2 = challengeMap.get(a2.getChallengeId());
+                    int compareYear = Integer.compare(c2.getYear(), c1.getYear());
+                    return (compareYear != 0) ? compareYear : Integer.compare(c2.getMonth(), c1.getMonth());
+                })
+                .limit(3)
+                .map(a -> {
+                    Challenge challenge = challengeMap.get(a.getChallengeId());
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            challenge.getAchievementImageUrl(), // 컬러 이미지
+                            true
+                    );
+                })
+                .collect(Collectors.toList());
+        return top3Achievements;
+    }
 }

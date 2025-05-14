@@ -18,4 +18,8 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     // 연도&달로 현재 챌린지 조회
     Optional<Challenge> findByYearAndMonth(int year, int month);
 
+    // 전체 챌린지 조회 (연도/월 기준)
+    @Query("SELECT c FROM Challenge c ORDER BY c.year ASC, c.month ASC")
+    List<Challenge> findAllOrderedByYearAndMonth();
+
 }
