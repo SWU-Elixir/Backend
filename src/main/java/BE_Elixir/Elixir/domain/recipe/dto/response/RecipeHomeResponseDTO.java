@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.recipe.dto;
+package BE_Elixir.Elixir.domain.recipe.dto.response;
 
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;

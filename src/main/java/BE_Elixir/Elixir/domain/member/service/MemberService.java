@@ -9,7 +9,7 @@ import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;

@@ -1,7 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter

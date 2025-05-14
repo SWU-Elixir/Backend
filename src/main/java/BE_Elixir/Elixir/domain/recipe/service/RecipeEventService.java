@@ -1,9 +1,9 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentCreateRequestDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentUpdateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentCreateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentUpdateRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;

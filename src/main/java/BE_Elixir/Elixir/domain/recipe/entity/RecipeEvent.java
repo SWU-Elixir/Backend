@@ -1,8 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentCreateRequestDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeCommentUpdateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentCreateRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

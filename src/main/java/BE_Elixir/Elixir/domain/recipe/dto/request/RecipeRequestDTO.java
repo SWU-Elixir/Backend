@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.recipe.dto;
+package BE_Elixir.Elixir.domain.recipe.dto.request;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;

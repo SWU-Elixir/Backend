@@ -5,7 +5,7 @@ import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.domain.recipe.dto.RecipeImageResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
