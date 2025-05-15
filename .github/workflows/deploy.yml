@@ -1,0 +1,47 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: acho/minjung
+          stage: main
+          yaml: |
+            name: elixir-backend
+            app: java@17
+            options:
+              ports: "8080"
+              env:
+                - name: DB_URL
+                  secret: DB_URL
+                - name: DB_USERNAME
+                  secret: DB_USERNAME
+                - name: DB_PASSWORD
+                  secret: DB_PASSWORD
+                - name: JWT_SECRET
+                  secret: JWT_SECRET
+                - name: AWS_ACCESSKEY
+                  secret: AWS_ACCESSKEY
+                - name: AWS_SECRETKEY
+                  secret: AWS_SECRETKEY
+                - name: SPRING_PROFILES_ACTIVE
+                  secret: SPRING_PROFILES_ACTIVE
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
