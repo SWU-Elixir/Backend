@@ -20,7 +20,7 @@ import java.util.List;
 )
 public class SwaggerConfig {
 
-    String DEFAULT_URL = "http://localhost:8080";
+    String DEFAULT_URL = "https://port-0-elixir-backend-g0424l70py8py.gksl2.cloudtype.app/";
 
     @Bean
     public OpenAPI openAPI() {
