@@ -32,10 +32,13 @@ public class RecommendationResponseDTO {
         this.categorySlowAging = recipe.getCategorySlowAging();
         this.categoryType = recipe.getCategoryType();
 
-        this.ingredientTagIds = recipe.getIngredientTags().stream()
+        this.ingredientTagIds = recipe.getIngredientTags() != null
+                ? recipe.getIngredientTags().stream()
                 .map(tag -> tag.getIngredient().getId())
-                .limit(3) // 식재료 태그 3개로 제한
-                .collect(Collectors.toList());
+                .limit(3)
+                .collect(Collectors.toList())
+                : List.of();
+
 
         this.scrappedByCurrentUser = scrappedByCurrentUser;
     }

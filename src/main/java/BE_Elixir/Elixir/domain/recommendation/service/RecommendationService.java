@@ -12,15 +12,17 @@ import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecommendationService {
@@ -47,6 +49,13 @@ public class RecommendationService {
                 .limit(3)
                 .collect(Collectors.toList());
 
+        // 필터링된 레시피가 없을 경우 → 랜덤
+        if (filtered.isEmpty()) {
+            Collections.shuffle(allRecipes); // 리스트를 무작위로
+            filtered = allRecipes.stream()
+                    .limit(3)
+                    .collect(Collectors.toList());
+        }
 
         // 스크랩 여부 확인 및 DTO 변환
         List<RecommendationResponseDTO> recommendations = filtered.stream()
@@ -92,7 +101,7 @@ public class RecommendationService {
 
     // 식사 스타일(육류 기반, 채식 기반, 혼합)에 따라 레시피 필터링
     private boolean matchesMealStyle(Member member, Recipe recipe) {
-        List<String> meatKeywords = List.of("고기", "닭", "소고기", "돼지고기", "오리", "양고기", "소", "돼지", "닭고기", "베이컨", "햄", "고등어", "삼겹살", "참치", "갈비", "스테이크", "육회", "정육");
+        List<String> meatKeywords = List.of("고기", "닭", "소고기", "돼지고기", "오리", "양고기", "소", "돼지", "닭고기", "베이컨", "햄", "고등어", "삼겹살", "참치", "갈비", "스테이크", "육회", "정육", "새우");
         List<String> vegetableKeywords = List.of("채소", "상추", "깻잎", "시금치", "샐러리", "양상추", "브로콜리", "오이", "파", "양파", "당근", "고추", "마늘", "배추", "버섯", "콩", "두부");
 
         boolean hasMeat = false;
@@ -108,7 +117,9 @@ public class RecommendationService {
                 hasVegetable = true;
             }
         }
-
+        if (!member.isMealStyleMeatBased() && !member.isMealStyleVegetableBased() && !member.isMealStyleMixed()) {
+            return true;
+        }
         // 사용자 선호 스타일과 매칭
         if (member.isMealStyleMeatBased() && hasMeat && !hasVegetable) return true;
         if (member.isMealStyleVegetableBased() && hasVegetable && !hasMeat) return true;
@@ -133,9 +144,14 @@ public class RecommendationService {
 
     // 목적(항산화, 혈당 조절, 염증 감소)에 따라 레시피 필터링
     private boolean matchesReason(Member member, Recipe recipe) {
-        if (member.isReasonAntioxidantBoost() && recipe.getCategorySlowAging() == CategorySlowAging.항산화강화) return true;
-        if (member.isReasonBloodSugarControl() && recipe.getCategorySlowAging() == CategorySlowAging.혈당조절) return true;
-        if (member.isReasonInflammationReduction() && recipe.getCategorySlowAging() == CategorySlowAging.염증감소) return true;
-        return false;
+        if (!member.isReasonAntioxidantBoost() &&
+                !member.isReasonBloodSugarControl() &&
+                !member.isReasonInflammationReduction()) {
+            return true;
+        }
+        return (member.isReasonAntioxidantBoost() && recipe.getCategorySlowAging().equals("항산화강화")) ||
+                (member.isReasonBloodSugarControl() && recipe.getCategorySlowAging().equals("혈당조절")) ||
+                (member.isReasonInflammationReduction() && recipe.getCategorySlowAging().equals("염증감소"));
     }
+
 }
