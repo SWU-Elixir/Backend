@@ -13,4 +13,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     // 당월 챌린지 식재료 조회
     List<Ingredient> findByChallengeMonth(int month);
+
+    // 여러 ID로 한 번에 조회
+    List<Ingredient> findByIdIn(List<Long> ids);
 }
