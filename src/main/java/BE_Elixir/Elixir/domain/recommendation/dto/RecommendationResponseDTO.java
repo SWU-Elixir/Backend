@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class RecommendationResponseDTO {
     private Long id;
     private String title;
