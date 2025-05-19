@@ -38,4 +38,25 @@ public interface RecommendationApi {
     ResponseEntity<CommonResponse<?>> getRecommendations(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
+
+    // 추천 검색어 조회
+    @Operation(summary = "추천 검색어 조회", description = "추천 검색어를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "추천 검색어 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "추천 검색어 조회 성공",
+                                      "data": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "레시피 없음",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<?>> getSearchKeyword(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }

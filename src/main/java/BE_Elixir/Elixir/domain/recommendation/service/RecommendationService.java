@@ -1,26 +1,23 @@
 package BE_Elixir.Elixir.domain.recommendation.service;
 
 
+import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
+import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.domain.recommendation.dto.RecommendationResponseDTO;
-import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 @Slf4j
 @Service
@@ -30,9 +27,11 @@ public class RecommendationService {
     private final RecipeRepository recipeRepository;
     private final RedisRecipeService redisRecipeService;
     private final RecipeEventRepository recipeEventRepository;
+    private final IngredientRepository ingredientRepository;
+
 
     // 사용자 맞춤형 레시피 추천
-    @Transactional
+    @Transactional(readOnly = true)
     public List<RecommendationResponseDTO> getRecommendationsForUser(Member member) {
         // 캐시 확인
         List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(member.getId());
@@ -154,4 +153,41 @@ public class RecommendationService {
                 (member.isReasonInflammationReduction() && recipe.getCategorySlowAging().equals("염증감소"));
     }
 
+    // 추천 검색어 조회
+    @Transactional(readOnly = true)
+    public List<String> getRecommendedKeywords(Member member) {
+        // 캐시된 추천 레시피 확인
+        List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(member.getId());
+        if (cached == null || cached.isEmpty()) return List.of();
+
+        Set<String> keywords = new LinkedHashSet<>(); // 중복 제거 + 순서 유지
+        Set<Long> ingredientIdSet = new HashSet<>();
+
+
+        for (RecommendationResponseDTO dto : cached) {
+            // 제목에서 키워드 추출
+            if (dto.getTitle() != null) {
+                String[] words = dto.getTitle().split("\\s+");
+                for (String word : words) {
+                    if (!word.isBlank()) keywords.add(word.trim());
+                }
+            }
+
+            // 식재료 ID 수집
+            if (dto.getIngredientTagIds() != null) {
+                ingredientIdSet.addAll(dto.getIngredientTagIds());
+            }
+
+            // 원하는 개수만큼 제한 (예: 상위 5개)
+            if (keywords.size() >= 5) break;
+        }
+
+        // 식재료 이름 조회
+        if (!ingredientIdSet.isEmpty()) {
+            List<Ingredient> ingredients = ingredientRepository.findByIdIn(ingredientIdSet.stream().toList());
+            ingredients.forEach(ingredient -> keywords.add(ingredient.getName()));
+        }
+
+        return keywords.stream().limit(5).toList();
+    }
 }

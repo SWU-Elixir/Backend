@@ -23,6 +23,7 @@ public class RecommendationController implements RecommendationApi {
 
     private final RecommendationService recommendationService;
 
+    // 추천 레시피 조회
     @GetMapping
     public ResponseEntity<CommonResponse<?>> getRecommendations(
             @AuthenticationPrincipal MemberDetails memberDetails
@@ -44,4 +45,26 @@ public class RecommendationController implements RecommendationApi {
         }
     }
 
+    // 추천 검색어 조회
+    @GetMapping("/search/keyword")
+    public ResponseEntity<CommonResponse<?>> getSearchKeyword(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            List<String> recommendationsKeywords = recommendationService.getRecommendedKeywords(member);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(),
+                    "추천 검색어 조회 성공", recommendationsKeywords
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                            "추천 검색어 조회 실패 - " + e.getMessage()
+                    ));
+        }
+    }
 }
+
