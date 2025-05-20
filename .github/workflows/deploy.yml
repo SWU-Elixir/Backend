@@ -2,7 +2,7 @@ name: Deploy to cloudtype
 on:
   push:
     branches:
-      - dev
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -40,6 +40,14 @@ jobs:
                   secret: AWS_SECRETKEY
                 - name: SPRING_PROFILES_ACTIVE
                   secret: SPRING_PROFILES_ACTIVE
+                - name: DEFAULT_URL
+                  secret: DEFAULT_URL
+                - name: REDIS_HOST
+                  secret: REDIS_HOST
+                - name: REDIS_PORT
+                  secret: REDIS_PORT
+                - name: OPENAI_SECRETKEY
+                  secret: OPENAI_SECRETKEY
               buildenv: []
             context:
               git:
