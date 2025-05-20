@@ -6,7 +6,6 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +20,7 @@ import java.util.List;
 )
 public class SwaggerConfig {
 
-    @Value("${swagger.app.default-url}")
-    private String DEFAULT_URL;
+    String DEFAULT_URL = "https://port-0-elixir-backend-g0424l70py8py.gksl2.cloudtype.app/";
 
     @Bean
     public OpenAPI openAPI() {

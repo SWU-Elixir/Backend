@@ -99,6 +99,14 @@ public class RecipeService {
         return new RecipeResponseDTO(recipe);
     }
 
+    // 레시피 조회
+    public RecipeResponseDTO getRecipe(Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+
+        return new RecipeResponseDTO(recipe);
+    }
+
     // 레시피 상세 조회
     @Transactional(readOnly = true)
     public RecipeDetailResponseDTO getRecipeDetail(Long recipeId, Member member) {
