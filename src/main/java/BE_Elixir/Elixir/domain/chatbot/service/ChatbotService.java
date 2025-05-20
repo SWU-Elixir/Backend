@@ -82,11 +82,14 @@ public class ChatbotService {
 
             redisChatbotService.printChatSessionValue(chatSessionId);
 
-            // 결과 DTO로 return
+            // 클리닝
+            String cleanedContent = response.get("content").replace("**", "");
+
             return ChatbotResponseDTO.builder()
                     .chatSessionId(chatSessionId)
-                    .message(response.get("content"))
+                    .message(cleanedContent)
                     .build();
+
         } catch (IllegalArgumentException | IllegalStateException e) {
             log.error("잘못된 입력 또는 상태 오류: {}", e.getMessage());
             throw e;
