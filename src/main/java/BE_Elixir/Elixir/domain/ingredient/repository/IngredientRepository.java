@@ -19,4 +19,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     // ID로 찾기
     @Query("SELECT i.name FROM Ingredient i WHERE i.id IN :ids")
     List<String> findNamesByIds(@Param("ids") List<Long> ids);
+
+    // 여러 ID로 식재료명만 조회
+    List<Ingredient> findByIdIn(List<Long> ids);
 }
