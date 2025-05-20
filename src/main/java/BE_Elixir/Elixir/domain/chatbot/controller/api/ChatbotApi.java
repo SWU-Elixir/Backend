@@ -31,10 +31,10 @@ public interface ChatbotApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "챗봇 응답 받기 성공 - 회원 ID: 1",
+                                      "message": "챗봇 응답 받기 성공 - 회원 ID:4",
                                       "data": {
-                                        "type": "DIET_FEEDBACK",
-                                        "targetId": 1
+                                        "chatSessionId": "a5186067-2d05-4880-88ac-29abcf096b41",
+                                        "message": "식단은 저속노화 식단의 기본 원칙에 잘 부합합니다. ..."
                                       }
                                     }
                                     """))),
