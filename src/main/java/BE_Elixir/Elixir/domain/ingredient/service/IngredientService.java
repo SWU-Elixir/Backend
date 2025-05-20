@@ -32,4 +32,9 @@ public class IngredientService {
                 .toList();
 
     }
+
+    // Id 목록으로 식재료명 목록 조회
+    public List<String> getIngredientNamesByIds(List<Long> ids) {
+        return ingredientRepository.findNamesByIds(ids);
+    }
 }
