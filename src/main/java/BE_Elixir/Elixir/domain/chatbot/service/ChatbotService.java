@@ -74,16 +74,15 @@ public class ChatbotService {
             // gpt api 호출
             Map<String, String> response = callGpt(messages);
 
+            // gpt 응답 파싱 후 클리닝 적용
+            String cleanedContent = response.get("content").replace("**", "");
+            response.put("content", cleanedContent); // 수정된 content로 덮어쓰기
+
             // redis에 대화 기록
             redisChatbotService.appendMessageToHistory(chatSessionId, messages.get(messages.size()-1));
             redisChatbotService.appendMessageToHistory(chatSessionId, response);
 
             log.info("response: " + response.get("content"));
-
-            redisChatbotService.printChatSessionValue(chatSessionId);
-
-            // 클리닝
-            String cleanedContent = response.get("content").replace("**", "");
 
             return ChatbotResponseDTO.builder()
                     .chatSessionId(chatSessionId)
