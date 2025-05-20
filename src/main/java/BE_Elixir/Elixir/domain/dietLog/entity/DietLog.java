@@ -44,8 +44,13 @@ public class DietLog {
     private LocalDateTime time;
 
     public void setIngredientTags(List<DietLogIngredient> ingredientTags) {
+        if (this.ingredientTags == null) {
+            this.ingredientTags = new ArrayList<>();
+        }
         this.ingredientTags.clear();
-        this.ingredientTags.addAll(ingredientTags);
+        if (ingredientTags != null) {
+            this.ingredientTags.addAll(ingredientTags);
+        }
     }
 
     // DietLogResponseDTO 로 변환
