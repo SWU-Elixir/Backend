@@ -3,9 +3,11 @@ package BE_Elixir.Elixir.domain.member.controller;
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
@@ -340,6 +342,51 @@ public class MemberController implements MemberApi {
                             HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "최근 업적 3개 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 로그인한 사용자의 설문조사 결과 조회하기
+    @GetMapping("/survey")
+    public ResponseEntity<CommonResponse<SurveyResponseDTO>> getSurvey(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        try {
+            SurveyResponseDTO responseDTO = memberService.getSurvey(memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "설문조사 결과 조회 성공, 회원 ID: " + memberId, responseDTO));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "설문조사 결과 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 로그인한 사용자의 설문조사 결과 수정하기
+    @PutMapping("/survey")
+    public ResponseEntity<CommonResponse<SurveyResponseDTO>> updateSurvey(
+            @RequestBody SurveyRequestDTO dto,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        try {
+            SurveyResponseDTO responseDTO = memberService.updateSurvey(memberId, dto);
+
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "설문조사 수정 성공, 회원 ID: " + memberId, responseDTO));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "설문조사 수정 실패 - " + e.getMessage()));
         }
     }
 }

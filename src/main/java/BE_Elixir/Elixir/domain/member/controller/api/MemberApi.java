@@ -1,9 +1,11 @@
 package BE_Elixir.Elixir.domain.member.controller.api;
 
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
@@ -431,4 +433,76 @@ public interface MemberApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 로그인한 사용자의 설문조사 결과 조회하기
+    @Operation(summary = "로그인한 사용자의 설문조사 결과 조회하기",
+            description = "로그인한 사용자의 설문조사 결과를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 설문조사 결과 조회하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "설문조사 결과 조회 성공, 회원 ID: 1",
+                                      "data": {
+                                            "memberId": 1,
+                                            "allergies": ["알류", "호두"],
+                                            "mealStyles": ["고기 위주", "혼합식"],
+                                            "recipeStyles": ["한식", "양식", "디저트"],
+                                            "reasons": ["혈당 조절"]
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "로그인한 사용자의 설문조사 결과 조회하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "설문조사 결과 조회 실패",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<SurveyResponseDTO>> getSurvey(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 로그인한 사용자의 설문조사 결과 수정하기
+    @Operation(summary = "로그인한 사용자의 설문조사 결과 수정하기",
+            description = "로그인한 사용자의 설문조사 결과를 수정합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 설문조사 결과 수정하기 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "설문조사 결과 수정 성공, 회원 ID: 1",
+                                      "data": {
+                                            "memberId": 1,
+                                            "allergies": ["알류", "호두"],
+                                            "mealStyles": ["고기 위주", "혼합식"],
+                                            "recipeStyles": ["한식", "양식", "디저트"],
+                                            "reasons": ["혈당 조절"]
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "로그인한 사용자의 설문조사 결과 수정하기 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 INTERNAL_SERVER_ERROR",
+                                      "message": "설문조사 결과 수정 실패",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<SurveyResponseDTO>> updateSurvey(
+            @RequestBody SurveyRequestDTO dto,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }

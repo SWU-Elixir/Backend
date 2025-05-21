@@ -5,8 +5,10 @@ import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
@@ -157,74 +159,6 @@ public class MemberService {
     }
 
 
-    // 설문조사 결과를 member 객체에 적용 - 알러지
-    private void applyAllergies(Member member, List<String> allergies) {
-        for (String allergy : allergies) {
-            switch (allergy) {
-                case "알류" -> member.setAllergy_알류(true);
-                case "우유" -> member.setAllergy_우유(true);
-                case "각류" -> member.setAllergy_각류(true);
-                case "밀류" -> member.setAllergy_밀류(true);
-                case "유제품" -> member.setAllergy_유제품(true);
-                case "메밀" -> member.setAllergy_메밀(true);
-                case "땅콩" -> member.setAllergy_땅콩(true);
-                case "대두" -> member.setAllergy_대두(true);
-                case "밀" -> member.setAllergy_밀(true);
-                case "고등어" -> member.setAllergy_고등어(true);
-                case "돼지고기" -> member.setAllergy_돼지고기(true);
-                case "복숭아" -> member.setAllergy_복숭아(true);
-                case "토마토" -> member.setAllergy_토마토(true);
-                case "아황산류" -> member.setAllergy_아황산류(true);
-                case "호두" -> member.setAllergy_호두(true);
-                case "닭고기" -> member.setAllergy_닭고기(true);
-                case "쇠고기" -> member.setAllergy_쇠고기(true);
-                case "오징어" -> member.setAllergy_오징어(true);
-                case "조개류" -> member.setAllergy_조개류(true);
-                case "굴" -> member.setAllergy_굴(true);
-                case "전복" -> member.setAllergy_전복(true);
-                case "홍합" -> member.setAllergy_홍합(true);
-                case "잣" -> member.setAllergy_잣(true);
-            }
-        }
-    }
-
-    // 설문조사 결과를 member 객체에 적용 - 식사 스타일
-    private void applyMealStyles(Member member, List<String> styles) {
-        for (String style : styles) {
-            switch (style) {
-                case "고기 위주" -> member.setMealStyle_고기_위주(true);
-                case "채소 위주" -> member.setMealStyle_채소_위주(true);
-                case "혼합식" -> member.setMealStyle_혼합식(true);
-            }
-        }
-    }
-
-    // 설문조사 결과를 member 객체에 적용 - 레시피 스타일
-    private void applyRecipeStyles(Member member, List<String> styles) {
-        for (String style : styles) {
-            switch (style) {
-                case "한식" -> member.setRecipeStyle_한식(true);
-                case "중식" -> member.setRecipeStyle_중식(true);
-                case "일식" -> member.setRecipeStyle_일식(true);
-                case "양식" -> member.setRecipeStyle_양식(true);
-                case "디저트" -> member.setRecipeStyle_디저트(true);
-                case "음료차" -> member.setRecipeStyle_음료_차(true);
-                case "양념소스잼" -> member.setRecipeStyle_양념_소스_잼(true);
-            }
-        }
-    }
-
-    // 설문조사 결과를 member 객체에 적용 - 식단 이유
-    private void applyReasons(Member member, List<String> reasons) {
-        for (String reason : reasons) {
-            switch (reason) {
-                case "항산화 강화" -> member.setReason_항산화강화(true);
-                case "혈당 조절" -> member.setReason_혈당조절(true);
-                case "염증 감소" -> member.setReason_염증감소(true);
-            }
-        }
-    }
-
     // 로그인한 사용자가 업로드한 모든 레시피 조회하기
     public List<RecipeImageResponseDTO> getMyRecipes(String email) {
         Member member = memberRepository.findByEmail(email)
@@ -333,5 +267,185 @@ public class MemberService {
                 })
                 .collect(Collectors.toList());
         return top3Achievements;
+    }
+
+    // 설문조사 결과 조회
+    public SurveyResponseDTO getSurvey(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return SurveyResponseDTO.builder()
+                .memberId(memberId)
+                .allergies(member.getAllergies())
+                .mealStyles(member.getMealStyles())
+                .recipeStyles(member.getRecipeStyles())
+                .reasons(member.getReasons())
+                .build();
+    }
+
+
+    // 설문조사 결과 수정
+    public SurveyResponseDTO updateSurvey(Long memberId, SurveyRequestDTO dto) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<String> allergies = dto.getAllergies();
+        if (allergies != null) {
+            resetAllergies(member);
+            applyAllergies(member, allergies);
+        }
+
+        // meal style 값 세팅
+        List<String> mealStyles = dto.getMealStyles();
+        if (mealStyles != null) {
+            resetMealStyles(member);
+            applyMealStyles(member, mealStyles);
+        }
+
+        // recipe style 값 세팅
+        List<String> recipeStyles = dto.getRecipeStyles();
+        if (recipeStyles != null) {
+            resetRecipeStyles(member);
+            applyRecipeStyles(member, recipeStyles);
+        }
+
+        // reason 값 세팅
+        List<String> reasons = dto.getReasons();
+        if (reasons != null) {
+            resetReasons(member);
+            applyReasons(member, reasons);
+        }
+
+        memberRepository.save(member);
+
+        return SurveyResponseDTO.builder()
+                .memberId(memberId)
+                .allergies(member.getAllergies())
+                .mealStyles(member.getMealStyles())
+                .recipeStyles(member.getRecipeStyles())
+                .reasons(member.getReasons())
+                .build();
+    }
+
+
+
+    // 설문조사 결과를 member 객체에 적용 - 알러지
+    private void applyAllergies(Member member, List<String> allergies) {
+        for (String allergy : allergies) {
+            switch (allergy) {
+                case "알류" -> member.setAllergy_알류(true);
+                case "우유" -> member.setAllergy_우유(true);
+                case "각류" -> member.setAllergy_각류(true);
+                case "밀류" -> member.setAllergy_밀류(true);
+                case "유제품" -> member.setAllergy_유제품(true);
+                case "메밀" -> member.setAllergy_메밀(true);
+                case "땅콩" -> member.setAllergy_땅콩(true);
+                case "대두" -> member.setAllergy_대두(true);
+                case "밀" -> member.setAllergy_밀(true);
+                case "고등어" -> member.setAllergy_고등어(true);
+                case "돼지고기" -> member.setAllergy_돼지고기(true);
+                case "복숭아" -> member.setAllergy_복숭아(true);
+                case "토마토" -> member.setAllergy_토마토(true);
+                case "아황산류" -> member.setAllergy_아황산류(true);
+                case "호두" -> member.setAllergy_호두(true);
+                case "닭고기" -> member.setAllergy_닭고기(true);
+                case "쇠고기" -> member.setAllergy_쇠고기(true);
+                case "오징어" -> member.setAllergy_오징어(true);
+                case "조개류" -> member.setAllergy_조개류(true);
+                case "굴" -> member.setAllergy_굴(true);
+                case "전복" -> member.setAllergy_전복(true);
+                case "홍합" -> member.setAllergy_홍합(true);
+                case "잣" -> member.setAllergy_잣(true);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 식사 스타일
+    private void applyMealStyles(Member member, List<String> styles) {
+        for (String style : styles) {
+            switch (style) {
+                case "고기 위주" -> member.setMealStyle_고기_위주(true);
+                case "채소 위주" -> member.setMealStyle_채소_위주(true);
+                case "혼합식" -> member.setMealStyle_혼합식(true);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 레시피 스타일
+    private void applyRecipeStyles(Member member, List<String> styles) {
+        for (String style : styles) {
+            switch (style) {
+                case "한식" -> member.setRecipeStyle_한식(true);
+                case "중식" -> member.setRecipeStyle_중식(true);
+                case "일식" -> member.setRecipeStyle_일식(true);
+                case "양식" -> member.setRecipeStyle_양식(true);
+                case "디저트" -> member.setRecipeStyle_디저트(true);
+                case "음료차" -> member.setRecipeStyle_음료_차(true);
+                case "양념소스잼" -> member.setRecipeStyle_양념_소스_잼(true);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 식단 이유
+    private void applyReasons(Member member, List<String> reasons) {
+        for (String reason : reasons) {
+            switch (reason) {
+                case "항산화 강화" -> member.setReason_항산화강화(true);
+                case "혈당 조절" -> member.setReason_혈당조절(true);
+                case "염증 감소" -> member.setReason_염증감소(true);
+            }
+        }
+    }
+
+    // 알러지 필드 모두 false로 초기화
+    private void resetAllergies(Member member) {
+        member.setAllergy_알류(false);
+        member.setAllergy_우유(false);
+        member.setAllergy_각류(false);
+        member.setAllergy_밀류(false);
+        member.setAllergy_유제품(false);
+        member.setAllergy_메밀(false);
+        member.setAllergy_땅콩(false);
+        member.setAllergy_대두(false);
+        member.setAllergy_밀(false);
+        member.setAllergy_고등어(false);
+        member.setAllergy_돼지고기(false);
+        member.setAllergy_복숭아(false);
+        member.setAllergy_토마토(false);
+        member.setAllergy_아황산류(false);
+        member.setAllergy_호두(false);
+        member.setAllergy_닭고기(false);
+        member.setAllergy_쇠고기(false);
+        member.setAllergy_오징어(false);
+        member.setAllergy_조개류(false);
+        member.setAllergy_굴(false);
+        member.setAllergy_전복(false);
+        member.setAllergy_홍합(false);
+        member.setAllergy_잣(false);
+    }
+
+    // 식사 스타일 필드 초기화
+    private void resetMealStyles(Member member) {
+        member.setMealStyle_고기_위주(false);
+        member.setMealStyle_채소_위주(false);
+        member.setMealStyle_혼합식(false);
+    }
+
+    // 레시피 스타일 필드 초기화
+    private void resetRecipeStyles(Member member) {
+        member.setRecipeStyle_한식(false);
+        member.setRecipeStyle_중식(false);
+        member.setRecipeStyle_일식(false);
+        member.setRecipeStyle_양식(false);
+        member.setRecipeStyle_디저트(false);
+        member.setRecipeStyle_음료_차(false);
+        member.setRecipeStyle_양념_소스_잼(false);
+    }
+
+    // 이유 필드 초기화
+    private void resetReasons(Member member) {
+        member.setReason_항산화강화(false);
+        member.setReason_혈당조절(false);
+        member.setReason_염증감소(false);
     }
 }
