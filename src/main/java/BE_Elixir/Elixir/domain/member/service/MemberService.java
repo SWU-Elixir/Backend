@@ -364,8 +364,8 @@ public class MemberService {
     private void applyMealStyles(Member member, List<String> styles) {
         for (String style : styles) {
             switch (style) {
-                case "고기 위주" -> member.setMealStyle_고기_위주(true);
-                case "채소 위주" -> member.setMealStyle_채소_위주(true);
+                case "고기위주" -> member.setMealStyle_고기위주(true);
+                case "채소위주" -> member.setMealStyle_채소위주(true);
                 case "혼합식" -> member.setMealStyle_혼합식(true);
             }
         }
@@ -380,8 +380,8 @@ public class MemberService {
                 case "일식" -> member.setRecipeStyle_일식(true);
                 case "양식" -> member.setRecipeStyle_양식(true);
                 case "디저트" -> member.setRecipeStyle_디저트(true);
-                case "음료차" -> member.setRecipeStyle_음료_차(true);
-                case "양념소스잼" -> member.setRecipeStyle_양념_소스_잼(true);
+                case "음료_차" -> member.setRecipeStyle_음료_차(true);
+                case "양념_소스_잼" -> member.setRecipeStyle_양념_소스_잼(true);
             }
         }
     }
@@ -390,9 +390,9 @@ public class MemberService {
     private void applyReasons(Member member, List<String> reasons) {
         for (String reason : reasons) {
             switch (reason) {
-                case "항산화 강화" -> member.setReason_항산화강화(true);
-                case "혈당 조절" -> member.setReason_혈당조절(true);
-                case "염증 감소" -> member.setReason_염증감소(true);
+                case "항산화강화" -> member.setReason_항산화강화(true);
+                case "혈당조절" -> member.setReason_혈당조절(true);
+                case "염증감소" -> member.setReason_염증감소(true);
             }
         }
     }
@@ -426,8 +426,8 @@ public class MemberService {
 
     // 식사 스타일 필드 초기화
     private void resetMealStyles(Member member) {
-        member.setMealStyle_고기_위주(false);
-        member.setMealStyle_채소_위주(false);
+        member.setMealStyle_고기위주(false);
+        member.setMealStyle_채소위주(false);
         member.setMealStyle_혼합식(false);
     }
 
