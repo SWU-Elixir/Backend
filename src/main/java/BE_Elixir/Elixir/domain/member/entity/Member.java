@@ -103,15 +103,15 @@ public class Member {
     }
 
     // 식사 스타일
-    @Setter private Boolean mealStyle_고기_위주 = false;
-    @Setter private Boolean mealStyle_채소_위주 = false;
+    @Setter private Boolean mealStyle_고기위주 = false;
+    @Setter private Boolean mealStyle_채소위주 = false;
     @Setter private Boolean mealStyle_혼합식 = false;
 
     public List<String> getMealStyles() {
         List<String> result = new ArrayList<>();
 
-        if (mealStyle_고기_위주) result.add("고기 위주");
-        if (mealStyle_채소_위주) result.add("채소 위주");
+        if (mealStyle_고기위주) result.add("고기위주");
+        if (mealStyle_채소위주) result.add("채소위주");
         if (mealStyle_혼합식) result.add("혼합식");
 
         return result;
@@ -135,8 +135,8 @@ public class Member {
         if (recipeStyle_일식) result.add("일식");
         if (recipeStyle_양식) result.add("양식");
         if (recipeStyle_디저트) result.add("디저트");
-        if (recipeStyle_음료_차) result.add("음료차");
-        if (recipeStyle_양념_소스_잼) result.add("양념소스잼");
+        if (recipeStyle_음료_차) result.add("음료_차");
+        if (recipeStyle_양념_소스_잼) result.add("양념_소스_잼");
 
         return result;
     }
@@ -150,9 +150,9 @@ public class Member {
     public List<String> getReasons() {
         List<String> result = new ArrayList<>();
 
-        if (reason_항산화강화) result.add("항산화 강화");
-        if (reason_혈당조절) result.add("혈당 조절");
-        if (reason_염증감소) result.add("염증 감소");
+        if (reason_항산화강화) result.add("항산화강화");
+        if (reason_혈당조절) result.add("혈당조절");
+        if (reason_염증감소) result.add("염증감소");
 
         return result;
     }
