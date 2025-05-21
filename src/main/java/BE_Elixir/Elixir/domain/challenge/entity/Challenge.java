@@ -18,8 +18,16 @@ public class Challenge {
     private Long id;
 
     private String name; // 챌린지 명
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description; // 챌린지 설명
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String purpose; // 챌린지 목적
+
+
     // private LocalDateTime startDate; // 시작 일시
     // private LocalDateTime endDate; // 끝나는 일시
     private int month; // 월
