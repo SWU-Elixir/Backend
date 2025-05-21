@@ -47,48 +47,47 @@ public class Member {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-
-    // allergy fields
-    @Setter private boolean allergyEgg = false;
-    @Setter private boolean allergyMilk = false;
-    @Setter private boolean allergyGrain = false;
-    @Setter private boolean allergyWheatProduct = false;
-    @Setter private boolean allergyDairy = false;
-    @Setter private boolean allergyBuckwheat = false;
-    @Setter private boolean allergyPeanut = false;
-    @Setter private boolean allergySoybean = false;
-    @Setter private boolean allergyWheat = false;
-    @Setter private boolean allergyMackerel = false;
-    @Setter private boolean allergyPork = false;
-    @Setter private boolean allergyPeach = false;
-    @Setter private boolean allergyTomato = false;
-    @Setter private boolean allergySulfite = false;
-    @Setter private boolean allergyWalnut = false;
-    @Setter private boolean allergyChicken = false;
-    @Setter private boolean allergyBeef = false;
-    @Setter private boolean allergySquid = false;
-    @Setter private boolean allergyShellfish = false;
-    @Setter private boolean allergyOyster = false;
-    @Setter private boolean allergyAbalone = false;
-    @Setter private boolean allergyMussel = false;
-    @Setter private boolean allergyPineNut = false;
+    // 알러지 정보
+    @Setter private Boolean allergy_알류;
+    @Setter private Boolean allergy_우유;
+    @Setter private Boolean allergy_각류;
+    @Setter private Boolean allergy_밀류;
+    @Setter private Boolean allergy_유제품;
+    @Setter private Boolean allergy_메밀;
+    @Setter private Boolean allergy_땅콩;
+    @Setter private Boolean allergy_대두;
+    @Setter private Boolean allergy_밀;
+    @Setter private Boolean allergy_고등어;
+    @Setter private Boolean allergy_돼지고기;
+    @Setter private Boolean allergy_복숭아;
+    @Setter private Boolean allergy_토마토;
+    @Setter private Boolean allergy_아황산류;
+    @Setter private Boolean allergy_호두;
+    @Setter private Boolean allergy_닭고기;
+    @Setter private Boolean allergy_쇠고기;
+    @Setter private Boolean allergy_오징어;
+    @Setter private Boolean allergy_조개류;
+    @Setter private Boolean allergy_굴;
+    @Setter private Boolean allergy_전복;
+    @Setter private Boolean allergy_홍합;
+    @Setter private Boolean allergy_잣;
 
     // meal style fields
-    @Setter private boolean mealStyleMeatBased = false;
-    @Setter private boolean mealStyleVegetableBased = false;
-    @Setter private boolean mealStyleMixed = false;
+    @Setter private Boolean mealStyle_고기_위주 = false;
+    @Setter private Boolean mealStyle_채소_위주 = false;
+    @Setter private Boolean mealStyle_혼합식 = false;
 
     // recipe style fields
-    @Setter private boolean recipeStyleKorean = false;
-    @Setter private boolean recipeStyleChinese = false;
-    @Setter private boolean recipeStyleJapanese = false;
-    @Setter private boolean recipeStyleWestern = false;
-    @Setter private boolean recipeStyleDessert = false;
-    @Setter private boolean recipeStyleBeverageTea = false;
-    @Setter private boolean recipeStyleSauceJam = false;
+    @Setter private Boolean recipeStyle_한식 = false;
+    @Setter private Boolean recipeStyle_중식 = false;
+    @Setter private Boolean recipeStyle_일식 = false;
+    @Setter private Boolean recipeStyle_양식 = false;
+    @Setter private Boolean recipeStyle_디저트 = false;
+    @Setter private Boolean recipeStyle_음료_차 = false;
+    @Setter private Boolean recipeStyle_양념_소스_잼 = false;
 
     // reason fields
-    @Setter private boolean reasonAntioxidantBoost = false;
-    @Setter private boolean reasonBloodSugarControl = false;
-    @Setter private boolean reasonInflammationReduction = false;
+    @Setter private boolean reason_항산화강화 = false;
+    @Setter private boolean reason_혈당조절 = false;
+    @Setter private boolean reason_염증감소 = false;
 }
