@@ -33,10 +33,12 @@ public class Member {
     private Integer birthYear;
 
     // 회원이 팔로잉하는 경우
+    @Builder.Default
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();
 
     // 회원을 팔로우하는 경우
+    @Builder.Default
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
 
@@ -48,29 +50,29 @@ public class Member {
     private List<String> roles = new ArrayList<>();
 
     // 알러지 정보
-    @Setter private Boolean allergy_알류;
-    @Setter private Boolean allergy_우유;
-    @Setter private Boolean allergy_각류;
-    @Setter private Boolean allergy_밀류;
-    @Setter private Boolean allergy_유제품;
-    @Setter private Boolean allergy_메밀;
-    @Setter private Boolean allergy_땅콩;
-    @Setter private Boolean allergy_대두;
-    @Setter private Boolean allergy_밀;
-    @Setter private Boolean allergy_고등어;
-    @Setter private Boolean allergy_돼지고기;
-    @Setter private Boolean allergy_복숭아;
-    @Setter private Boolean allergy_토마토;
-    @Setter private Boolean allergy_아황산류;
-    @Setter private Boolean allergy_호두;
-    @Setter private Boolean allergy_닭고기;
-    @Setter private Boolean allergy_쇠고기;
-    @Setter private Boolean allergy_오징어;
-    @Setter private Boolean allergy_조개류;
-    @Setter private Boolean allergy_굴;
-    @Setter private Boolean allergy_전복;
-    @Setter private Boolean allergy_홍합;
-    @Setter private Boolean allergy_잣;
+    @Builder.Default @Setter private Boolean allergy_알류 = false;
+    @Builder.Default @Setter private Boolean allergy_우유 = false;
+    @Builder.Default @Setter private Boolean allergy_각류 = false;
+    @Builder.Default @Setter private Boolean allergy_밀류 = false;
+    @Builder.Default @Setter private Boolean allergy_유제품 = false;
+    @Builder.Default @Setter private Boolean allergy_메밀 = false;
+    @Builder.Default @Setter private Boolean allergy_땅콩 = false;
+    @Builder.Default @Setter private Boolean allergy_대두 = false;
+    @Builder.Default @Setter private Boolean allergy_밀 = false;
+    @Builder.Default @Setter private Boolean allergy_고등어 = false;
+    @Builder.Default @Setter private Boolean allergy_돼지고기 = false;
+    @Builder.Default @Setter private Boolean allergy_복숭아 = false;
+    @Builder.Default @Setter private Boolean allergy_토마토 = false;
+    @Builder.Default @Setter private Boolean allergy_아황산류 = false;
+    @Builder.Default @Setter private Boolean allergy_호두 = false;
+    @Builder.Default @Setter private Boolean allergy_닭고기 = false;
+    @Builder.Default @Setter private Boolean allergy_쇠고기 = false;
+    @Builder.Default @Setter private Boolean allergy_오징어 = false;
+    @Builder.Default @Setter private Boolean allergy_조개류 = false;
+    @Builder.Default @Setter private Boolean allergy_굴 = false;
+    @Builder.Default @Setter private Boolean allergy_전복 = false;
+    @Builder.Default @Setter private Boolean allergy_홍합 = false;
+    @Builder.Default @Setter private Boolean allergy_잣 = false;
 
     public List<String> getAllergies() {
         List<String> result = new ArrayList<>();
@@ -103,9 +105,9 @@ public class Member {
     }
 
     // 식사 스타일
-    @Setter private Boolean mealStyle_고기위주 = false;
-    @Setter private Boolean mealStyle_채소위주 = false;
-    @Setter private Boolean mealStyle_혼합식 = false;
+    @Builder.Default @Setter private Boolean mealStyle_고기위주 = false;
+    @Builder.Default @Setter private Boolean mealStyle_채소위주 = false;
+    @Builder.Default @Setter private Boolean mealStyle_혼합식 = false;
 
     public List<String> getMealStyles() {
         List<String> result = new ArrayList<>();
@@ -118,13 +120,13 @@ public class Member {
     }
 
     // 레시피 스타일
-    @Setter private Boolean recipeStyle_한식 = false;
-    @Setter private Boolean recipeStyle_중식 = false;
-    @Setter private Boolean recipeStyle_일식 = false;
-    @Setter private Boolean recipeStyle_양식 = false;
-    @Setter private Boolean recipeStyle_디저트 = false;
-    @Setter private Boolean recipeStyle_음료_차 = false;
-    @Setter private Boolean recipeStyle_양념_소스_잼 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_한식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_중식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_일식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_양식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_디저트 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_음료_차 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_양념_소스_잼 = false;
 
     // 레시피 스타일 리스트 반환
     public List<String> getRecipeStyles() {
@@ -142,9 +144,9 @@ public class Member {
     }
 
     // 식단 이유
-    @Setter private boolean reason_항산화강화 = false;
-    @Setter private boolean reason_혈당조절 = false;
-    @Setter private boolean reason_염증감소 = false;
+    @Builder.Default @Setter private boolean reason_항산화강화 = false;
+    @Builder.Default @Setter private boolean reason_혈당조절 = false;
+    @Builder.Default @Setter private boolean reason_염증감소 = false;
 
     // 식단 이유 리스트 반환
     public List<String> getReasons() {
