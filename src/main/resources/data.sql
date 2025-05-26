@@ -1264,10 +1264,11 @@ INSERT INTO ingredient (id, category, name, is_nova4, challenge_month) VALUES (1
 INSERT INTO ingredient (id, category, name, is_nova4, challenge_month) VALUES (1262, '해조류', '파래', False, NULL);
 
 -- 회원
-INSERT INTO member (email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
+    1,
     'mj@example.com',
-    '1234',
+    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'mj',
     NULL,
     NULL,
@@ -1278,6 +1279,9 @@ VALUES (
     false, false, false, false, false, false, false, -- 레시피 스타일
     false, true, false -- 식단 이유
 );
+
+INSERT INTO member_roles (member_id, roles)
+VALUES (1, 'USER');
 
 INSERT INTO recipe (id, member_id, title, image_url, description, category_slow_aging, category_type, difficulty, time_hours, time_minutes, tips, likes, scraps, created_at, updated_at, allergy_각류, allergy_고등어, allergy_굴, allergy_닭고기, allergy_대두, allergy_돼지고기, allergy_땅콩, allergy_메밀, allergy_밀, allergy_밀류, allergy_복숭아, allergy_쇠고기, allergy_아황산류, allergy_알류, allergy_오징어, allergy_우유, allergy_유제품, allergy_잣, allergy_전복, allergy_조개류, allergy_토마토, allergy_호두, allergy_홍합)
 VALUES (1, 1, '새우 두부 계란찜', 'http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png', '찌기', '염증감소', '한식', '보통', 0, 45, '나트륨의 배출을 도와주는 것으로 알려진 칼륨이 풍부한 시금치와 소금, 간장 등의 양념 대신 새우에 들어있는 간으로 맛을 내요.', 0, 0, '2025-05-21 19:19:09', '2025-05-21 19:19:09', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);
@@ -2848,3 +2852,217 @@ INSERT INTO recipe_step_images (recipe_id, step_image_urls) VALUES (48, 'http://
 INSERT INTO recipe_step_images (recipe_id, step_image_urls) VALUES (48, 'http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00281_5.png');
 INSERT INTO recipe_step_images (recipe_id, step_image_urls) VALUES (48, 'http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00281_6.png');
 
+
+-- 회원 .더미 데이터
+INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+VALUES (
+		2,
+    'A@example.com',
+    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
+    'A',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/A_profile.jpg',
+    'female',
+    2002,
+    NULL,
+    false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보
+    false, true, false, -- 식사 스타일
+    true, false, true, false, false, true, false, -- 레시피 스타일
+    true, true, false -- 식단 이유
+);
+-- 권한 설정
+INSERT INTO member_roles (member_id, roles)
+VALUES (2, 'USER');
+
+
+INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+VALUES (
+    3,
+    'B@example.com',
+    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
+    'B',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/B_profile.jpg',
+    'female',
+    2002,
+    NULL,
+    true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보
+    true, true, false, -- 식사 스타일
+    true, true, true, false, true, true, true, -- 레시피 스타일
+    false, false, true-- 식단 이유
+);
+-- 권한 설정
+INSERT INTO member_roles (member_id, roles)
+VALUES (3, 'USER');
+
+INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+VALUES (
+    4,
+    'C@example.com',
+    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
+    'C',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/C_profile.jpg',
+    'female',
+    2002,
+    NULL,
+    false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보
+    false, true, false, -- 식사 스타일
+    true, false, true, false, false, true, false, -- 레시피 스타일
+    true, true, false -- 식단 이유
+);
+-- 권한 설정
+INSERT INTO member_roles (member_id, roles)
+VALUES (4, 'USER');
+
+-- 팔로우 관계 설정
+INSERT INTO follow (follower_id, following_id)
+VALUES (2, 3);
+INSERT INTO follow (follower_id, following_id)
+VALUES (2, 4);
+INSERT INTO follow (follower_id, following_id)
+VALUES (3, 2);
+INSERT INTO follow (follower_id, following_id)
+VALUES (4, 3);
+
+-- 식단 기록 더미 데이터
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		1,
+		2,
+		'마라탕',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%A7%88%EB%9D%BC%ED%83%95.jpg',
+		'점심',
+		2,
+		'2025-05-26 13:43:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (1, 1187);  -- 청경채
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (1, 282);  -- 유부
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (1, 291);  -- 목이버섯
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (1, 292);  -- 백목이
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (1, 307);  -- 팽이버섯
+
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		2,
+		2,
+		'딸기잼 샌드위치와 바나나',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%94%B8%EA%B8%B0%EC%9E%BC%EC%83%8C%EB%93%9C%EC%9C%84%EC%B9%98%EC%99%80%EB%B0%94%EB%82%98%EB%82%98.jpg',
+		'아침',
+		3,
+		'2025-05-27 09:10:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (2, 158);  -- 바나나
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (2, 223);  -- 식빵
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		3,
+		2,
+		'묵은지참치김밥',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%AC%B5%EC%9D%80%EC%A7%80%EC%B0%B8%EC%B9%98%EA%B9%80%EB%B0%A5.jpg',
+		'점심',
+		3,
+		'2025-05-27 13:11:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (3, 314);  -- 참치
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (3, 1227);  -- 김밥용김
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (3, 988);  -- 배추김치
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		4,
+		3,
+		'마라탕',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%A7%88%EB%9D%BC%ED%83%95.jpg',
+		'점심',
+		2,
+		'2025-05-26 13:43:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (4, 1187);  -- 청경채
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (4, 282);  -- 유부
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (4, 291);  -- 목이버섯
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (4, 292);  -- 백목이
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (4, 307);  -- 팽이버섯
+
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		5,
+		3,
+		'냉면과 수육',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%83%89%EB%A9%B4%EA%B3%BC%EC%88%98%EC%9C%A1.jpg',
+		'아침',
+		4,
+		'2025-05-27 10:03:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (5, 911);  -- 돼지고기(앞다리(수육용))
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		6,
+		3,
+		'묵은지참치김밥',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%AC%B5%EC%9D%80%EC%A7%80%EC%B0%B8%EC%B9%98%EA%B9%80%EB%B0%A5.jpg',
+		'점심',
+		3,
+		'2025-05-27 13:11:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (6, 314);  -- 참치
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (6, 1227);  -- 김밥용김
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (6, 988);  -- 배추김치
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		7,
+		4,
+		'마라샹궈',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%A7%88%EB%9D%BC%EC%83%B9%EA%B6%88.jpg',
+		'저녁',
+		2,
+		'2025-05-26 19:03:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (7, 1187);  -- 청경채
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (7, 291);  -- 목이버섯
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (7, 292);  -- 백목이
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (7, 307);  -- 팽이버섯
+
+INSERT INTO diet_log (id, member_id, name, image_url, type, score, time)
+VALUES (
+		8,
+		4,
+		'즉석떡볶이',
+		'https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EC%A6%89%EC%84%9D%EB%96%A1%EB%B3%B6%EC%9D%B4.jpg',
+		'점심',
+		3,
+		'2025-05-27 13:03:10'
+);
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (8, 217);  -- 떡
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (8, 973);  -- 고추장
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (8, 313);  -- 어묵
+INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
+VALUES (8, 54);  -- 쫄면
