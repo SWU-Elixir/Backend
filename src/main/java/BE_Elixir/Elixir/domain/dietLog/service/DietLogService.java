@@ -185,8 +185,10 @@ public class DietLogService {
 
     // 월별 식단 점수 조회
     public List<MonthlyDietScoreDTO> getMonthlyDietScores(Long memberId, int year, int month) {
-        // 해당 월에 대한 모든 식단 조회
-        List<DietLog> dietLogs = dietLogRepository.findByMemberIdAndYearAndMonth(memberId, year, month);
+        LocalDateTime start = LocalDate.of(year, month, 1).atStartOfDay();
+        LocalDateTime end = start.plusMonths(1);
+
+        List<DietLog> dietLogs = dietLogRepository.findByMemberIdAndMonthBetween(memberId, start, end);
 
         return dietLogs.stream()
                 .map(dietLog -> MonthlyDietScoreDTO.builder()
@@ -197,5 +199,4 @@ public class DietLogService {
                 .collect(Collectors.toList());
 
     }
-
 }
