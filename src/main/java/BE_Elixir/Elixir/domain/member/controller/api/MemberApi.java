@@ -675,4 +675,24 @@ public interface MemberApi {
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievementsByMemberId(
             @PathVariable Long memberId
     );
+
+
+    // 다른 사용자의 최근 3개 업적 조회하기
+    @Operation(summary = "다른 사용자의 최근 3개 업적 조회하기", description = "다른 사용자의 최근 3개 업적 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자의 최근 3개 업적 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자의 최근 3개 업적 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3AchievementsByMemberId(
+            @PathVariable Long memberId
+    );
 }

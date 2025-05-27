@@ -525,4 +525,23 @@ public class MemberController implements MemberApi {
                             "다른 사용자의 업적 조회 실패 - " + e.getMessage()));
         }
     }
+
+    // 다른 사용자의 최근 3개 업적 조회하기
+    @GetMapping("/{memberId}/achievements/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3AchievementsByMemberId(
+            @PathVariable Long memberId
+    ) {
+        try {
+            List<MemberAchievementResponseDTO> achievements = memberService.getTop3AchievementsByMemberId(memberId);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "다른 사용자의 최근 업적 3개 조회 성공", achievements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "다른 사용자의 최근 업적 3개 조회 실패 - " + e.getMessage()));
+        }
+    }
 }
