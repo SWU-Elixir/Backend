@@ -488,4 +488,23 @@ public class MemberController implements MemberApi {
                             "설문조사 수정 실패 - " + e.getMessage()));
         }
     }
+
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    @GetMapping("/{memberId}/recipes")
+    public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
+            @PathVariable("memberId") Long memberId
+    ) {
+        try {
+            List<RecipeImageResponseDTO> recipes = memberService.getUserRecipes(memberId);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(), "다른 사용자 레시피 조회 성공", recipes));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "다른 사용자 레시피 조회 실패 - " + e.getMessage()));
+        }
+    }
+
 }
