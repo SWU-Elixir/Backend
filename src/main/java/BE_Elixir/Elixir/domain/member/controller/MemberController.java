@@ -507,4 +507,22 @@ public class MemberController implements MemberApi {
         }
     }
 
+    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
+    @GetMapping("/{memberId}/achievements")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievementsByMemberId(
+            @PathVariable Long memberId
+    ) {
+        try {
+            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievementsByMemberId(memberId);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "다른 사용자의 모든 업적 조회 성공", achievements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "다른 사용자의 업적 조회 실패 - " + e.getMessage()));
+        }
+    }
 }

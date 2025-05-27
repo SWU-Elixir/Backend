@@ -539,4 +539,37 @@ public class MemberService {
                 .limit(9)
                 .collect(Collectors.toList());
     }
+
+    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
+    public List<MemberAchievementResponseDTO> getAllAchievementsByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        Map<Long, ChallengeAchievement> achievementMap = achievements.stream()
+                .collect(Collectors.toMap(ChallengeAchievement::getChallengeId, a -> a));
+
+        return allChallenges.stream()
+                .map(challenge -> {
+                    ChallengeAchievement achievement = achievementMap.get(challenge.getId());
+
+                    boolean completed = (achievement != null)
+                            && achievement.isStep4Goal1Achieved()
+                            && achievement.isStep4Goal2Achieved();
+
+                    String imageUrl = completed
+                            ? challenge.getAchievementImageUrl()
+                            : challenge.getGrayAchievementImageUrl();
+
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            imageUrl,
+                            completed
+                    );
+                }).collect(Collectors.toList());
+    }
 }
