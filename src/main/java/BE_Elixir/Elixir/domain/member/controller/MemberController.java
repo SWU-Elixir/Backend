@@ -2,12 +2,10 @@ package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
+import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
@@ -16,6 +14,7 @@ import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -99,7 +98,7 @@ public class MemberController implements MemberApi {
     }
 
     // 회원 정보 조회 (이메일, 닉네임, 젠더, 생년, 프로필 url)
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<CommonResponse<MemberResponseDTO>> getMemberInfo(
             @AuthenticationPrincipal MemberDetails memberDetails,
             HttpServletRequest request)
@@ -119,6 +118,109 @@ public class MemberController implements MemberApi {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                             "회원 정보 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 로그인한 사용자 프로필 수정 시, 얻은 칭호 목록 조회
+    @GetMapping("/achievement/title")
+    public ResponseEntity<CommonResponse<MemberTitlesResponseDTO>> getTitles(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+        log.info("칭호 목록 조회 요청 - id: {}", memberId);
+
+        try {
+            List<String> titles = memberService.getTitles(memberId);
+            MemberTitlesResponseDTO dto = MemberTitlesResponseDTO.builder()
+                    .memberId(memberId)
+                    .titles(titles)
+                    .build();
+
+            log.info("칭호 목록 조회 성공 - id: {}", memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "칭호 목록 성공", dto));
+
+        } catch (Exception e) {
+            log.warn("칭호 목록 조회 실패 - id: {}, message: {}", memberId, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "칭호 목록 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+    // 로그인한 사용자 프로필 수정하기
+    @PatchMapping(value="/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<MemberResponseDTO>> updateMemberProfile(
+            @RequestPart(value = "dto", required = false) MemberProfileRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+        log.info("사용자 프로필 수정 요청 - id: {}", memberId);
+
+        try {
+            MemberResponseDTO responseDTO = memberService.updateMemberProfile(memberId, dto, profileImage);
+
+            log.info("사용자 프로필 수정 성공 - id: {}", memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "사용자 프로필 수정 성공", responseDTO));
+
+        } catch (Exception e) {
+            log.warn("사용자 프로필 수정 실패 - id: {}, message: {}", memberId, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "사용자 프로필 수정 실패: " + e.getMessage()));
+        }
+    }
+
+    // 로그인한 사용자 프로필 조회 (칭호, 닉네임, 프로필사진, 팔로워 수, 팔로잉 수)
+    @GetMapping("/profile")
+    public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getMemberProfile(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+        log.info("로그인한 사용자의 프로필 조회 요청 - id: {}", memberId);
+
+        try {
+            MemberProfileResponseDTO responseDTO = memberService.getMemberProfile(memberId);
+
+            log.info("로그인한 사용자의 프로필 조회 성공 - id: {}", memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "로그인한 사용자의 프로필 조회 성공", responseDTO));
+
+        } catch (Exception e) {
+            log.warn("로그인한 사용자의 프로필 조회 실패 - id: {}, message: {}", memberId, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "로그인한 사용자의 프로필 조회 실패 - " + e.getMessage()));
+        }
+    }
+
+
+    // 특정 사용자 프로필 조회 (칭호, 닉네임, 프로필사진, 팔로워 수, 팔로잉 수)
+    @GetMapping("/{memberId}/profile")
+    public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getOtherMemberProfile(
+            @PathVariable("memberId") Long memberId,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        log.info("특정 사용자의 프로필 조회 요청 - id: {}", memberId);
+
+        try {
+            MemberProfileResponseDTO responseDTO = memberService.getMemberProfile(memberId);
+
+            log.info("특정 사용자의 프로필 조회 성공 - id: {}", memberId);
+
+            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "로그인한 사용자의 프로필 조회 성공", responseDTO));
+
+        } catch (Exception e) {
+            log.warn("특정 사용자의 프로필 조회 실패 - id: {}, message: {}", memberId, e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "특정 사용자의 프로필 조회 실패 - " + e.getMessage()));
         }
     }
 
@@ -234,7 +336,6 @@ public class MemberController implements MemberApi {
         }
     }
 
-
     // (현재 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
     @GetMapping("/follower")
     public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollower(
@@ -299,7 +400,6 @@ public class MemberController implements MemberApi {
         }
     }
 
-
     // 로그인한 사용자의 모든 챌린지 업적 정보 조회
     @GetMapping("/achievement")
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
@@ -321,7 +421,6 @@ public class MemberController implements MemberApi {
                             "업적 조회 실패 - " + e.getMessage()));
         }
     }
-
 
     // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
     @GetMapping("/achievement/top3")

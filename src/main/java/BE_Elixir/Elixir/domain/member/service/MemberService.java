@@ -4,9 +4,11 @@ import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
+import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.MemberProfileResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
@@ -29,10 +31,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -155,6 +155,84 @@ public class MemberService {
                 .gender(member.getGender())
                 .birthYear(member.getBirthYear())
                 .profileUrl(member.getProfileUrl())
+                .build();
+    }
+
+    // 프로필 수정 시, 얻은 칭호 목록 조회
+    public List<String> getTitles(Long memberId) {
+        // memberId 기반 챌린지 최종 달성 여부 조회 및
+        List<Long> achievedChallengeIds = challengeAchievementRepository.findByMemberId(memberId).stream()
+                .filter(ChallengeAchievement::isAllGoalsAchieved)
+                .map(ChallengeAchievement::getChallengeId)
+                .collect(Collectors.toList());
+
+        // 업적명 조회
+        return challengeRepository.findAllById(achievedChallengeIds).stream()
+                .map(Challenge::getAchievementName)
+                .collect(Collectors.toList());
+    }
+
+    // 로그인한 사용자 프로필 수정하기
+    public MemberResponseDTO updateMemberProfile(Long memberId, MemberProfileRequestDTO dto, MultipartFile image) throws IOException {
+        // 기존 프로필 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. id: " + memberId));
+
+        // 닉네임 수정
+        if (dto.getNickname() != null) {
+            member.setNickname(dto.getNickname());
+        }
+
+        // 칭호 수정
+        if (dto.getTitle() != null) {
+            member.setTitle(dto.getTitle());
+        }
+
+        // 프로필 사진 수정
+        if (image != null && !image.isEmpty()) {
+            // 기존 이미지 삭제
+            if (member.getProfileUrl() != null) {
+                s3Service.deleteS3(member.getProfileUrl(), "member");
+            }
+            // 새 이미지 업로드
+            String imageUrl = s3Service.upload(image, "member");
+            member.setProfileUrl(imageUrl);
+        }
+
+        // 젠더 수정
+        if (dto.getGender() != null) {
+            member.setGender(dto.getGender());
+        }
+
+        // 생년 수정
+        if (dto.getBirthYear() != null) {
+            member.setGender(dto.getGender());
+        }
+
+        memberRepository.save(member);
+
+        return MemberResponseDTO.builder()
+                .id(memberId)
+                .nickname(member.getNickname())
+                .title(member.getTitle())
+                .profileUrl(member.getProfileUrl())
+                .gender(member.getGender())
+                .birthYear(member.getBirthYear())
+                .build();
+    }
+
+    // 사용자 프로필 조회 (칭호, 닉네임, 프로필사진, 팔로워 수, 팔로잉 수)
+    public MemberProfileResponseDTO getMemberProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return MemberProfileResponseDTO.builder()
+                .id(memberId)
+                .nickname(member.getNickname())
+                .title(member.getTitle())
+                .profileUrl(member.getProfileUrl())
+                .followerCount(member.getFollowers().size())
+                .followingCount(member.getFollowings().size())
                 .build();
     }
 

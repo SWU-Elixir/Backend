@@ -7,14 +7,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberResponseDTO {
+public class MemberProfileResponseDTO {
 
     private Long id;
-    private String email;
     private String nickname;
     private String title;
-    private String gender;
-    private Integer birthYear;
     private String profileUrl;
+    private int followerCount;
+    private int followingCount;
 
 }
