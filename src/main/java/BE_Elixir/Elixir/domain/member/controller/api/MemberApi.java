@@ -636,4 +636,23 @@ public interface MemberApi {
             @RequestBody SurveyRequestDTO dto,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
+
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    @Operation(summary = "다른 사용자가 업로드한 모든 레시피 조회하기", description = "다른 사용자가 업로드한 모든 레시피 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 업로드한 모든 레시피 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자가 업로드한 모든 레시피 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
+            @PathVariable("memberId") Long memberId
+    );
 }

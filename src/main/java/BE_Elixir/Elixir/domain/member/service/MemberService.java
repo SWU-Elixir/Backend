@@ -526,4 +526,17 @@ public class MemberService {
         member.setReason_혈당조절(false);
         member.setReason_염증감소(false);
     }
+
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    public List<RecipeImageResponseDTO> getUserRecipes(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Recipe> recipes = recipeRepository.findAllByMember(member);
+
+        return recipes.stream()
+                .map(recipe -> new RecipeImageResponseDTO(recipe.getId(), recipe.getImageUrl()))
+                .limit(9)
+                .collect(Collectors.toList());
+    }
 }
