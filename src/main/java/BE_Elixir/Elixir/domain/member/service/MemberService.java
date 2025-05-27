@@ -539,4 +539,78 @@ public class MemberService {
                 .limit(9)
                 .collect(Collectors.toList());
     }
+
+    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
+    public List<MemberAchievementResponseDTO> getAllAchievementsByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        Map<Long, ChallengeAchievement> achievementMap = achievements.stream()
+                .collect(Collectors.toMap(ChallengeAchievement::getChallengeId, a -> a));
+
+        return allChallenges.stream()
+                .map(challenge -> {
+                    ChallengeAchievement achievement = achievementMap.get(challenge.getId());
+
+                    boolean completed = (achievement != null)
+                            && achievement.isStep4Goal1Achieved()
+                            && achievement.isStep4Goal2Achieved();
+
+                    String imageUrl = completed
+                            ? challenge.getAchievementImageUrl()
+                            : challenge.getGrayAchievementImageUrl();
+
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            imageUrl,
+                            completed
+                    );
+                }).collect(Collectors.toList());
+    }
+
+    // 다른 사용자의 최신 업적 3개 조회
+    public List<MemberAchievementResponseDTO> getTop3AchievementsByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
+
+        Set<Long> challengeIds = achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .map(ChallengeAchievement::getChallengeId)
+                .collect(Collectors.toSet());
+
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+
+        Map<Long, Challenge> challengeMap = challenges.stream()
+                .collect(Collectors.toMap(Challenge::getId, c -> c));
+
+        return achievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .sorted((a1, a2) -> {
+                    Challenge c1 = challengeMap.get(a1.getChallengeId());
+                    Challenge c2 = challengeMap.get(a2.getChallengeId());
+                    int compareYear = Integer.compare(c2.getYear(), c1.getYear());
+                    return (compareYear != 0)
+                            ? compareYear
+                            : Integer.compare(c2.getMonth(), c1.getMonth());
+                })
+                .limit(3)
+                .map(a -> {
+                    Challenge challenge = challengeMap.get(a.getChallengeId());
+                    return new MemberAchievementResponseDTO(
+                            challenge.getYear(),
+                            challenge.getMonth(),
+                            challenge.getAchievementName(),
+                            challenge.getAchievementImageUrl(),
+                            true
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }
