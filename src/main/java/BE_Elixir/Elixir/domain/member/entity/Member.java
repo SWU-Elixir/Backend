@@ -26,11 +26,11 @@ public class Member {
     private String password;  // 인코딩된 비밀번호
 
     @Column(nullable = false, unique = true)
-    private String nickname;
+    @Setter private String nickname;
 
     @Setter private String profileUrl;
-    private String gender;
-    private Integer birthYear;
+    @Setter private String gender;
+    @Setter private Integer birthYear;
 
     // 회원이 팔로잉하는 경우
     @Builder.Default
@@ -43,7 +43,7 @@ public class Member {
     private List<Follow> followers = new ArrayList<>();
 
     // 업적
-    private String title;
+    @Setter private String title;
 
     @Setter
     @ElementCollection(fetch = FetchType.EAGER)
