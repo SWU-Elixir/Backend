@@ -6,10 +6,7 @@ import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeHomeResponseDTO;
-import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.*;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
@@ -288,5 +285,13 @@ public class RecipeService {
         recipe.clearIngredientTags();
 
         recipeRepository.delete(recipe);
+    }
+
+    // 로그인한 사용자가 작성한 레시피를 최대 10개까지 조회
+    public List<RecipeSummaryResponse> getMyRecipes(Member member, int size) {
+        List<Recipe> recipes = recipeRepository.findTopRecipesByUserId(member.getId(), size);
+        return recipes.stream()
+                .map(RecipeSummaryResponse::from)
+                .collect(Collectors.toList());
     }
 }

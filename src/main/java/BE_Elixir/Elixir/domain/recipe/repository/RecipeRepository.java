@@ -46,6 +46,11 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "WHERE r.member.id = :memberId " +
             "AND r.createdAt >= :openedAt")
     List<String> findIngredientsByMemberIdAndTimeAfter(@Param("memberId") Long memberId, @Param("openedAt") LocalDateTime openedAt);
+
+    // 사용자가 작성한 레시피 size만큼 가져오기
+    @Query(value = "SELECT * FROM recipe WHERE member_id = :memberId ORDER BY created_at DESC LIMIT :size", nativeQuery = true)
+    List<Recipe> findTopRecipesByUserId(@Param("memberId") Long userId, @Param("size") int size);
+
 }
 
 
