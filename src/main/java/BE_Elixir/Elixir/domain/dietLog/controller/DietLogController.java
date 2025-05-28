@@ -6,7 +6,6 @@ import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
 import BE_Elixir.Elixir.domain.dietLog.service.DietLogService;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.global.exception.EmailNotFoundException;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -178,7 +177,7 @@ public class DietLogController implements DietLogApi {
     // 최근 N일 식단 조회하기
     @GetMapping("/recent")
     public ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getRecentDietLogs(
-            @RequestParam(value = "days", defaultValue = "7") int days,
+            @RequestParam(value = "days", defaultValue = "14") int days,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         log.info("최근 N일 식단 목록 조회 요청");

@@ -308,7 +308,7 @@ public interface DietLogApi {
                                     """)))
     })
     ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getRecentDietLogs(
-            @RequestParam("days") int days,
+            @RequestParam(value = "days", defaultValue = "14") int days,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
