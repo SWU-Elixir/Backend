@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.ingredient.controller.api;
 
-import BE_Elixir.Elixir.domain.ingredient.dto.IngredientResponseDTO;
+import BE_Elixir.Elixir.domain.ingredient.dto.ChallengeIngredientDTO;
+import BE_Elixir.Elixir.domain.ingredient.dto.IngredientDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,15 +34,47 @@ public interface IngredientApi {
                                       "data": [
                                         {
                                           "id": 1,
-                                          "name": "가시오가피"
+                                          "name": "가시오가피",
+                                          "type": null
                                         },
                                         {
                                           "id": 2,
-                                          "name": "가지"
+                                          "name": "가지",
+                                          "type": null
                                         }, ...
                                       ]
                                      }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<IngredientResponseDTO>>> getAllIngredients();
+    ResponseEntity<CommonResponse<List<IngredientDTO>>> getAllIngredients();
+
+    @Operation(
+            summary = "당월 챌린지 식재료 목록 조회",
+            description = "당월 챌린지 식재료 목록을 조회합니다."
+    )
+    // 반환 상태 코드 및 의미
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "당월 챌린지 식재료 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "당월 챌린지 식재료 목록 조회 성공",
+                                      "data": [
+                                        {
+                                          "id": 1,
+                                          "name": "딸기",
+                                          "month": 2
+                                        },
+                                        {
+                                          "id": 2,
+                                          "name": "봄동",
+                                          "month": 2
+                                        }, ...
+                                      ]
+                                     }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<ChallengeIngredientDTO>>> getChallengeIngredients();
 }

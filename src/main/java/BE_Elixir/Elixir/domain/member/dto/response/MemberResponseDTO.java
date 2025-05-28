@@ -12,6 +12,7 @@ public class MemberResponseDTO {
     private Long id;
     private String email;
     private String nickname;
+    private String title;
     private String gender;
     private Integer birthYear;
     private String profileUrl;
