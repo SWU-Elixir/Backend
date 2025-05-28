@@ -104,4 +104,20 @@ public class ChallengeAchievementService {
             );
         }
     }
+
+    // 로그인한 사용자의 이전 챌린지 진행 상황 조회
+    public ChallengeProgressResponseDTO getBeforeProgress(Long memberId, Long challengeId) {
+
+        Challenge challenge = challengeRepository
+                .findById(challengeId)
+                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+        Optional<ChallengeAchievement> optionalAchievement =
+                challengeAchievementRepository.findByChallengeIdAndMemberId(challengeId, memberId);
+
+        return optionalAchievement
+                .map(achievement -> ChallengeProgressResponseDTO.from(challenge, achievement))
+                .orElseGet(() -> ChallengeProgressResponseDTO.empty(challenge));
+    }
+
 }

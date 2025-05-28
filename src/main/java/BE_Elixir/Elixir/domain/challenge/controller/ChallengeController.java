@@ -117,6 +117,22 @@ public class ChallengeController implements ChallengeApi {
         }
     }
 
-
-
+    // 로그인한 사용자의 이전 챌린지 진행 상황 조회
+    @GetMapping("/{challengeId}/progress")
+    public ResponseEntity<CommonResponse<ChallengeProgressResponseDTO>> getProgress(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @PathVariable Long challengeId
+    ) {
+        try{
+            Member member = memberDetails.getMember();
+            ChallengeProgressResponseDTO dto = challengeAchievementService.getBeforeProgress(member.getId(), challengeId);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    memberDetails.getUsername() + " 사용자의 이전 챌린지 진행 상황 조회 성공", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            memberDetails.getUsername() + " 사용자의 이전 챌린지 진행 상황 조회 실패 - " + e.getMessage()));
+        }
+    }
 }
