@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.recipe.controller.api;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeSummaryResponse;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.response.CommonResponse;
@@ -187,5 +188,25 @@ public interface RecipeApi {
     ResponseEntity<CommonResponse<?>> deleteRecipe(
             @PathVariable Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 로그인한 사용자가 작성한 레시피를 최대 10개까지 조회
+    @Operation(summary = "작성한 레시피를 최대 10개까지 조회", description = "작성한 레시피를 최대 10개까지 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "작성한 레시피를 최대 10개까지 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "작성한 레시피를 최대 10개까지 조회 성공",
+                                      "data": true
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeSummaryResponse>>> getMyRecipes(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @RequestParam(defaultValue = "10") int size
     );
 }

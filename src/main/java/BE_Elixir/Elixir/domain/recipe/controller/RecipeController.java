@@ -7,6 +7,7 @@ import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeSummaryResponse;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -203,4 +204,25 @@ public class RecipeController implements RecipeApi {
         }
     }
 
+    // 로그인한 사용자가 작성한 레시피를 최대 10개까지 조회
+    @GetMapping("/my")
+    public ResponseEntity<CommonResponse<List<RecipeSummaryResponse>>> getMyRecipes(
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        try {
+            Member member = memberDetails.getMember();
+            List<RecipeSummaryResponse> recipes = recipeService.getMyRecipes(member, size);
+            return ResponseEntity.ok(CommonResponse.success(
+                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                    "작성한 레시피 조회 성공", recipes
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "작성한 레시피 조회 실패 - " + e.getMessage()
+                    ));
+        }
+    }
 }
