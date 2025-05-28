@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.global.mail;
+package BE_Elixir.Elixir.global.email;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
-public class MailConfig {
+public class EmailConfig {
 
     @Value("${naver.id}")
     private String id;

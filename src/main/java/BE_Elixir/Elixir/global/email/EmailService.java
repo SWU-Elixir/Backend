@@ -1,13 +1,14 @@
-package BE_Elixir.Elixir.global.mail;
+package BE_Elixir.Elixir.global.email;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +24,7 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MailService {
+public class EmailService {
 
     private final JavaMailSender emailSender;
 
@@ -33,22 +34,20 @@ public class MailService {
     @Value("${naver.id}")
     private String id;
 
-    private Instant codeGenerationTime;
+    @Getter
+    @Setter
+    public Instant mailSendTime;
 
-    private Duration validityDuration = Duration.ofMinutes(1);
+    @Getter
+    public Duration validityDuration = Duration.ofMinutes(5);
 
     // Key 생성 및 메일 전송
-    public String sendSimpleMessage(String to) throws Exception {
+    public String sendMail(String to) throws MessagingException, UnsupportedEncodingException {
         key = createKey();
 
         MimeMessage message = createMessage(to);
 
-        try {
-            emailSender.send(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException();
-        }
+        emailSender.send(message);
 
         return key;
     }
@@ -68,9 +67,9 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
+
     // 이메일 본문
     private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
-        codeGenerationTime = Instant.now();
 
         jakarta.mail.internet.MimeMessage message = emailSender.createMimeMessage();
         message.addRecipients(Message.RecipientType.TO, to);
@@ -100,14 +99,4 @@ public class MailService {
 
         return message;
     }
-
-//    // 인증번호 검증
-//    public String verifyCode(String code) {
-//        try {
-//            if (codeGenerationTime == null) {
-//                throw new Exception("시간 정보가 없습니다.");
-//            }
-//        }
-//    }
-
 }
