@@ -20,7 +20,11 @@ public enum ErrorCode {
     LIKE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "좋아요한 레시피가 없습니다."),
     MEMBER_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "회원이 존재하지 않습니다"),
     CHALLENGE_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "챌린지를 찾을 수 없습니다."),
-    CHALLENGE_ACHIEVEMENT_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "챌린지 기록이 없습니다.");
+    CHALLENGE_ACHIEVEMENT_NOT_FOUND(HttpStatus.FORBIDDEN.value(), "챌린지 기록이 없습니다."),
+    EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST.value(), "이메일 인증번호가 일치하지 않습니다."),
+    EMAIL_VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST.value(), "이메일 인증번호의 유효 시간이 초과되었습니다.");
+
+
     private final int status;
     private final String message;
 }
