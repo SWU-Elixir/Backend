@@ -1,8 +1,6 @@
 package BE_Elixir.Elixir.domain.member.controller.api;
 
-import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
@@ -72,6 +70,117 @@ public interface MemberApi {
     ResponseEntity<CommonResponse<?>> signUp(
             @RequestPart("dto") SignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    );
+
+    @Operation(summary = "이메일 인증 요청", description = "이메일 인증을 요청합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "이메일 인증 요청 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "이메일 인증 요청 성공 - email: A@example.com",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "이메일 인증 요청 실패: 이메일에 해당하는 회원이 존재하지 않음",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 MEMBER_NOT_FOUND",
+                                      "message": "이메일 인증 요청 실패: 회원이 존재하지 않습니다",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "이메일 인증 요청 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 BAD_REQUEST",
+                                      "message": "이메일 인증 요청 실패: ",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> sendVerificationCode(
+            @RequestBody EmailVerificationRequestDTO dto
+    );
+
+    @Operation(summary = "이메일 인증 검증 요청", description = "이메일 인증번호와 검증을 요청합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "이메일 인증 검증 요청 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "이메일 인증 검증 요청 성공 - email: A@example.com",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "이메일 인증 검증 요청 실패: 유효시간 초과",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 Customize Toolbar...",
+                                      "message": "이메일 인증 검증 요청 실패: 이메일 인증번호의 유효 시간이 초과되었습니다.",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "이메일 인증 검증 요청 실패: 유효하지 않은 코드",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 EMAIL_VERIFICATION_CODE_MISMATCH",
+                                      "message": "이메일 인증 검증 요청 실패: 이메일 인증번호가 일치하지 않습니다.",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "이메일 인증 검증 요청 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 BAD_REQUEST",
+                                      "message": "이메일 인증 검증 요청 실패: ",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> verifyCode(
+            @RequestBody EmailVerificationCheckRequestDTO dto
+    );
+
+    @Operation(summary = "비밀번호 업데이트", description = "새로운 비밀번호로 업데이트합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "비밀번호 업데이트 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "비밀번호 업데이트 요청 성공 - email: A@example.com",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "비밀번호 업데이트 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 401,
+                                      "code": "401 BAD_REQUEST",
+                                      "message": "비밀번호 업데이트 요청 실패: ",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> updatePassword(
+            @RequestBody UpdatePasswordRequestDTO dto
     );
 
     @Operation(summary = "회원탈퇴",

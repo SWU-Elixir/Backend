@@ -2,19 +2,19 @@ package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
-import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
+import BE_Elixir.Elixir.global.exception.EmailVerificationCodeExpiredException;
+import BE_Elixir.Elixir.global.exception.EmailVerificationCodeMismatchException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -69,6 +69,86 @@ public class MemberController implements MemberApi {
                             "회원가입 실패: " + e.getMessage(), null));
         }
     }
+
+    // 이메일 인증 요청하기
+    @PostMapping("/email-verification")
+    public ResponseEntity<CommonResponse<?>> sendVerificationCode(
+            @RequestBody EmailVerificationRequestDTO dto
+    ) {
+        log.info("이메일 인증 요청 - 이메일: {}", dto.getEmail());
+
+        try {
+            memberService.sendVerificationCode(dto.getEmail());
+            log.info("이메일 인증 요청 성공 - email: {}", dto.getEmail());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "이메일 인증 요청 성공 - memberId: " + dto.getEmail()));
+
+        } catch (IllegalArgumentException iae) {
+            log.error("이메일 인증 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), iae.getMessage(), iae);
+            return ResponseEntity.status(ErrorCode.MEMBER_NOT_FOUND.getStatus())
+                    .body(CommonResponse.error(ErrorCode.MEMBER_NOT_FOUND.getStatus(), ErrorCode.MEMBER_NOT_FOUND.toString(),
+                            "이메일 인증 요청 실패: " + iae.getMessage()));
+        } catch (Exception e) {
+            log.error("이메일 인증 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "이메일 인증 요청 실패: " + e.getMessage()));
+        }
+    }
+
+    // 인증번호 검증하기
+    @PostMapping("/email-verification/verify")
+    public ResponseEntity<CommonResponse<?>> verifyCode(
+            @RequestBody EmailVerificationCheckRequestDTO dto
+    ) {
+        log.info("이메일 인증 검증 요청 - 이메일: {}", dto.getEmail());
+
+        try {
+            boolean result = memberService.verifyCode(dto.getEmail(), dto.getCode());
+            log.info("이메일 인증 검증 성공 - email: {}", dto.getEmail());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "이메일 인증 검증 성공 - email: " + dto.getEmail(), result));
+        } catch (EmailVerificationCodeExpiredException evcee) {
+            log.error("이메일 인증 검증 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), evcee.getMessage(), evcee);
+            return ResponseEntity.status(ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED.getStatus())
+                    .body(CommonResponse.error(ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED.getStatus(), ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED.toString(),
+                            "이메일 검증 인증 요청 실패: " + evcee.getMessage()));
+        } catch (EmailVerificationCodeMismatchException evcme) {
+            log.error("이메일 인증 검증 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), evcme.getMessage(), evcme);
+            return ResponseEntity.status(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH.getStatus())
+                    .body(CommonResponse.error(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH.getStatus(), ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH.toString(),
+                            "이메일 검증 인증 요청 실패: " + evcme.getMessage()));
+        } catch (Exception e) {
+            log.error("이메일 인증 검증 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "이메일 검증 인증 요청 실패: " + e.getMessage()));
+        }
+    }
+
+    // 비밀번호 수정하기
+    @PutMapping("/update-password")
+    public ResponseEntity<CommonResponse<?>> updatePassword(
+            @RequestBody UpdatePasswordRequestDTO dto
+    ) {
+        log.info("비밀번호 업데이트 요청 - 이메일: {}", dto.getEmail());
+
+        try {
+            memberService.updatePassword(dto.getEmail(), dto.getNewPassword());
+
+            log.info("비밀번호 업데이트 성공 - email: {}", dto.getEmail());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "비밀번호 업데이트 성공 - email: " + dto.getEmail()));
+        } catch (Exception e) {
+            log.error("비밀번호 업데이트 요청 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
+                            "비밀번호 업데이트 요청 실패: " + e.getMessage()));
+        }
+    }
+
 
     // 회원탈퇴
     @DeleteMapping("/withdrawal")

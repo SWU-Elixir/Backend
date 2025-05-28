@@ -23,7 +23,7 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
-    private String password;  // 인코딩된 비밀번호
+    @Setter private String password;  // 인코딩된 비밀번호
 
     @Column(nullable = false, unique = true)
     @Setter private String nickname;
