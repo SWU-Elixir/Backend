@@ -153,7 +153,7 @@ public class DietLogService {
         }
 
         dietLogRepository.save(dietLog);
-        log.info("update save까지 완료");
+
         return dietLog.convertToResponseDTO();
 
     }
@@ -197,6 +197,15 @@ public class DietLogService {
                         .time(dietLog.getTime())
                         .build())
                 .collect(Collectors.toList());
+    }
 
+    // 최근 N일 간 식단 기록 조회
+    public List<DietLogResponseDTO> getRecentDietLogs(Long memberId, int recentDays){
+        LocalDateTime from = LocalDate.now().minusDays(recentDays).atStartOfDay();
+
+
+        return dietLogRepository.findByMemberIdAndTimeAfter(memberId, from).stream()
+                .map(DietLog::convertToResponseDTO)
+                .toList();
     }
 }

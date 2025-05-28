@@ -174,4 +174,27 @@ public class DietLogController implements DietLogApi {
         }
     }
 
+    // 최근 N일 식단 조회하기
+    @GetMapping("/recent")
+    public ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getRecentDietLogs(
+            @RequestParam(value = "days", defaultValue = "14") int days,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        log.info("최근 N일 식단 목록 조회 요청");
+        Long memberId = memberDetails.getId();
+
+        try {
+            List<DietLogResponseDTO> responseDTO = dietLogService.getRecentDietLogs(memberId, days);
+            log.info("최근 N일 식단 목록 조회 성공 - 회원 ID: {}", memberId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                            "최근 N일 식단 목록 조회 성공 - 회원 ID:" + memberId, responseDTO));
+
+        } catch (Exception e) {
+            log.error("최근 N일 식단 목록 조회 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                            "최근 N일 식단 목록 조회 실패: " + e.getMessage()));
+        }
+    }
 }
