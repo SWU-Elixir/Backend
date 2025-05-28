@@ -19,10 +19,17 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.exception.EmailVerificationCodeExpiredException;
+import BE_Elixir.Elixir.global.exception.EmailVerificationCodeMismatchException;
 import BE_Elixir.Elixir.global.exception.OccupiedException;
+import BE_Elixir.Elixir.global.email.EmailService;
+import BE_Elixir.Elixir.global.redis.RedisEmailVerificationService;
 import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.redis.dto.EmailVerificationDTO;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import BE_Elixir.Elixir.global.security.JwtProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +58,9 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final RedisEmailVerificationService redisMailVerificationService;
     private final S3Service s3Service;
+    private final EmailService mailService;
 
     // 이메일 중복 체크
     public boolean isEmailDuplicated(String email) {
@@ -109,6 +120,57 @@ public class MemberService {
         } catch (Exception e) {
             throw new RuntimeException("회원가입 중 오류가 발생했습니다.");
         }
+    }
+
+    // 이메일 인증 요청하기
+    public void sendVerificationCode(String email) throws MessagingException, UnsupportedEncodingException, JsonProcessingException {
+        // 해당 이메일의 회원이 존재하는지 검증
+        memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+
+        // 인증코드 만들기 및 메일 보내기
+        String key = mailService.sendMail(email);
+
+        // 메일 전송 시각 저장
+        mailService.setMailSendTime(Instant.now());
+
+        // redis에 인증 관련 정보 저장
+        redisMailVerificationService.saveVerificationCode(email, key, mailService.getMailSendTime());
+
+    }
+
+    // 인증번호 검증하기
+    public boolean verifyCode(String email, String code) throws JsonProcessingException {
+        EmailVerificationDTO dto = redisMailVerificationService.getVerification(email);
+        // 인증 유효, 유효하지 않음, 시간 초과
+
+        // 인증 가능한 최대 시간 계산
+        Instant time = dto.getEmailSendTime().plus(mailService.getValidityDuration());
+
+        // 유효시간 초과
+        if (Instant.now().isAfter(time)) {
+            throw new EmailVerificationCodeExpiredException(ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED);
+        }
+        // 코드 불일치
+        if (!code.equals(dto.getCode())) {
+            throw new EmailVerificationCodeMismatchException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH);
+        }
+
+        // Redis에 저장된 인증 정보 삭제
+        redisMailVerificationService.deleteVerification(email);
+
+        return true;
+    }
+
+    // 비밀번호 수정하기
+    public void updatePassword(String email, String newPassword) {
+        Member member = memberRepository.findByEmail(email)
+                        .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+
+        // 인코딩 및 비밀번호 설정
+        member.setPassword(passwordEncoder.encode(newPassword));
+
+        memberRepository.save(member);
     }
 
 
