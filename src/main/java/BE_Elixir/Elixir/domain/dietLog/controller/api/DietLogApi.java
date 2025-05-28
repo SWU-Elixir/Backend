@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -263,6 +264,51 @@ public interface DietLogApi {
     ResponseEntity<CommonResponse<List<MonthlyDietScoreDTO>>> getMonthlyDietScores(
             @PathVariable("year") int year,
             @PathVariable("month") int month,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    @Operation(summary = "최근 N일 식단 목록 조회",
+            description = "날짜를 기반으로 최근 N일 식단 목록을 조회합니다",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "최근 N일 식단 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "최근 N일 식단 목록 조회 성공 - 회원 ID:1",
+                                      "data": [
+                                        {
+                                          "id": 5,
+                                          "memberId": 1,
+                                          "name": "부대찌개",
+                                          "imageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/...",
+                                          "type": "저녁",
+                                          "score": 3,
+                                          "ingredientTagId": [
+                                            10,
+                                            15,
+                                          ],
+                                          "time": "2025-05-03T08:52:46.034"
+                                        },
+                                        ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "최근 N일 식단 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "최근 N일 식단 목록 조회 실패: ...",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getRecentDietLogs(
+            @RequestParam(value = "days", defaultValue = "14") int days,
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 

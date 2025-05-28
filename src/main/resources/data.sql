@@ -3066,3 +3066,121 @@ INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
 VALUES (8, 313);  -- 어묵
 INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
 VALUES (8, 54);  -- 쫄면
+
+-- 챌린지 더미 데이터
+-- 6월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"6월 챌린지",
+		"설명- 6월 챌린지입니다.(식재료: 오이 id: 1166)",
+		"목적- 6월 챌린지입니다.",
+    6, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_6.png',
+    'https://example.com/images/gray_6.png'
+);
+
+-- 5월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"5월 봄맞이 챌린지",
+		"설명- 5월 챌린지입니다.(식재료: 딸기 id: 142)",
+		"목적- 5월 챌린지입니다.",
+    5, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_5.png',
+    'https://example.com/images/gray_5.png'
+);
+
+
+-- 4월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"4월 챌린지",
+		"설명- 4월 챌린지입니다.(식재료: 호두 id: 47)",
+		"목적- 4월 챌린지입니다.",
+    4, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_4.png',
+    'https://example.com/images/gray_4.png'
+);
+
+-- 3월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"3월 챌린지",
+		"설명- 3월 챌린지입니다.(식재료: 쑥 id: 1142)",
+		"목적- 3월 챌린지입니다.",
+    3, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_3.png',
+    'https://example.com/images/gray_3.png'
+);
+
+-- 2월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"2월 챌린지",
+		"설명- 2월 챌린지입니다.(식재료: 봄동 id: 1111)",
+		"목적- 2월 챌린지입니다.",
+    2, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_2.png',
+    'https://example.com/images/gray_2.png'
+);
+
