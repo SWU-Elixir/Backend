@@ -3069,7 +3069,7 @@ INSERT INTO diet_log_ingredient(diet_log_id, ingredient_id)
 VALUES (8, 54);  -- 쫄면
 
 -- 챌린지 더미 데이터
--- 6월
+-- 2월
 INSERT INTO challenge (
     name, description, purpose, month, year, achievement_name,
     step1goal1type, step1goal2type, step2goal1type, step2goal2type,
@@ -3079,64 +3079,17 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"6월 챌린지",
-		"설명- 6월 챌린지입니다.(식재료: 오이 id: 1166)",
-		"목적- 6월 챌린지입니다.",
-    6, 2025,
+		"2월 챌린지",
+		"설명- 2월 챌린지입니다.(식재료: 봄동 id: 1111)",
+		"목적- 2월 챌린지입니다.",
+    2, 2025,
     "비타민 수호자",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_6.png',
-    'https://example.com/images/gray_6.png'
-);
-
--- 5월
-INSERT INTO challenge (
-    name, description, purpose, month, year, achievement_name,
-    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
-    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
-    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
-    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
-    achievement_image_url, gray_achievement_image_url
-)
-VALUES (
-		"5월 봄맞이 챌린지",
-		"설명- 5월 챌린지입니다.(식재료: 딸기 id: 142)",
-		"목적- 5월 챌린지입니다.",
-    5, 2025,
-    "비타민 수호자",
-    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
-    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
-    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
-    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_5.png',
-    'https://example.com/images/gray_5.png'
-);
-
-
--- 4월
-INSERT INTO challenge (
-    name, description, purpose, month, year, achievement_name,
-    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
-    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
-    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
-    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
-    achievement_image_url, gray_achievement_image_url
-)
-VALUES (
-		"4월 챌린지",
-		"설명- 4월 챌린지입니다.(식재료: 호두 id: 47)",
-		"목적- 4월 챌린지입니다.",
-    4, 2025,
-    "비타민 수호자",
-    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
-    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
-    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
-    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_4.png',
-    'https://example.com/images/gray_4.png'
+    'https://example.com/images/color_2.png',
+    'https://example.com/images/gray_2.png'
 );
 
 -- 3월
@@ -3162,7 +3115,7 @@ VALUES (
     'https://example.com/images/gray_3.png'
 );
 
--- 2월
+-- 4월
 INSERT INTO challenge (
     name, description, purpose, month, year, achievement_name,
     step1goal1type, step1goal2type, step2goal1type, step2goal2type,
@@ -3172,18 +3125,221 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"2월 챌린지",
-		"설명- 2월 챌린지입니다.(식재료: 봄동 id: 1111)",
-		"목적- 2월 챌린지입니다.",
-    2, 2025,
+		"4월 챌린지",
+		"설명- 4월 챌린지입니다.(식재료: 호두 id: 47)",
+		"목적- 4월 챌린지입니다.",
+    4, 2025,
     "비타민 수호자",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_2.png',
-    'https://example.com/images/gray_2.png'
+    'https://example.com/images/color_4.png',
+    'https://example.com/images/gray_4.png'
 );
+
+-- 5월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"5월 봄맞이 챌린지",
+		"설명- 5월 챌린지입니다.(식재료: 딸기 id: 142)",
+		"목적- 5월 챌린지입니다.",
+    5, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_5.png',
+    'https://example.com/images/gray_5.png'
+);
+
+-- 6월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+		"6월 챌린지",
+		"설명- 6월 챌린지입니다.(식재료: 오이 id: 1166)",
+		"목적- 6월 챌린지입니다.",
+    6, 2025,
+    "비타민 수호자",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://example.com/images/color_6.png',
+    'https://example.com/images/gray_6.png'
+);
+
+-- 챌린지 미션 더미데이터
+-- A 회원의 2월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    NOW(), -- challenge_completed_at
+    1,  -- challenge_id (2월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
+-- A 회원의 3월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    NOW(), -- challenge_completed_at
+    2,  -- challenge_id (3월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
+-- A 회원의 4월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    NOW(), -- challenge_completed_at
+    3,  -- challenge_id (4월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
+-- A 회원의 5월 챌린지 3개만 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    0, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    0, 1, -- step2goal2achieved, step2goal2active
+    0, 0, -- step3goal1achieved, step3goal1active
+    0, 0, -- step3goal2achieved, step3goal2active
+    0, 0, -- step4goal1achieved, step4goal1active
+    0, 0, -- step4goal2achieved, step4goal2active
+    NULL, -- challenge_completed_at
+    4,  -- challenge_id (5월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
+-- B 회원의 2월 챌린지 3개만 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    0, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    0, 1, -- step2goal2achieved, step2goal2active
+    0, 0, -- step3goal1achieved, step3goal1active
+    0, 0, -- step3goal2achieved, step3goal2active
+    0, 0, -- step4goal1achieved, step4goal1active
+    0, 0, -- step4goal2achieved, step4goal2active
+    NULL, -- challenge_completed_at
+    1,  -- challenge_id (2월)
+    3,  -- member_id (B@example.com)
+    NOW() -- opened_at
+);
+
 
 
 
