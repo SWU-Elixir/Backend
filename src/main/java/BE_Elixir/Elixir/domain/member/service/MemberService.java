@@ -275,6 +275,7 @@ public class MemberService {
 
         return MemberResponseDTO.builder()
                 .id(memberId)
+                .email(member.getEmail())
                 .nickname(member.getNickname())
                 .title(member.getTitle())
                 .profileUrl(member.getProfileUrl())
