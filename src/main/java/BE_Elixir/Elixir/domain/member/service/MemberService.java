@@ -268,7 +268,7 @@ public class MemberService {
 
         // 생년 수정
         if (dto.getBirthYear() != null) {
-            member.setGender(dto.getGender());
+            member.setBirthYear(dto.getBirthYear());
         }
 
         memberRepository.save(member);
