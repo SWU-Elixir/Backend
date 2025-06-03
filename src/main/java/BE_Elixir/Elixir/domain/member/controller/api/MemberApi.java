@@ -395,8 +395,13 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "내가 작성한 레시피 조회 성공",
-                                      "data": true
+                                      "message": "내 레시피 조회 성공",
+                                      "data": [
+                                        {
+                                          "recipeId": 49,
+                                          "imageUrl": "https://image.com"
+                                        }
+                                      ]
                                     }
                                     """)))
     })
@@ -415,7 +420,16 @@ public interface MemberApi {
                                       "status": 200,
                                       "code": "200 OK",
                                       "message": "내가 스크랩한 레시피 조회 성공",
-                                      "data": true
+                                      "data": [
+                                        {
+                                          "recipeId": 1,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
+                                        },
+                                        {
+                                          "recipeId": 2,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
+                                        }
+                                      ]
                                     }
                                     """)))
     })
@@ -642,11 +656,47 @@ public interface MemberApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
-                                      "data": true
-                                    }
+                                       "status": 200,
+                                       "code": "200 OK",
+                                       "message": "모든 챌린지 업적 조회 성공",
+                                       "data": [
+                                         {
+                                           "year": 2025,
+                                           "month": 2,
+                                           "achievementName": "비타민 수호자",
+                                           "achievementImageUrl": "https://example.com/images/color_2.png",
+                                           "challengeCompleted": true
+                                         },
+                                         {
+                                           "year": 2025,
+                                           "month": 3,
+                                           "achievementName": "비타민 수호자",
+                                           "achievementImageUrl": "https://example.com/images/color_3.png",
+                                           "challengeCompleted": true
+                                         },
+                                         {
+                                           "year": 2025,
+                                           "month": 4,
+                                           "achievementName": "비타민 수호자",
+                                           "achievementImageUrl": "https://example.com/images/color_4.png",
+                                           "challengeCompleted": true
+                                         },
+                                         {
+                                           "year": 2025,
+                                           "month": 5,
+                                           "achievementName": "비타민 수호자",
+                                           "achievementImageUrl": "https://example.com/images/gray_5.png",
+                                           "challengeCompleted": false
+                                         },
+                                         {
+                                           "year": 2025,
+                                           "month": 6,
+                                           "achievementName": "비타민 수호자",
+                                           "achievementImageUrl": "https://example.com/images/gray_6.png",
+                                           "challengeCompleted": false
+                                         }
+                                       ]
+                                     }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
@@ -664,8 +714,30 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
-                                      "data": true
+                                      "message": "최근 업적 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "year": 2025,
+                                          "month": 4,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_4.png",
+                                          "challengeCompleted": true
+                                        },
+                                        {
+                                          "year": 2025,
+                                          "month": 3,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_3.png",
+                                          "challengeCompleted": true
+                                        },
+                                        {
+                                          "year": 2025,
+                                          "month": 2,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_2.png",
+                                          "challengeCompleted": true
+                                        }
+                                      ]
                                     }
                                     """)))
     })
@@ -756,8 +828,24 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "다른 사용자가 업로드한 모든 레시피 조회 성공",
-                                      "data": true
+                                      "message": "다른 사용자 레시피 조회 성공",
+                                      "data": [
+                                        {
+                                          "recipeId": 1,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
+                                        },
+                                        {
+                                          "recipeId": 2,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
+                                        },
+                                        .
+                                        .
+                                        .
+                                        {
+                                          "recipeId": 9,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00089_1.png"
+                                        }
+                                      ]
                                     }
                                     """)))
     })
@@ -776,8 +864,26 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "다른 사용자의 모든 챌린지 업적 정보 조회 성공",
-                                      "data": true
+                                      "message": "다른 사용자의 모든 업적 조회 성공",
+                                      "data": [
+                                        {
+                                          "year": 2025,
+                                          "month": 2,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/gray_2.png",
+                                          "challengeCompleted": false
+                                        },
+                                        .
+                                        .
+                                        .
+                                        {
+                                          "year": 2025,
+                                          "month": 6,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/gray_6.png",
+                                          "challengeCompleted": false
+                                        }
+                                      ]
                                     }
                                     """)))
     })
@@ -796,8 +902,30 @@ public interface MemberApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "다른 사용자의 최근 3개 업적 조회 성공",
-                                      "data": true
+                                      "message": "다른 사용자의 최근 업적 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "year": 2025,
+                                          "month": 4,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_4.png",
+                                          "challengeCompleted": true
+                                        },
+                                        {
+                                          "year": 2025,
+                                          "month": 3,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_3.png",
+                                          "challengeCompleted": true
+                                        },
+                                        {
+                                          "year": 2025,
+                                          "month": 2,
+                                          "achievementName": "비타민 수호자",
+                                          "achievementImageUrl": "https://example.com/images/color_2.png",
+                                          "challengeCompleted": true
+                                        }
+                                      ]
                                     }
                                     """)))
     })
