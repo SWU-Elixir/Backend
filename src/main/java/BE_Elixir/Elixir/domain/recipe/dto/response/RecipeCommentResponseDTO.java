@@ -23,6 +23,7 @@ public class RecipeCommentResponseDTO {
         this.commentId = recipeEvent.getId();
         this.recipeId = recipeEvent.getRecipe().getId(); // 직접 접근
         this.nickName = recipeEvent.getMember().getNickname();
+        this.title = recipeEvent.getMember().getTitle();
         this.content = recipeEvent.getContent();
         this.createdAt = recipeEvent.getCreatedAt();
         this.updatedAt = recipeEvent.getUpdatedAt();
