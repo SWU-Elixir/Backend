@@ -34,14 +34,52 @@ public interface RecipeApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 201,
-                                      "code": "201 OK",
+                                      "status": 200,
+                                      "code": "201 CREATED",
                                       "message": "레시피 등록 성공",
-                                      "data": true
+                                      "data": {
+                                        "id": 49,
+                                        "email": "A@example.com",
+                                        "title": "닭가슴살 덮밥",
+                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00281_1.png",
+                                        "description": "닭가슴살로 간단히 덮밥해먹기",
+                                        "categorySlowAging": "염증감소",
+                                        "categoryType": "한식",
+                                        "difficulty": "쉬움",
+                                        "timeHours": 0,
+                                        "timeMinutes": 45,
+                                        "ingredientTagIds": [
+                                          1
+                                        ],
+                                        "ingredients": {
+                                          "물": "2ml(1/3작은술)"
+                                        },
+                                        "seasoning": {
+                                          "설탕": "2g(1/3작은술)"
+                                        },
+                                        "stepDescriptions": [
+                                          "닭가슴살을 전자레인지에 데운다"
+                                        ],
+                                        "stepImageUrls": "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_5.png",
+                                        "tips": "닭가슴살을 잘게 자를수록 더 맛있음",
+                                        "likes": 0,
+                                        "scraps": 0,
+                                        "createdAt": "2025-06-03T00:08:22.319638443",
+                                        "updatedAt": "2025-06-03T00:08:22.31966641",
+                                        "allergies": []
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "500", description = "레시피 등록 실패",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 500,
+                                      "code": "500 INTERNAL_SERVER_ERROR",
+                                      "message": "레시피 등록 실패 - 재료 없음: 0",
+                                      "data": null
+                                    }
+                                    """)))
     })
     ResponseEntity<CommonResponse<?>> createRecipe(
             @RequestPart("dto") RecipeRequestDTO dto,
@@ -60,8 +98,61 @@ public interface RecipeApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "레시피 상세 조회 성공",
-                                      "data": true
+                                      "message": "레시피 조회 성공",
+                                      "data": {
+                                        "authorFollowByCurrentUser": false,
+                                        "comments": [],
+                                        "likedByCurrentUser": false,
+                                        "scrappedByCurrentUser": false,
+                                        "id": 3,
+                                        "authorNickname": "mj",
+                                        "authorTitle": null,
+                                        "title": "방울토마토 소박이",
+                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00031_1.png",
+                                        "description": "기타",
+                                        "categorySlowAging": "염증감소",
+                                        "categoryType": "한식",
+                                        "difficulty": "쉬움",
+                                        "timeHours": 0,
+                                        "timeMinutes": 45,
+                                        "ingredientTagIds": [
+                                          1106,
+                                          1198,
+                                          5,
+                                          1101
+                                        ],
+                                        "ingredients": {
+                                          "통깨": "약간",
+                                          "방울토마토": "150g(5개)",
+                                          "부추": "10g(5줄기)",
+                                          "물": "2ml(1/3작은술)"
+                                        },
+                                        "seasoning": {
+                                          "고춧가루": "4g(1작은술)",
+                                          "멸치액젓": "3g(2/3작은술)",
+                                          "다진 마늘": "2.5g(1/2쪽)",
+                                          "매실액": "2g(1/3작은술)",
+                                          "양파": "10g(3×1cm)",
+                                          "설탕": "2g(1/3작은술)"
+                                        },
+                                        "stepDescriptions": [
+                                          "물기를 빼고 2cm 정도의 크기로 썰은 부추와 양파를 양념장에 섞어 양념속을 만든다.",
+                                          "깨끗이 씻은 방울토마토는 꼭지를 떼고 윗부분에 칼로 십자모양으로 칼집을 낸다.",
+                                          "칼집을 낸 방울토마토에 양념속을 사이사이에 넣어 버무린다."
+                                        ],
+                                        "stepImageUrls": [
+                                          "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_1.png",
+                                          "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_4.png",
+                                          "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_5.png"
+                                        ],
+                                        "tips": "소금에 절이는 오이 대신 방울토마토를 사용하여 나트륨 섭취를 줄였어요. 토마토에는 과일에 대체로 없는 글루탐산이 풍부하여 감칠맛을 내주며, 겉절이 양념과 잘 어우러져 상큼함과 감칠맛을 내주어요.",
+                                        "likes": 0,
+                                        "createdAt": "2025-05-21T10:19:09",
+                                        "updatedAt": "2025-05-21T10:19:09",
+                                        "allergies": [
+                                          "토마토"
+                                        ]
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
@@ -82,8 +173,70 @@ public interface RecipeApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "레시피 목록(홈) 조회 성공",
-                                      "data": true
+                                      "message": "전체 레시피 조회 성공",
+                                      "data": {
+                                        "content": [
+                                          {
+                                            "likedByCurrentUser": false,
+                                            "scrappedByCurrentUser": false,
+                                            "id": 49,
+                                            "title": "string",
+                                            "imageUrl": null,
+                                            "categorySlowAging": "항산화강화",
+                                            "categoryType": "한식",
+                                            "difficulty": "쉬움",
+                                            "totalTimeMinutes": 0,
+                                            "ingredientTagIds": [
+                                              1
+                                            ],
+                                            "likes": 0
+                                          },
+                                          {
+                                            "likedByCurrentUser": false,
+                                            "scrappedByCurrentUser": false,
+                                            "id": 1,
+                                            "title": "새우 두부 계란찜",
+                                            "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png",
+                                            "categorySlowAging": "염증감소",
+                                            "categoryType": "한식",
+                                            "difficulty": "보통",
+                                            "totalTimeMinutes": 45,
+                                            "ingredientTagIds": [
+                                              280,
+                                              599
+                                            ],
+                                            "likes": 0
+                                          }
+                                          .
+                                          .
+                                          .
+                                        ],
+                                        "pageable": {
+                                          "pageNumber": 0,
+                                          "pageSize": 10,
+                                          "sort": {
+                                            "empty": false,
+                                            "sorted": true,
+                                            "unsorted": false
+                                          },
+                                          "offset": 0,
+                                          "paged": true,
+                                          "unpaged": false
+                                        },
+                                        "last": false,
+                                        "totalPages": 5,
+                                        "totalElements": 49,
+                                        "size": 10,
+                                        "number": 0,
+                                        "sort": {
+                                          "empty": false,
+                                          "sorted": true,
+                                          "unsorted": false
+                                        },
+                                        "numberOfElements": 10,
+                                        "first": true,
+                                        "empty": false
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
@@ -105,11 +258,57 @@ public interface RecipeApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "레시피 검색 결과 조회 성공",
-                                      "data": true
-                                    }
+                                       "status": 200,
+                                       "code": "200 OK",
+                                       "message": "레시피 검색 성공",
+                                       "data": {
+                                         "content": [
+                                           {
+                                             "likedByCurrentUser": false,
+                                             "scrappedByCurrentUser": false,
+                                             "id": 4,
+                                             "title": "순두부 사과 소스 오이무침",
+                                             "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00032_2.png",
+                                             "categorySlowAging": "염증감소",
+                                             "categoryType": "한식",
+                                             "difficulty": "보통",
+                                             "totalTimeMinutes": 45,
+                                             "ingredientTagIds": [
+                                               175,
+                                               280,
+                                               1166,
+                                               1089
+                                             ],
+                                             "likes": 0
+                                           }
+                                         ],
+                                         "pageable": {
+                                           "pageNumber": 0,
+                                           "pageSize": 10,
+                                           "sort": {
+                                             "empty": false,
+                                             "sorted": true,
+                                             "unsorted": false
+                                           },
+                                           "offset": 0,
+                                           "paged": true,
+                                           "unpaged": false
+                                         },
+                                         "last": true,
+                                         "totalPages": 1,
+                                         "totalElements": 1,
+                                         "size": 10,
+                                         "number": 0,
+                                         "sort": {
+                                           "empty": false,
+                                           "sorted": true,
+                                           "unsorted": false
+                                         },
+                                         "numberOfElements": 1,
+                                         "first": true,
+                                         "empty": false
+                                       }
+                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
@@ -133,8 +332,10 @@ public interface RecipeApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "인기 검색어 조회 성공",
-                                      "data": true
+                                      "message": "인기 검색어 조회 성공 ",
+                                      "data": [
+                                        "사과"
+                                      ]
                                     }
                                     """)))
     })
@@ -153,7 +354,37 @@ public interface RecipeApi {
                                       "status": 200,
                                       "code": "200 OK",
                                       "message": "레시피 수정 성공",
-                                      "data": true
+                                      "data": {
+                                        "id": 49,
+                                        "email": "A@example.com",
+                                        "title": "닭가슴살 덮밥",
+                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00281_1.png",
+                                        "description": "닭가슴살로 간단히 덮밥해먹기",
+                                        "categorySlowAging": "염증감소",
+                                        "categoryType": "한식",
+                                        "difficulty": "쉬움",
+                                        "timeHours": 0,
+                                        "timeMinutes": 45,
+                                        "ingredientTagIds": [
+                                          1
+                                        ],
+                                        "ingredients": {
+                                          "물": "2ml(1/3작은술)"
+                                        },
+                                        "seasoning": {
+                                          "설탕": "2g(1/3작은술)"
+                                        },
+                                        "stepDescriptions": [
+                                          "닭가슴살을 전자레인지에 데운다"
+                                        ],
+                                        "stepImageUrls": "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_5.png",
+                                        "tips": "닭가슴살을 잘게 자를수록 더 맛있음",
+                                        "likes": 0,
+                                        "scraps": 0,
+                                        "createdAt": "2025-06-03T00:08:22.319638443",
+                                        "updatedAt": "2025-06-03T00:08:22.31966641",
+                                        "allergies": []
+                                      }
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
@@ -179,7 +410,7 @@ public interface RecipeApi {
                                       "status": 200,
                                       "code": "200 OK",
                                       "message": "레시피 삭제 성공",
-                                      "data": true
+                                      "data": "recipeId: 49 삭제 완료"
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
@@ -198,11 +429,20 @@ public interface RecipeApi {
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "작성한 레시피를 최대 10개까지 조회 성공",
-                                      "data": true
-                                    }
+                                       "status": 200,
+                                       "code": "200 OK",
+                                       "message": "작성한 레시피 조회 성공",
+                                       "data": [
+                                         {
+                                           "recipeId": 50,
+                                           "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00032_2.png",
+                                           "title": "닭가슴살 덮밥",
+                                           "ingredientTags": [
+                                             2
+                                           ]
+                                         }
+                                       ]
+                                     }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<RecipeSummaryResponse>>> getMyRecipes(
