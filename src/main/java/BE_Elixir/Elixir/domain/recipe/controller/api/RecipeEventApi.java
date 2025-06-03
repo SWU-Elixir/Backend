@@ -7,6 +7,7 @@ import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentUpdateRequestDTO;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +25,23 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 등록 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 201,
+                                          "code": "201 CREATED",
+                                          "message": "댓글 등록 성공 ",
+                                          "data": {
+                                            "commentId": 3,
+                                            "recipeId": 1,
+                                            "nickName": "A",
+                                            "title": "칭호입니다",
+                                            "content": "댓글 등록하기",
+                                            "createdAt": "2025-06-03T00:42:28.932330511",
+                                            "updatedAt": "2025-06-03T00:42:28.932342665"
+                                          }
+                                        }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "댓글 등록 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -39,7 +56,23 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 수정 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                           "status": 200,
+                                           "code": "200 OK",
+                                           "message": "댓글 수정 성공",
+                                           "data": {
+                                             "commentId": 3,
+                                             "recipeId": 1,
+                                             "nickName": "A",
+                                             "title": "칭호입니다",
+                                             "content": "댓글 수정하기",
+                                             "createdAt": "2025-06-03T00:42:28.932331",
+                                             "updatedAt": "2025-06-03T00:45:42.514499224"
+                                           }
+                                         }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "댓글 수정 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -55,7 +88,15 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                            "status": 200,
+                                            "code": "200 OK",
+                                            "message": "댓글 삭제 성공",
+                                            "data": "commentId: 1 삭제 완료"
+                                          }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "댓글 삭제 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -70,7 +111,15 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "스크랩 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 201,
+                                          "code": "201 CREATED",
+                                          "message": "레시피 스크랩 성공",
+                                          "data": "recipeId: 1"
+                                        }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "스크랩 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -84,7 +133,15 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "스크랩 취소 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 200,
+                                          "code": "200 OK",
+                                          "message": "레시피 스크랩 취소 성공",
+                                          "data": "recipeId: 1"
+                                        }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "스크랩 취소 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -98,7 +155,15 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "좋아요 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 201,
+                                          "code": "201 CREATED",
+                                          "message": "레시피 좋아요 성공",
+                                          "data": "recipeId: 1"
+                                        }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "좋아요 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
@@ -112,7 +177,15 @@ public interface RecipeEventApi {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "좋아요 취소 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 200,
+                                          "code": "200 OK",
+                                          "message": "레시피 좋아요 취소 성공",
+                                          "data": "recipeId: 1"
+                                        }
+                                    """))),
             @ApiResponse(responseCode = "500", description = "좋아요 취소 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     })
