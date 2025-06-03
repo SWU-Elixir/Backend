@@ -136,7 +136,7 @@ public interface DietLogApi {
                                     """)))
     })
     ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
-            @PathVariable("dietLogId") Long dietLogId,
+            @PathVariable Long dietLogId,
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile image,
             @AuthenticationPrincipal MemberDetails memberDetails

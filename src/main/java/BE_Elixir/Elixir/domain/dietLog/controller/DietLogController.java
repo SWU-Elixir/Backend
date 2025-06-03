@@ -76,9 +76,9 @@ public class DietLogController implements DietLogApi {
     }
 
     // 식단 수정하기
-    @PatchMapping(name="/{dietLogId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value="/{dietLogId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<DietLogResponseDTO>> updateDietLog(
-            @PathVariable("dietLogId") Long dietLogId,
+            @PathVariable Long dietLogId,
             @RequestPart("dto") DietLogRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal MemberDetails memberDetails
