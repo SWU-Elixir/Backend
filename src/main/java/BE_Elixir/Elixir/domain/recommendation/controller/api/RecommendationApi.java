@@ -28,8 +28,20 @@ public interface RecommendationApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "홈에서 추천 레시피 조회 성공",
-                                      "data": true
+                                      "message": "추천 레시피 조회 성공",
+                                      "data": [
+                                        {
+                                          "id": 50,
+                                          "title": "닭가슴살 덮밥",
+                                          "imageUrl": "https://image.com",
+                                          "categorySlowAging": "항산화강화",
+                                          "categoryType": "한식",
+                                          "ingredientTagIds": [
+                                            2
+                                          ],
+                                          "scrappedByCurrentUser": false
+                                        }
+                                      ]
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
@@ -48,9 +60,13 @@ public interface RecommendationApi {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
-                                      "code": "200 OK",
+                                      "code": "OK",
                                       "message": "추천 검색어 조회 성공",
-                                      "data": true
+                                      "data": [
+                                        "닭가슴살",
+                                        "덮밥",
+                                        "곤약(구약나물)"
+                                      ]
                                     }
                                     """))),
             @ApiResponse(responseCode = "404", description = "레시피 없음",
