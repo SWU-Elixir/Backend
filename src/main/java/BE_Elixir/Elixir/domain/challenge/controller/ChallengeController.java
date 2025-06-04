@@ -35,16 +35,10 @@ public class ChallengeController implements ChallengeApi {
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "grayImage", required = false) MultipartFile grayImage
     ) {
-        try {
-            ChallengeResponseDTO response = challengeService.registerChallenge(dto, image, grayImage);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "챌린지 등록 완료", response));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "챌린지 등록 실패 - " + e.getMessage()));
-        }
+        ChallengeResponseDTO response = challengeService.registerChallenge(dto, image, grayImage);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "챌린지 등록 완료", response));
     }
 
     // 연도 별 챌린지 조회하기

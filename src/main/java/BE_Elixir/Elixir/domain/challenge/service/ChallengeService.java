@@ -33,19 +33,27 @@ public class ChallengeService {
             ChallengeRequestDTO dto,
             MultipartFile image,
             MultipartFile grayImage
-    ) throws IOException {
+    ) {
         Challenge challenge = ChallengeRequestDTO.from(dto);
 
         // 업적 컬러 이미지
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "challenge/achievement-color");
-            challenge.setAchievementImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "challenge/achievement-color");
+                challenge.setAchievementImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 업적 흑백 이미지
         if (grayImage != null && !grayImage.isEmpty()) {
-            String grayImageUrl = s3Service.upload(grayImage, "challenge/achievement-gray");
-            challenge.setGrayAchievementImageUrl(grayImageUrl);
+            try {
+                String grayImageUrl = s3Service.upload(grayImage, "challenge/achievement-gray");
+                challenge.setGrayAchievementImageUrl(grayImageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         challengeRepository.save(challenge);

@@ -40,19 +40,12 @@ public class RecipeController implements RecipeApi {
             @RequestPart(value = "recipeStepImages", required = false) List<MultipartFile> recipeStepImages,
             @AuthenticationPrincipal MemberDetails memberDetails
     ){
-        try {
-            Member member = memberDetails.getMember();
-            RecipeResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages, member);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.CREATED.toString(),
-                    "레시피 등록 성공", response
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "레시피 등록 실패 - " + e.getMessage()
-            ));
-        }
+        Member member = memberDetails.getMember();
+        RecipeResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages, member);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.CREATED.toString(),
+                "레시피 등록 성공", response
+        ));
     }
 
     // 레시피 상세 조회
@@ -145,18 +138,12 @@ public class RecipeController implements RecipeApi {
             @RequestPart(value = "recipeStepImages", required = false) List<MultipartFile> recipeStepImages,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            RecipeResponseDTO response = recipeService.updateRecipe(recipeId, dto, image, recipeStepImages, member);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "레시피 수정 성공", response
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "레시피 수정 실패 - " + e.getMessage()));
-        }
+        Member member = memberDetails.getMember();
+        RecipeResponseDTO response = recipeService.updateRecipe(recipeId, dto, image, recipeStepImages, member);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "레시피 수정 성공", response
+        ));
     }
     
     // 레시피 삭제

@@ -53,22 +53,30 @@ public class RecipeService {
             MultipartFile image,
             List<MultipartFile> recipeStepImages,
             Member member
-    ) throws IOException {
+    ) {
         // 기본 필드 세팅
         Recipe recipe = Recipe.from(dto, member);
 
-        // 대표 이미지 업로드
+        // 대표 이미지 업로드 (IOException을 CustomException으로 변환)
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "recipe/main");
-            recipe.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "recipe/main");
+                recipe.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 단계별 이미지 업로드
         if (recipeStepImages != null && !recipeStepImages.isEmpty()) {
             List<String> stepUrls = new ArrayList<>();
             for (MultipartFile file : recipeStepImages) {
-                String url = s3Service.upload(file, "recipe/steps");
-                stepUrls.add(url);
+                try {
+                    String url = s3Service.upload(file, "recipe/steps");
+                    stepUrls.add(url);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+                }
             }
             recipe.setStepImageUrls(stepUrls);
         }
@@ -220,7 +228,7 @@ public class RecipeService {
             MultipartFile image,
             List<MultipartFile> recipeStepImages,
             Member member
-    ) throws IOException {
+    ) {
         // 레시피 조회
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
@@ -234,21 +242,28 @@ public class RecipeService {
 
         // 대표 이미지 업데이트
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "recipe/main");
-            recipe.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "recipe/main");
+                recipe.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 단계 이미지 업데이트
         if (recipeStepImages != null && !recipeStepImages.isEmpty()) {
             List<String> stepUrls = new ArrayList<>();
             for (MultipartFile file : recipeStepImages) {
-                String url = s3Service.upload(file, "recipe/steps");
-                stepUrls.add(url);
+                try {
+                    String url = s3Service.upload(file, "recipe/steps");
+                    stepUrls.add(url);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+                }
             }
             if (!stepUrls.isEmpty()) {
                 recipe.setStepImageUrls(stepUrls);
             }
-            recipe.setStepImageUrls(stepUrls);
         }
 
         recipe.getIngredientTags().clear(); // 참조 유지
