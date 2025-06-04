@@ -52,33 +52,20 @@ public class ChallengeController implements ChallengeApi {
     public ResponseEntity<CommonResponse<List<ChallengeListResponseDTO>>> getChallengesByYear(
             @PathVariable int year
     ) {
-        try {
-            List<ChallengeListResponseDTO> result = challengeService.getChallengesByYear(year);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    year + "년도 챌린지 목록 조회 성공", result));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            year + "년도 챌린지 목록 조회 실패 - " + e.getMessage()));
-        }
-
+        List<ChallengeListResponseDTO> result = challengeService.getChallengesByYear(year);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                year + "년도 챌린지 목록 조회 성공", result));
     }
     // 특정 챌린지 상세 조회하기
     @GetMapping("/{challengeId}")
     public ResponseEntity<CommonResponse<ChallengeDetailResponseDTO>> getChallengeDetail(
             @PathVariable Long challengeId
     ) {
-        try {
-            ChallengeDetailResponseDTO result = challengeService.getChallengeDetail(challengeId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "챌린지 상세 조회 성공", result));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "챌린지 상세 조회 실패 - " + e.getMessage()));
-        }
+        ChallengeDetailResponseDTO result = challengeService.getChallengeDetail(challengeId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "챌린지 상세 조회 성공", result));
     }
 
     // 로그인한 사용자의 현재 진행 상황 조회
@@ -86,17 +73,11 @@ public class ChallengeController implements ChallengeApi {
     public ResponseEntity<CommonResponse<ChallengeProgressResponseDTO>> getProgress(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try{
-            Member member = memberDetails.getMember();
-            ChallengeProgressResponseDTO dto = challengeAchievementService.getProgress(member.getId());
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    memberDetails.getUsername() + " 사용자의 현재 진행 상황 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            memberDetails.getUsername() + " 사용자의 현재 진행 상황 조회 실패 - " + e.getMessage()));
-        }
+        Member member = memberDetails.getMember();
+        ChallengeProgressResponseDTO dto = challengeAchievementService.getProgress(member.getId());
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                memberDetails.getUsername() + " 사용자의 현재 진행 상황 조회 성공", dto));
     }
 
     // 챌린지 최종 완료 여부 조회
@@ -104,17 +85,11 @@ public class ChallengeController implements ChallengeApi {
     public ResponseEntity<CommonResponse<ChallengeCompletedResponseDTO>> getChallengeCompletion(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            ChallengeCompletedResponseDTO dto = challengeAchievementService.getChallengeCompletion(member.getId());
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "챌린지 최종 완료 여부 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "챌린지 최종 완료 여부 조회 실패 - " + e.getMessage()));
-        }
+        Member member = memberDetails.getMember();
+        ChallengeCompletedResponseDTO dto = challengeAchievementService.getChallengeCompletion(member.getId());
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "챌린지 최종 완료 여부 조회 성공", dto));
     }
 
     // 로그인한 사용자의 이전 챌린지 진행 상황 조회
@@ -123,16 +98,10 @@ public class ChallengeController implements ChallengeApi {
             @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long challengeId
     ) {
-        try{
-            Member member = memberDetails.getMember();
-            ChallengeProgressResponseDTO dto = challengeAchievementService.getBeforeProgress(member.getId(), challengeId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    memberDetails.getUsername() + " 사용자의 이전 챌린지 진행 상황 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            memberDetails.getUsername() + " 사용자의 이전 챌린지 진행 상황 조회 실패 - " + e.getMessage()));
-        }
+        Member member = memberDetails.getMember();
+        ChallengeProgressResponseDTO dto = challengeAchievementService.getBeforeProgress(member.getId(), challengeId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                memberDetails.getUsername() + " 사용자의 이전 챌린지 진행 상황 조회 성공", dto));
     }
 }

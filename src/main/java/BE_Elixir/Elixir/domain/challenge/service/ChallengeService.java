@@ -8,8 +8,8 @@ import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
+import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
-import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -66,7 +66,7 @@ public class ChallengeService {
     @Transactional(readOnly = true)
     public ChallengeDetailResponseDTO getChallengeDetail(Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.CHALLENGE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.CHALLENGE_NOT_FOUND));
 
         // 챌린지 month
         int month = challenge.getMonth();
