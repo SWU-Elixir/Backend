@@ -309,10 +309,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyRecipes(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        String email = memberDetails.getUsername();
+        Long memberId = memberDetails.getId();
 
         try {
-            List<RecipeImageResponseDTO> recipes = memberService.getMyRecipes(email);
+            List<RecipeImageResponseDTO> recipes = memberService.getMyRecipes(memberId);
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(), "내 레시피 조회 성공", recipes));
 
@@ -331,10 +331,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyScrapRecipes(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        String email = memberDetails.getUsername();
+        Long memberId = memberDetails.getId();
 
         try {
-            List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(email);
+            List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(memberId);
 
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
@@ -485,10 +485,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        String email = memberDetails.getUsername();
+        Long memberId = memberDetails.getId();
 
         try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(email);
+            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(memberId);
 
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
@@ -507,10 +507,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        String email = memberDetails.getUsername();
+        Long memberId = memberDetails.getId();
 
         try {
-            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(email);
+            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(memberId);
 
             return ResponseEntity.ok(CommonResponse.success(
                     HttpStatus.OK.value(), HttpStatus.OK.toString(),
