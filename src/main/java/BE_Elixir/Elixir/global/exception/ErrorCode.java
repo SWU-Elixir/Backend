@@ -48,6 +48,7 @@ public enum ErrorCode {
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "좋아요한 레시피가 없습니다."),
     ALREADY_SCRAPPED(HttpStatus.CONFLICT.value(), "이미 스크랩한 레시피입니다."),
     SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "스크랩한 레시피가 없습니다."),
+    INVALID_EVENT_OPERATION(HttpStatus.BAD_REQUEST.value(), "잘못된 이벤트 요청입니다."),
 
     // 챌린지
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "챌린지를 찾을 수 없습니다."),
@@ -68,7 +69,7 @@ public enum ErrorCode {
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "MultipartFile을 File로 전환하지 못했습니다."),
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "S3에서 파일을 삭제하지 못했습니다."),
     FILE_SIZE_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR.value(), "업로드하는 이미지의 용량이 초과되었습니다. (10MB미만)"),
-
+    S3_INVALID_URL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "잘못된 S3 이미지 URL입니다.")
     ;
 
 

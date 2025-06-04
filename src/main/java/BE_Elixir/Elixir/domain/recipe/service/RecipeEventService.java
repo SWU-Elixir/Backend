@@ -8,8 +8,8 @@ import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
-import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -30,7 +30,7 @@ public class RecipeEventService {
     ) {
         // 레시피 존재 여부 확인
         Recipe recipe = recipeRepository.findById(requestDTO.getRecipeId())
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 댓글 생성
         RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, requestDTO, member);
@@ -47,11 +47,11 @@ public class RecipeEventService {
     ){
         // 기존 댓글 조회
         RecipeEvent existingComment = recipeEventRepository.findById(requestDTO.getCommentId())
-                .orElseThrow(() -> new OccupiedException(ErrorCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 댓글 작성자가 아닌 경우 예외 처리
         if (!existingComment.getMember().getEmail().equals(member.getEmail())) {
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION); // 수정 권한이 없으면 예외
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS); // 수정 권한이 없으면 예외
         }
 
         // 댓글 내용 수정
@@ -64,16 +64,16 @@ public class RecipeEventService {
     public void deleteComment(Long commentId, Member member) {
         // 기존 댓글 조회
         RecipeEvent existingComment = recipeEventRepository.findById(commentId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 댓글 작성자가 아닌 경우 예외 처리
         if (!existingComment.getMember().getEmail().equals(member.getEmail())) {
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 댓글(flag)이 맞는지 한 번 확인
         if (!existingComment.isCommentFlag()) {
-            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+            throw new CustomException(ErrorCode.INVALID_EVENT_OPERATION);
         }
 
         existingComment.setCommentFlag(false); // 댓글 플래그 끄기
@@ -87,12 +87,12 @@ public class RecipeEventService {
     public void scrapRecipe(Long recipeId, Member member) {
         // 레시피 존재 여부 확인
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 기존에 스크랩한 게 있는지 확인
         boolean alreadyScrapped = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
         if (alreadyScrapped) {
-            throw new OccupiedException(ErrorCode.ALREADY_SCRAPPED);
+            throw new CustomException(ErrorCode.ALREADY_SCRAPPED);
         }
 
         RecipeEvent scrap = new RecipeEvent();
@@ -107,17 +107,17 @@ public class RecipeEventService {
     public void cancelScrapRecipe(Long recipeId, Member member) {
         // 스크랩한 거 가져오기
         RecipeEvent scrap = recipeEventRepository.findByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId())
-                .orElseThrow(() -> new OccupiedException(ErrorCode.SCRAP_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.SCRAP_NOT_FOUND));
 
 
         // 스크랩한 사용자가 아닌 경우 예외 처리
         if (!scrap.getMember().getEmail().equals(member.getEmail())) {
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 스크랩(flag)이 맞는지 한 번 확인
         if (!scrap.isScrapFlag()) {
-            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+            throw new CustomException(ErrorCode.INVALID_EVENT_OPERATION);
         }
 
         scrap.setScrapFlag(false); // 스크랩 플래그 끄기
@@ -130,12 +130,12 @@ public class RecipeEventService {
     public void likeRecipe(Long recipeId, Member member) {
         // 레시피 존재 여부 확인
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 기존에 좋아요한 게 있는지 확인
         boolean alreadyLiked = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
         if (alreadyLiked) {
-            throw new OccupiedException(ErrorCode.ALREADY_LIKED);
+            throw new CustomException(ErrorCode.ALREADY_LIKED);
         }
 
         RecipeEvent like = new RecipeEvent();
@@ -152,16 +152,16 @@ public class RecipeEventService {
     @Transactional
     public void cancelLikeRecipe(Long recipeId, Member member) {
         RecipeEvent like = recipeEventRepository.findByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId())
-                .orElseThrow(() -> new OccupiedException(ErrorCode.LIKE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.LIKE_NOT_FOUND));
 
         // 좋아요한 사용자가 아닌 경우 예외 처리
         if (!like.getMember().getEmail().equals(member.getEmail())) {
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 좋아요(flag)가 맞는지 한 번 확인
         if (!like.isLikeFlag()) {
-            throw new OccupiedException(ErrorCode.INVALID_OPERATION);
+            throw new CustomException(ErrorCode.INVALID_EVENT_OPERATION);
         }
 
         like.setLikeFlag(false); // 좋아요 플래그 끄기
