@@ -61,20 +61,13 @@ public class RecipeController implements RecipeApi {
             @PathVariable Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId, member);
+        Member member = memberDetails.getMember();
+        RecipeDetailResponseDTO response = recipeService.getRecipeDetail(recipeId, member);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "레시피 조회 성공", response
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "레시피 조회 실패 - " + e.getMessage()
-                    ));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "레시피 조회 성공", response
+        ));
     }
 
     // 추후에 추천레시피 구현 후, 사용자 별 추천 레시피 내용 조회 추가
@@ -116,26 +109,18 @@ public class RecipeController implements RecipeApi {
             @RequestParam(required = false) CategorySlowAging categorySlowAging,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            // 검색어 저장
-            recipeService.saveSearchKeyword(keyword);
+        // 검색어 저장
+        recipeService.saveSearchKeyword(keyword);
 
-            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Member member = memberDetails.getMember();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Member member = memberDetails.getMember();
 
-            Page<RecipeHomeResponseDTO> response = recipeService.searchRecipe(keyword, pageable, categoryType, categorySlowAging, member);
+        Page<RecipeHomeResponseDTO> response = recipeService.searchRecipe(keyword, pageable, categoryType, categorySlowAging, member);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "레시피 검색 성공", response
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "레시피 검색 실패 - " + e.getMessage()
-                    ));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "레시피 검색 성공", response
+        ));
     }
 
     // 추후에 추천 검색어 추가하기
@@ -144,20 +129,11 @@ public class RecipeController implements RecipeApi {
     public ResponseEntity<CommonResponse<?>> getSearchKeyword(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            List<String> popularKeywords = recipeService.getPopularSearchKeywords();
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "인기 검색어 조회 성공 ", popularKeywords
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "인기 검색어 조회 실패 - " + e.getMessage()
-                    ));
-        }
+        List<String> popularKeywords = recipeService.getPopularSearchKeywords();
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "인기 검색어 조회 성공 ", popularKeywords
+        ));
     }
 
     // 레시피 수정
@@ -189,19 +165,13 @@ public class RecipeController implements RecipeApi {
             @PathVariable Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            recipeService.deleteRecipe(recipeId, member);
+        Member member = memberDetails.getMember();
+        recipeService.deleteRecipe(recipeId, member);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "레시피 삭제 성공", "recipeId: " + recipeId + " 삭제 완료"
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "레시피 삭제 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "레시피 삭제 성공", "recipeId: " + recipeId + " 삭제 완료"
+        ));
     }
 
     // 로그인한 사용자가 작성한 레시피를 최대 10개까지 조회
@@ -210,19 +180,11 @@ public class RecipeController implements RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails,
             @RequestParam(defaultValue = "10") int size
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            List<RecipeSummaryResponse> recipes = recipeService.getMyRecipes(member, size);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "작성한 레시피 조회 성공", recipes
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "작성한 레시피 조회 실패 - " + e.getMessage()
-                    ));
-        }
+        Member member = memberDetails.getMember();
+        List<RecipeSummaryResponse> recipes = recipeService.getMyRecipes(member, size);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "작성한 레시피 조회 성공", recipes
+        ));
     }
 }

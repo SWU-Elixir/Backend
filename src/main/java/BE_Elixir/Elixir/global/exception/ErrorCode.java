@@ -48,6 +48,7 @@ public enum ErrorCode {
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "좋아요한 레시피가 없습니다."),
     ALREADY_SCRAPPED(HttpStatus.CONFLICT.value(), "이미 스크랩한 레시피입니다."),
     SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "스크랩한 레시피가 없습니다."),
+    INVALID_EVENT_OPERATION(HttpStatus.BAD_REQUEST.value(), "잘못된 이벤트 요청입니다."),
 
     // 챌린지
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "챌린지를 찾을 수 없습니다."),
