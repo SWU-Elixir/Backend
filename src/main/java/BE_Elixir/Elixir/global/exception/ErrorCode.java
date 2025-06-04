@@ -69,7 +69,7 @@ public enum ErrorCode {
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "MultipartFile을 File로 전환하지 못했습니다."),
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "S3에서 파일을 삭제하지 못했습니다."),
     FILE_SIZE_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR.value(), "업로드하는 이미지의 용량이 초과되었습니다. (10MB미만)"),
-
+    S3_INVALID_URL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "잘못된 S3 이미지 URL입니다.")
     ;
 
 
