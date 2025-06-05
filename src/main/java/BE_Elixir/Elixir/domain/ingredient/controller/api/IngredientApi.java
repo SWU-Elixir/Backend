@@ -34,12 +34,14 @@ public interface IngredientApi {
                                       "data": [
                                         {
                                           "id": 1,
-                                          "name": "가시오가피",
+                                          "name": "감자",
+                                          "category": "농산물",
                                           "type": null
                                         },
                                         {
                                           "id": 2,
-                                          "name": "가지",
+                                          "name": "곤약(구약나물)",
+                                          "category": "농산물",
                                           "type": null
                                         }, ...
                                       ]
@@ -63,13 +65,15 @@ public interface IngredientApi {
                                       "message": "당월 챌린지 식재료 목록 조회 성공",
                                       "data": [
                                         {
-                                          "id": 1,
+                                          "id": 142,
                                           "name": "딸기",
+                                          "category": "농산물",
                                           "month": 2
                                         },
                                         {
-                                          "id": 2,
+                                          "id": 1111,
                                           "name": "봄동",
+                                          "category": "농산물",
                                           "month": 2
                                         }, ...
                                       ]
