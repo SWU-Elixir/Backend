@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class RedisService {
+public class RedisAuthService {
 
     private final StringRedisTemplate redisTemplate;
     private final JwtProvider jwtProvider;
 
-    public RedisService(StringRedisTemplate redisTemplate, JwtProvider jwtProvider) {
+    public RedisAuthService(StringRedisTemplate redisTemplate, JwtProvider jwtProvider) {
         this.redisTemplate = redisTemplate;
         this.jwtProvider = jwtProvider;
     }
