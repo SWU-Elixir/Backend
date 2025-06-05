@@ -13,6 +13,8 @@ import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.enums.DietLogType;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class DietLogService {
     private final ApplicationEventPublisher eventPublisher;
 
     // 식단 기록하기
-    public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) throws IOException{
+    public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) {
 
         // 회원 조회
         Member member = memberRepository.findById(memberId)
@@ -56,9 +58,14 @@ public class DietLogService {
 
         // 식단 이미지 업로드 및 url 세팅
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "diet_log");
-            log.info("이미지 S3에 업로드 성공 imageUrl: {}", imageUrl);
-            dietLog.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "diet_log");
+
+                log.info("이미지 S3에 업로드 성공 imageUrl: {}", imageUrl);
+                dietLog.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // Ingredient ID 목록으로 Ingredient 엔티티들 조회
@@ -99,7 +106,7 @@ public class DietLogService {
     }
 
     // 식단 수정하기
-    public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) throws IOException {
+    public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) {
         // 기존 식단 조회
         DietLog dietLog = dietLogRepository.findById(dietLogId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
@@ -132,8 +139,12 @@ public class DietLogService {
                 s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
             }
             // 새 이미지 업로드
-            String imageUrl = s3Service.upload(image, "diet_log");
-            dietLog.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "diet_log");
+                dietLog.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 식단 점수 수정

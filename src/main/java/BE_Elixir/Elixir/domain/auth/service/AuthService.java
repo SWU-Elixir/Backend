@@ -5,7 +5,9 @@ import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
-import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
+import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
-    private final RedisService redisService;
+    private final RedisAuthService redisAuthService;
     private final MemberDetailsService memberDetailsService;
 
     // 로그인 (jwt 발급 및 Redis 저장)
@@ -46,17 +48,13 @@ public class AuthService {
             String email = authentication.getName();
 
             // Redis에 Refresh Token 저장
-            redisService.saveRefreshToken(email, refreshToken);
+            redisAuthService.saveRefreshToken(email, refreshToken);
             log.info("Refresh Token Redis에 저장: email={}, token={}", email, refreshToken);
 
             return tokenResponse;
         } catch (BadCredentialsException e) {
             log.warn("로그인 실패 - 잘못된 비밀번호: {}", request.getEmail());
-            throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다.");
-
-        } catch (Exception e) {
-            log.error("로그인 중 예외 발생 - email: {}, message: {}", request.getEmail(), e.getMessage(), e);
-            throw new RuntimeException("로그인 처리 중 오류가 발생했습니다.");
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 
@@ -64,40 +62,32 @@ public class AuthService {
     public void logout(String email, String accessToken, String refreshToken) {
         // Access Token 검증 및 블랙리스트 처리
         if (jwtProvider.validateToken(accessToken)) {
-            redisService.addAccessTokenToBlacklist(accessToken);
+            redisAuthService.addAccessTokenToBlacklist(accessToken);
             log.info("Access Token 블랙리스트 등록 완료");
         } else {
-            throw new RuntimeException("유효하지 않거나 만료된 Access Token");
+            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         // Refresh Token이 redis에 있는지 확인 및 제거
-        if (refreshToken != null && redisService.isRefreshTokenValid(email, refreshToken)) {
-            redisService.removeRefreshToken(email);
+        if (refreshToken != null && redisAuthService.isRefreshTokenValid(email, refreshToken)) {
+            redisAuthService.removeRefreshToken(email);
             log.info("Refresh Token 삭제 완료");
         } else {
-            throw new RuntimeException("유효하지 않거나 만료된 Refresh Token");
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 
     // Refresh Token을 이용해 새로운 Access Token, Refresh Token을 발급
     public AccessTokenDTO refreshAccessToken(String email, String refreshToken) {
-        try {
-            if (!jwtProvider.validateToken(refreshToken)) {
-                throw new RuntimeException("유효하지 않은 Refresh Token");
-            }
-
-            // 회원 인증 정보 추출
-            MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    email, "", memberDetails.getAuthorities());
-
-            return jwtProvider.generateAccessToken(authentication);
-        } catch (UsernameNotFoundException e) {
-            throw new RuntimeException("찾을 수 없는 회원", e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("유효하지 않은 Refresh Token", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Access Token 재발급 중 오류가 발생했습니다.", e);
+        if (!jwtProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
+
+        // 회원 인증 정보 추출
+        MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                email, "", memberDetails.getAuthorities());
+
+        return jwtProvider.generateAccessToken(authentication);
     }
 }

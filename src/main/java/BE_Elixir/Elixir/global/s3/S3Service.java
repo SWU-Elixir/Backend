@@ -33,7 +33,9 @@ public class S3Service {
 
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new CustomException(ErrorCode.S3_UPLOAD_ERROR));
+
         return upload(uploadFile, dirName);
+
     }
 
     private String upload(File uploadFile, String dirName) {
@@ -64,7 +66,7 @@ public class S3Service {
         }
     }
 
-    public Optional<File> convert(MultipartFile file) throws  IOException {
+    public Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename()); // 업로드한 파일의 이름
         if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {

@@ -5,6 +5,8 @@ import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -105,7 +107,7 @@ public class JwtProvider {
 
         if (claims.get("auth") == null) {
             log.error("권한 정보가 없는 토큰입니다.");
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         // 클레임에서 권한 정보 가져오기
@@ -116,7 +118,7 @@ public class JwtProvider {
 
         String email = claims.getSubject();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다. email: " + email));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         MemberDetails principal = new MemberDetails(member);
 
@@ -159,7 +161,11 @@ public class JwtProvider {
                     .parseSignedClaims(accessToken)
                     .getPayload();
         } catch (ExpiredJwtException e) {
+            log.warn("만료된 JWT 토큰이지만 클레임은 추출됩니다: {}", e.getMessage());
             return e.getClaims();
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("JWT 클레임 파싱 실패: {}", e.getMessage());
+            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
