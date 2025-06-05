@@ -311,18 +311,10 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<RecipeImageResponseDTO> recipes = memberService.getMyRecipes(memberId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(), "내 레시피 조회 성공", recipes));
+        List<RecipeImageResponseDTO> recipes = memberService.getMyRecipes(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(), "내 레시피 조회 성공", recipes));
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "내 레시피 조회 실패 - " + e.getMessage()));
-        }
     }
 
 
@@ -333,19 +325,11 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(memberId);
+        List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(memberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "내가 스크랩한 레시피 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
     }
 
     // 팔로우 하기
@@ -487,19 +471,11 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(memberId);
+        List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(memberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "모든 챌린지 업적 조회 성공", achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "업적 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "모든 챌린지 업적 조회 성공", achievements));
     }
 
     // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
@@ -509,19 +485,11 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(memberId);
+        List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(memberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "최근 업적 3개 조회 성공", top3Achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "최근 업적 3개 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "최근 업적 3개 조회 성공", top3Achievements));
     }
 
     // 로그인한 사용자의 설문조사 결과 조회하기
@@ -574,17 +542,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
             @PathVariable("memberId") Long memberId
     ) {
-        try {
-            List<RecipeImageResponseDTO> recipes = memberService.getUserRecipes(memberId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(), "다른 사용자 레시피 조회 성공", recipes));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "다른 사용자 레시피 조회 실패 - " + e.getMessage()));
-        }
+        List<RecipeImageResponseDTO> recipes = memberService.getUserRecipes(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(), "다른 사용자 레시피 조회 성공", recipes));
+
     }
 
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
@@ -592,18 +553,10 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievementsByMemberId(
             @PathVariable Long memberId
     ) {
-        try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievementsByMemberId(memberId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "다른 사용자의 모든 업적 조회 성공", achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "다른 사용자의 업적 조회 실패 - " + e.getMessage()));
-        }
+        List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievementsByMemberId(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "다른 사용자의 모든 업적 조회 성공", achievements));
     }
 
     // 다른 사용자의 최근 3개 업적 조회하기
@@ -611,17 +564,9 @@ public class MemberController implements MemberApi {
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3AchievementsByMemberId(
             @PathVariable Long memberId
     ) {
-        try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getTop3AchievementsByMemberId(memberId);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "다른 사용자의 최근 업적 3개 조회 성공", achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "다른 사용자의 최근 업적 3개 조회 실패 - " + e.getMessage()));
-        }
+        List<MemberAchievementResponseDTO> achievements = memberService.getTop3AchievementsByMemberId(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "다른 사용자의 최근 업적 3개 조회 성공", achievements));
     }
 }
