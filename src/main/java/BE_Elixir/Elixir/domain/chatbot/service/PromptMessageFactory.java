@@ -5,6 +5,7 @@ import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.service.DietLogService;
 import BE_Elixir.Elixir.domain.ingredient.dto.ChallengeIngredientDTO;
 import BE_Elixir.Elixir.domain.ingredient.service.IngredientService;
+import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
@@ -110,7 +111,7 @@ public class PromptMessageFactory {
                 recipe.getCategorySlowAging(),
                 recipe.getCategoryType(),
                 formatMap(recipe.getIngredients()),
-                formatMap(recipe.getSeasoning()),
+                formatMap(recipe.getSeasonings()),
                 String.join(", ", recipe.getStepDescriptions()),
                 String.join(", ", recipe.getAllergies()),
                 recipe.getTips()
@@ -185,10 +186,10 @@ public class PromptMessageFactory {
         return createMessage(system, message);
     }
 
-    // 레시피 식재료, 양념 구조를 문자열로 변환 (Map<String, String> -> ' '과 ', '로 join하기 ex. 소금 1T, 설탕 2T)
-    private String formatMap(Map<String, String> map) {
-        return map.entrySet().stream()
-                .map(e -> e.getKey() + " " + e.getValue())
+    // 레시피 식재료, 양념 구조를 문자열로 변환 (MaterialDTO -> ' '과 ', ', ''로 join하기 ex. 소금 1T, 설탕 2T)
+    private String formatMap(List<MaterialDTO> map) {
+        return map.stream()
+                .map(e -> e.getName() + " " + e.getValue() + e.getUnit())
                 .collect(Collectors.joining(", "));
     }
 
