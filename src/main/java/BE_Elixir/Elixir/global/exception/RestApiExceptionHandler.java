@@ -35,4 +35,16 @@ public class RestApiExceptionHandler {
                         ErrorCode.FILE_SIZE_EXCEEDED.getMessage()
                 ));
     }
+
+    //
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<CommonResponse<?>> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        return ResponseEntity
+                .status(ErrorCode.FILE_SIZE_EXCEEDED.getStatus())
+                .body(CommonResponse.error(
+                        ErrorCode.FILE_SIZE_EXCEEDED.getStatus(),
+                        ErrorCode.FILE_SIZE_EXCEEDED.name(),
+                        ErrorCode.FILE_SIZE_EXCEEDED.getMessage()
+                ));
+    }
 }

@@ -8,8 +8,6 @@ import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeExpiredException;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeMismatchException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.redis.RedisService;
 import BE_Elixir.Elixir.global.response.CommonResponse;

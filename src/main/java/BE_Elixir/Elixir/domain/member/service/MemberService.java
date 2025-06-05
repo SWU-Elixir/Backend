@@ -20,8 +20,6 @@ import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeExpiredException;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeMismatchException;
 import BE_Elixir.Elixir.global.email.EmailService;
 import BE_Elixir.Elixir.global.redis.RedisEmailVerificationService;
 import BE_Elixir.Elixir.global.redis.RedisService;
@@ -114,11 +112,11 @@ public class MemberService {
 
         } catch (DataIntegrityViolationException e) {
             if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {
-                throw new OccupiedException(ErrorCode.EXISTS_MEMBER);
+                throw new CustomException(ErrorCode.EXISTS_MEMBER);
             }
             throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("회원가입 중 오류가 발생했습니다.");
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
         }
     }
 
@@ -497,6 +495,7 @@ public class MemberService {
                 case "전복" -> member.setAllergy_전복(true);
                 case "홍합" -> member.setAllergy_홍합(true);
                 case "잣" -> member.setAllergy_잣(true);
+                default -> throw new CustomException(ErrorCode.INVALID_ALLERGY_VALUE);
             }
         }
     }
@@ -508,6 +507,7 @@ public class MemberService {
                 case "고기위주" -> member.setMealStyle_고기위주(true);
                 case "채소위주" -> member.setMealStyle_채소위주(true);
                 case "혼합식" -> member.setMealStyle_혼합식(true);
+                default -> throw new CustomException(ErrorCode.INVALID_MEAL_STYLE);
             }
         }
     }
@@ -523,6 +523,7 @@ public class MemberService {
                 case "디저트" -> member.setRecipeStyle_디저트(true);
                 case "음료_차" -> member.setRecipeStyle_음료_차(true);
                 case "양념_소스_잼" -> member.setRecipeStyle_양념_소스_잼(true);
+                default -> throw new CustomException(ErrorCode.INVALID_RECIPE_STYLE);
             }
         }
     }
@@ -534,6 +535,7 @@ public class MemberService {
                 case "항산화강화" -> member.setReason_항산화강화(true);
                 case "혈당조절" -> member.setReason_혈당조절(true);
                 case "염증감소" -> member.setReason_염증감소(true);
+                default -> throw new CustomException(ErrorCode.INVALID_REASON);
             }
         }
     }
