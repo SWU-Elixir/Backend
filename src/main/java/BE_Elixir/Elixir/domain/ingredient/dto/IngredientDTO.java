@@ -12,11 +12,13 @@ import java.time.LocalDate;
 public class IngredientDTO {
     private Long id;
     private String name;
+    private String categoryGroup;
     private String type;
 
     public IngredientDTO(Ingredient ingredient) {
         this.id = ingredient.getId();
         this.name = ingredient.getName();
+        this.categoryGroup = ingredient.getCategoryGroup();
 
         if (ingredient.isNova4()) {
             this.type = "초가공식품";
