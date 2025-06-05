@@ -301,8 +301,8 @@ public class MemberService {
 
 
     // 로그인한 사용자가 업로드한 모든 레시피 조회하기
-    public List<RecipeImageResponseDTO> getMyRecipes(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public List<RecipeImageResponseDTO> getMyRecipes(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Recipe> recipes = recipeRepository.findAllByMember(member);
@@ -313,8 +313,8 @@ public class MemberService {
     }
 
     // 로그인한 사용자가 스크랩한 레시피 조회하기
-    public List<RecipeImageResponseDTO> getMyScrapRecipes(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public List<RecipeImageResponseDTO> getMyScrapRecipes(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<RecipeEvent> scraps = recipeEventRepository.findByMemberAndScrapFlagTrue(member);
@@ -328,8 +328,8 @@ public class MemberService {
     }
 
     // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    public List<MemberAchievementResponseDTO> getAllAchievements(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public List<MemberAchievementResponseDTO> getAllAchievements(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 전체 챌린지 조회 (연도/월 기준)
@@ -367,8 +367,8 @@ public class MemberService {
     }
 
     // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    public List<MemberAchievementResponseDTO> getTop3Achievements(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public List<MemberAchievementResponseDTO> getTop3Achievements(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
