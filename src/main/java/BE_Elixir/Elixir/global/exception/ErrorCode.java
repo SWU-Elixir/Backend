@@ -13,6 +13,10 @@ public enum ErrorCode {
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN.value(), "접근 권한이 없습니다."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST.value(), "유효하지 않은 입력 값입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 내부 오류가 발생했습니다."),
+    EMAIL_SENDING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "이메일 전송 중 오류가 발생했습니다."),
+    UNSUPPORTED_ENCODING(HttpStatus.INTERNAL_SERVER_ERROR.value(), "지원하지 않는 문자 인코딩 방식입니다."),
+    JSON_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "데이터 처리 중 오류가 발생했습니다."),
+    INVALID_ENCRYPTION_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR.value(), "알 수 없는 암호화 알고리즘입니다."),
 
     // Auth
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED.value(), "회원 정보가 일치하지 않습니다."),
@@ -30,6 +34,7 @@ public enum ErrorCode {
     // 회원 팔로우
     ALREADY_FOLLOWING(HttpStatus.CONFLICT.value(), "이미 팔로우 되어있는 회원입니다."),
     FOLLOW_RELATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "팔로우 관계가 없는 회원입니다."),
+    SELF_FOLLOW_NOT_ALLOWED(HttpStatus.BAD_REQUEST.value(), "자기 자신을 팔로우할 수 없습니다."),
 
     // 식재료
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 식재료가 존재하지 않습니다."),

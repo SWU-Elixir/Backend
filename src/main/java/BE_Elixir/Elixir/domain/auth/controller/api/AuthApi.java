@@ -44,7 +44,7 @@ public interface AuthApi {
                                     {
                                       "status": 401,
                                       "code": "401 UNAUTHORIZED",
-                                      "message": "로그인 실패 - 아이디 또는 비밀번호가 일치하지 않습니다.",
+                                      "message": "회원 정보가 일치하지 않습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -71,7 +71,7 @@ public interface AuthApi {
                                     {
                                       "status": 401,
                                       "code": "401 BAD_REQUEST",
-                                      "message": "로그아웃 실패 - 유효하지 않거나 만료된 Refresh Token",
+                                      "message": "Access Token이 유효하지 않습니다.",
                                       "data": null
                                     }
                                     """))),
@@ -103,7 +103,7 @@ public interface AuthApi {
                                     {
                                       "status": 401,
                                       "code": "401 UNAUTHORIZED",
-                                      "message": "Access Token 재발급 실패 - Access Token 재발급 중 오류가 발생했습니다.",
+                                      "message": "Token 발급 중 오류가 발생했습니다.",
                                       "data": null
                                     }
                                     """)))

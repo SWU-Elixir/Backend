@@ -57,7 +57,7 @@ public interface DietLogApi {
                                     {
                                       "status": 400,
                                       "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "식단 기록 실패: 오류 메시지",
+                                      "message": "서버 내부 오류가 발생했습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -83,13 +83,13 @@ public interface DietLogApi {
                                       "data": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+            @ApiResponse(responseCode = "404", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 400,
-                                      "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "식단 삭제 실패 - 해당 식단이 존재하지 않습니다. 식단 ID: 1",
+                                      "status": 404,
+                                      "code": "404 NOT_FOUND",
+                                      "message": "식단 기록이 존재하지 않습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -124,13 +124,13 @@ public interface DietLogApi {
                                       }
                                     }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "식단 수정 실패",
+            @ApiResponse(responseCode = "404", description = "식단 수정 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 400,
-                                      "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "식단 수정 실패: 오류 메시지",
+                                      "status": 404,
+                                      "code": "404 NOT_FOUND",
+                                      "message": "식단 기록이 존재하지 않습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -168,13 +168,13 @@ public interface DietLogApi {
                                       }
                                     }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "식단 정보 조회 실패",
+            @ApiResponse(responseCode = "404", description = "식단 정보 조회 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 400,
-                                      "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "식단 조회 실패: 해당 식단이 존재하지 않습니다. 식단 ID: 2",
+                                      "status": 404,
+                                      "code": "404 NOT_FOUND",
+                                      "message": "식단 기록이 존재하지 않습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -219,7 +219,7 @@ public interface DietLogApi {
                                     {
                                       "status": 400,
                                       "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "일별 식단 목록 조회 실패: 해당 식단이 존재하지 않습니다. 식단 ID: 2",
+                                      "message": "서버 내부 오류가 발생했습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -256,7 +256,7 @@ public interface DietLogApi {
                                     {
                                       "status": 400,
                                       "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "월별 식단별 점수 조회 실패",
+                                      "message": "서버 내부 오류가 발생했습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -302,7 +302,7 @@ public interface DietLogApi {
                                     {
                                       "status": 400,
                                       "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "최근 N일 식단 목록 조회 실패: ...",
+                                      "message": "서버 내부 오류가 발생했습니다.",
                                       "data": null
                                     }
                                     """)))
