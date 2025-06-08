@@ -1,6 +1,8 @@
 package BE_Elixir.Elixir.domain.member.entity;
 
 import BE_Elixir.Elixir.domain.follow.entity.Follow;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -74,6 +76,26 @@ public class Member {
     @Builder.Default @Setter private Boolean allergy_홍합 = false;
     @Builder.Default @Setter private Boolean allergy_잣 = false;
 
+    // 식사 스타일
+    @Builder.Default @Setter private Boolean mealStyle_고기위주 = false;
+    @Builder.Default @Setter private Boolean mealStyle_채소위주 = false;
+    @Builder.Default @Setter private Boolean mealStyle_혼합식 = false;
+
+    // 레시피 스타일
+    @Builder.Default @Setter private Boolean recipeStyle_한식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_중식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_일식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_양식 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_디저트 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_음료_차 = false;
+    @Builder.Default @Setter private Boolean recipeStyle_양념_소스_잼 = false;
+
+    // 식단 이유
+    @Builder.Default @Setter private boolean reason_항산화강화 = false;
+    @Builder.Default @Setter private boolean reason_혈당조절 = false;
+    @Builder.Default @Setter private boolean reason_염증감소 = false;
+
+    // 알러지 리스트 반환
     public List<String> getAllergies() {
         List<String> result = new ArrayList<>();
 
@@ -104,11 +126,7 @@ public class Member {
         return result;
     }
 
-    // 식사 스타일
-    @Builder.Default @Setter private Boolean mealStyle_고기위주 = false;
-    @Builder.Default @Setter private Boolean mealStyle_채소위주 = false;
-    @Builder.Default @Setter private Boolean mealStyle_혼합식 = false;
-
+    // 식사 스타일 리스트 반환
     public List<String> getMealStyles() {
         List<String> result = new ArrayList<>();
 
@@ -118,15 +136,6 @@ public class Member {
 
         return result;
     }
-
-    // 레시피 스타일
-    @Builder.Default @Setter private Boolean recipeStyle_한식 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_중식 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_일식 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_양식 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_디저트 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_음료_차 = false;
-    @Builder.Default @Setter private Boolean recipeStyle_양념_소스_잼 = false;
 
     // 레시피 스타일 리스트 반환
     public List<String> getRecipeStyles() {
@@ -143,11 +152,6 @@ public class Member {
         return result;
     }
 
-    // 식단 이유
-    @Builder.Default @Setter private boolean reason_항산화강화 = false;
-    @Builder.Default @Setter private boolean reason_혈당조절 = false;
-    @Builder.Default @Setter private boolean reason_염증감소 = false;
-
     // 식단 이유 리스트 반환
     public List<String> getReasons() {
         List<String> result = new ArrayList<>();
@@ -157,5 +161,129 @@ public class Member {
         if (reason_염증감소) result.add("염증감소");
 
         return result;
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 알러지
+    public void applyAllergies(List<String> allergies) {
+        for (String allergy : allergies) {
+            switch (allergy) {
+                case "알류" -> this.setAllergy_알류(true);
+                case "우유" -> this.setAllergy_우유(true);
+                case "각류" -> this.setAllergy_각류(true);
+                case "밀류" -> this.setAllergy_밀류(true);
+                case "유제품" -> this.setAllergy_유제품(true);
+                case "메밀" -> this.setAllergy_메밀(true);
+                case "땅콩" -> this.setAllergy_땅콩(true);
+                case "대두" -> this.setAllergy_대두(true);
+                case "밀" -> this.setAllergy_밀(true);
+                case "고등어" -> this.setAllergy_고등어(true);
+                case "돼지고기" -> this.setAllergy_돼지고기(true);
+                case "복숭아" -> this.setAllergy_복숭아(true);
+                case "토마토" -> this.setAllergy_토마토(true);
+                case "아황산류" -> this.setAllergy_아황산류(true);
+                case "호두" -> this.setAllergy_호두(true);
+                case "닭고기" -> this.setAllergy_닭고기(true);
+                case "쇠고기" -> this.setAllergy_쇠고기(true);
+                case "오징어" -> this.setAllergy_오징어(true);
+                case "조개류" -> this.setAllergy_조개류(true);
+                case "굴" -> this.setAllergy_굴(true);
+                case "전복" -> this.setAllergy_전복(true);
+                case "홍합" -> this.setAllergy_홍합(true);
+                case "잣" -> this.setAllergy_잣(true);
+                default -> throw new CustomException(ErrorCode.INVALID_ALLERGY_VALUE);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 식사 스타일
+    public void applyMealStyles(List<String> styles) {
+        for (String style : styles) {
+            switch (style) {
+                case "고기위주" -> this.setMealStyle_고기위주(true);
+                case "채소위주" -> this.setMealStyle_채소위주(true);
+                case "혼합식" -> this.setMealStyle_혼합식(true);
+                default -> throw new CustomException(ErrorCode.INVALID_MEAL_STYLE);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 레시피 스타일
+    public void applyRecipeStyles(List<String> styles) {
+        for (String style : styles) {
+            switch (style) {
+                case "한식" -> this.setRecipeStyle_한식(true);
+                case "중식" -> this.setRecipeStyle_중식(true);
+                case "일식" -> this.setRecipeStyle_일식(true);
+                case "양식" -> this.setRecipeStyle_양식(true);
+                case "디저트" -> this.setRecipeStyle_디저트(true);
+                case "음료_차" -> this.setRecipeStyle_음료_차(true);
+                case "양념_소스_잼" -> this.setRecipeStyle_양념_소스_잼(true);
+                default -> throw new CustomException(ErrorCode.INVALID_RECIPE_STYLE);
+            }
+        }
+    }
+
+    // 설문조사 결과를 member 객체에 적용 - 식단 이유
+    public void applyReasons(List<String> reasons) {
+        for (String reason : reasons) {
+            switch (reason) {
+                case "항산화강화" -> this.setReason_항산화강화(true);
+                case "혈당조절" -> this.setReason_혈당조절(true);
+                case "염증감소" -> this.setReason_염증감소(true);
+                default -> throw new CustomException(ErrorCode.INVALID_REASON);
+            }
+        }
+    }
+
+    // 알러지 필드 모두 false로 초기화
+    public void resetAllergies() {
+        this.setAllergy_알류(false);
+        this.setAllergy_우유(false);
+        this.setAllergy_각류(false);
+        this.setAllergy_밀류(false);
+        this.setAllergy_유제품(false);
+        this.setAllergy_메밀(false);
+        this.setAllergy_땅콩(false);
+        this.setAllergy_대두(false);
+        this.setAllergy_밀(false);
+        this.setAllergy_고등어(false);
+        this.setAllergy_돼지고기(false);
+        this.setAllergy_복숭아(false);
+        this.setAllergy_토마토(false);
+        this.setAllergy_아황산류(false);
+        this.setAllergy_호두(false);
+        this.setAllergy_닭고기(false);
+        this.setAllergy_쇠고기(false);
+        this.setAllergy_오징어(false);
+        this.setAllergy_조개류(false);
+        this.setAllergy_굴(false);
+        this.setAllergy_전복(false);
+        this.setAllergy_홍합(false);
+        this.setAllergy_잣(false);
+    }
+
+    // 식사 스타일 필드 초기화
+    public void resetMealStyles() {
+        this.setMealStyle_고기위주(false);
+        this.setMealStyle_채소위주(false);
+        this.setMealStyle_혼합식(false);
+    }
+
+    // 레시피 스타일 필드 초기화
+    public void resetRecipeStyles() {
+        this.setRecipeStyle_한식(false);
+        this.setRecipeStyle_중식(false);
+        this.setRecipeStyle_일식(false);
+        this.setRecipeStyle_양식(false);
+        this.setRecipeStyle_디저트(false);
+        this.setRecipeStyle_음료_차(false);
+        this.setRecipeStyle_양념_소스_잼(false);
+    }
+
+    // 이유 필드 초기화
+    public void resetReasons() {
+        this.setReason_항산화강화(false);
+        this.setReason_혈당조절(false);
+        this.setReason_염증감소(false);
     }
 }
