@@ -28,21 +28,13 @@ public class RecommendationController implements RecommendationApi {
     public ResponseEntity<CommonResponse<?>> getRecommendations(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            List<RecommendationResponseDTO> recommendations = recommendationService.getRecommendationsForUser(member);
+        Member member = memberDetails.getMember();
+        List<RecommendationResponseDTO> recommendations = recommendationService.getRecommendationsForUser(member);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "추천 레시피 조회 성공", recommendations
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "추천 레시피 조회 실패 - " + e.getMessage()
-                    ));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "추천 레시피 조회 성공", recommendations
+        ));
     }
 
     // 추천 검색어 조회
@@ -50,21 +42,13 @@ public class RecommendationController implements RecommendationApi {
     public ResponseEntity<CommonResponse<?>> getSearchKeyword(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
-        try {
-            Member member = memberDetails.getMember();
-            List<String> recommendationsKeywords = recommendationService.getRecommendedKeywords(member);
+        Member member = memberDetails.getMember();
+        List<String> recommendationsKeywords = recommendationService.getRecommendedKeywords(member);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(),
-                    "추천 검색어 조회 성공", recommendationsKeywords
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                            "추천 검색어 조회 실패 - " + e.getMessage()
-                    ));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(),
+                "추천 검색어 조회 성공", recommendationsKeywords
+        ));
     }
 }
 
