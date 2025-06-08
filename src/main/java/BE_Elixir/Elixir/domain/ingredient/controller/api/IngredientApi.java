@@ -46,6 +46,16 @@ public interface IngredientApi {
                                         }, ...
                                       ]
                                      }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "식재료 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<IngredientDTO>>> getAllIngredients();
@@ -78,6 +88,16 @@ public interface IngredientApi {
                                         }, ...
                                       ]
                                      }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "당월 챌린지 식재료 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<ChallengeIngredientDTO>>> getChallengeIngredients();

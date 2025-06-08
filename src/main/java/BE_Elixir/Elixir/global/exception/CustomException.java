@@ -1,10 +1,10 @@
 package BE_Elixir.Elixir.global.exception;
 
-public class EmailVerificationCodeExpiredException extends RuntimeException{
+public class CustomException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public EmailVerificationCodeExpiredException(ErrorCode errorCode) {
+    public CustomException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

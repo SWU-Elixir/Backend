@@ -1,5 +1,7 @@
 package BE_Elixir.Elixir.global.email;
 
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -42,30 +44,34 @@ public class EmailService {
     public Duration validityDuration = Duration.ofMinutes(5);
 
     // Key 생성 및 메일 전송
-    public String sendMail(String to) throws MessagingException, UnsupportedEncodingException {
-        key = createKey();
+    public String sendMail(String to) {
+        try {
+            key = createKey();
 
-        MimeMessage message = createMessage(to);
+            MimeMessage message = createMessage(to);
 
-        emailSender.send(message);
+            emailSender.send(message);
 
-        return key;
+            return key;
+        } catch (NoSuchAlgorithmException e) {
+            throw new CustomException(ErrorCode.INVALID_ENCRYPTION_ALGORITHM);
+        } catch (MessagingException e) {
+            throw new CustomException(ErrorCode.EMAIL_SENDING_ERROR);
+        } catch (UnsupportedEncodingException e) {
+            throw new CustomException(ErrorCode.UNSUPPORTED_ENCODING);
+        }
     }
 
     // 랜덤 인증코드 생성
-    private String createKey() {
+    private String createKey() throws NoSuchAlgorithmException {
         int length = 6;
 
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        Random random = SecureRandom.getInstanceStrong();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            builder.append(random.nextInt(10));
         }
+        return builder.toString();
     }
 
     // 이메일 본문

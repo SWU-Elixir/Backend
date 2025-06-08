@@ -18,13 +18,11 @@ import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeExpiredException;
-import BE_Elixir.Elixir.global.exception.EmailVerificationCodeMismatchException;
-import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.email.EmailService;
 import BE_Elixir.Elixir.global.redis.RedisEmailVerificationService;
-import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.redis.dto.EmailVerificationDTO;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import BE_Elixir.Elixir.global.security.JwtProvider;
@@ -40,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +56,7 @@ public class MemberService {
     private final RecipeEventRepository recipeEventRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final RedisService redisService;
+    private final RedisAuthService redisAuthService;
     private final RedisEmailVerificationService redisMailVerificationService;
     private final S3Service s3Service;
     private final EmailService mailService;
@@ -73,57 +72,59 @@ public class MemberService {
         roles.add("USER");
 
         try {
-            // Member entity 값 세팅
-            Member member = request.toEntity(
-                    passwordEncoder.encode(request.getPassword()), roles
-            );
-            member.setRoles(roles);
+        // Member entity 값 세팅
+        Member member = request.toEntity(
+                passwordEncoder.encode(request.getPassword()), roles
+        );
+        member.setRoles(roles);
 
-            // 설문조사 결과 세팅
-            // allergy 값 세팅
-            List<String> allergies = request.getAllergies();
-            if (allergies != null) {
-                applyAllergies(member, allergies);
-            }
+        // 설문조사 결과 세팅
+        // allergy 값 세팅
+        List<String> allergies = request.getAllergies();
+        if (allergies != null) {
+            applyAllergies(member, allergies);
+        }
 
-            // meal style 값 세팅
-            List<String> mealStyles = request.getMealStyles();
-            if (mealStyles != null) {
-                 applyMealStyles(member, mealStyles);
-            }
+        // meal style 값 세팅
+        List<String> mealStyles = request.getMealStyles();
+        if (mealStyles != null) {
+             applyMealStyles(member, mealStyles);
+        }
 
-            // recipe style 값 세팅
-            List<String> recipeStyles = request.getRecipeStyles();
-            if (recipeStyles != null) {
-                applyRecipeStyles(member, recipeStyles);
-            }
+        // recipe style 값 세팅
+        List<String> recipeStyles = request.getRecipeStyles();
+        if (recipeStyles != null) {
+            applyRecipeStyles(member, recipeStyles);
+        }
 
-            // reason 값 세팅
-            List<String> reasons = request.getReasons();
-            if (reasons != null) {
-                applyReasons(member, reasons);
-            }
+        // reason 값 세팅
+        List<String> reasons = request.getReasons();
+        if (reasons != null) {
+            applyReasons(member, reasons);
+        }
 
-            // 프로필 이미지 업로드 및 url 세팅
-            if (profileImage != null && !profileImage.isEmpty()) {
+        // 프로필 이미지 업로드 및 url 세팅
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
                 String imageUrl = s3Service.upload(profileImage, "member");
                 member.setProfileUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
             }
+        }
 
-            return memberRepository.save(member);
+        return memberRepository.save(member);
 
-        } catch (DataIntegrityViolationException e) {
-            if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {
-                throw new OccupiedException(ErrorCode.EXISTS_MEMBER);
-            }
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("회원가입 중 오류가 발생했습니다.");
+    } catch (DataIntegrityViolationException e) {
+        if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {
+            throw new CustomException(ErrorCode.EXISTS_MEMBER);
+        }
+        throw e;
         }
     }
 
     // 이메일 인증 요청하기
-    public void sendVerificationCode(String email) throws MessagingException, UnsupportedEncodingException, JsonProcessingException {
+    public void sendVerificationCode(String email) {
         // 해당 이메일의 회원이 존재하는지 검증
         memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
@@ -136,24 +137,22 @@ public class MemberService {
 
         // redis에 인증 관련 정보 저장
         redisMailVerificationService.saveVerificationCode(email, key, mailService.getMailSendTime());
-
     }
 
     // 인증번호 검증하기
-    public boolean verifyCode(String email, String code) throws JsonProcessingException {
+    public boolean verifyCode(String email, String code) {
         EmailVerificationDTO dto = redisMailVerificationService.getVerification(email);
-        // 인증 유효, 유효하지 않음, 시간 초과
 
         // 인증 가능한 최대 시간 계산
         Instant time = dto.getEmailSendTime().plus(mailService.getValidityDuration());
 
         // 유효시간 초과
         if (Instant.now().isAfter(time)) {
-            throw new EmailVerificationCodeExpiredException(ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED);
+            throw new CustomException(ErrorCode.EMAIL_VERIFICATION_CODE_EXPIRED);
         }
         // 코드 불일치
         if (!code.equals(dto.getCode())) {
-            throw new EmailVerificationCodeMismatchException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH);
+            throw new CustomException(ErrorCode.EMAIL_VERIFICATION_CODE_MISMATCH);
         }
 
         // Redis에 저장된 인증 정보 삭제
@@ -165,7 +164,7 @@ public class MemberService {
     // 비밀번호 수정하기
     public void updatePassword(String email, String newPassword) {
         Member member = memberRepository.findByEmail(email)
-                        .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 인코딩 및 비밀번호 설정
         member.setPassword(passwordEncoder.encode(newPassword));
@@ -173,32 +172,32 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-
     // 회원 탈퇴
     public void withdraw(String email, String accessToken, String refreshToken) {
         // Access Token 검증 및 블랙리스트 처리
         if (jwtProvider.validateToken(accessToken)) {
-            redisService.addAccessTokenToBlacklist(accessToken);
+            redisAuthService.addAccessTokenToBlacklist(accessToken);
             log.info("Access Token 블랙리스트 처리");
         } else {
-            throw new RuntimeException("유효하지 않거나 만료된 Access Token");
+            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         // Refresh Token이 redis에 있는지 확인 및 제거
-        if (refreshToken != null && redisService.isRefreshTokenValid(email, refreshToken)) {
+        if (refreshToken != null && redisAuthService.isRefreshTokenValid(email, refreshToken)) {
             // redis에서 제거
-            redisService.removeRefreshToken(email);
+            redisAuthService.removeRefreshToken(email);
             log.info("Refresh Token 무효화");
         } else {
-            throw new RuntimeException("유효하지 않거나 만료된 Refresh Token");
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         // 회원 정보 조회
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. email: " + email));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // S3 버킷에서 프로필 이미지 삭제
         s3Service.deleteS3(member.getProfileUrl(), "member");
+
         // 회원 삭제
         memberRepository.delete(member);
     }
@@ -207,7 +206,7 @@ public class MemberService {
     // 회원 정보 조회
     public MemberResponseDTO getMemberInfo(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. email: " + email));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // member 객체를 MemberResponseDTO 로 변환
         return MemberResponseDTO.builder()
@@ -235,10 +234,10 @@ public class MemberService {
     }
 
     // 로그인한 사용자 프로필 수정하기
-    public MemberResponseDTO updateMemberProfile(Long memberId, MemberProfileRequestDTO dto, MultipartFile image) throws IOException {
+    public MemberResponseDTO updateMemberProfile(Long memberId, MemberProfileRequestDTO dto, MultipartFile image) {
         // 기존 프로필 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. id: " + memberId));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 닉네임 수정
         if (dto.getNickname() != null) {
@@ -257,8 +256,12 @@ public class MemberService {
                 s3Service.deleteS3(member.getProfileUrl(), "member");
             }
             // 새 이미지 업로드
-            String imageUrl = s3Service.upload(image, "member");
-            member.setProfileUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "member");
+                member.setProfileUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 젠더 수정
@@ -287,7 +290,7 @@ public class MemberService {
     // 사용자 프로필 조회 (칭호, 닉네임, 프로필사진, 팔로워 수, 팔로잉 수)
     public MemberProfileResponseDTO getMemberProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return MemberProfileResponseDTO.builder()
                 .id(memberId)
@@ -303,7 +306,7 @@ public class MemberService {
     // 로그인한 사용자가 업로드한 모든 레시피 조회하기
     public List<RecipeImageResponseDTO> getMyRecipes(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Recipe> recipes = recipeRepository.findAllByMember(member);
 
@@ -315,7 +318,7 @@ public class MemberService {
     // 로그인한 사용자가 스크랩한 레시피 조회하기
     public List<RecipeImageResponseDTO> getMyScrapRecipes(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<RecipeEvent> scraps = recipeEventRepository.findByMemberAndScrapFlagTrue(member);
 
@@ -330,7 +333,7 @@ public class MemberService {
     // 로그인한 사용자의 모든 챌린지 업적 정보 조회
     public List<MemberAchievementResponseDTO> getAllAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 전체 챌린지 조회 (연도/월 기준)
         List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
@@ -369,7 +372,7 @@ public class MemberService {
     // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
     public List<MemberAchievementResponseDTO> getTop3Achievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
 
@@ -413,7 +416,7 @@ public class MemberService {
     // 설문조사 결과 조회
     public SurveyResponseDTO getSurvey(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return SurveyResponseDTO.builder()
                 .memberId(memberId)
@@ -428,7 +431,7 @@ public class MemberService {
     // 설문조사 결과 수정
     public SurveyResponseDTO updateSurvey(Long memberId, SurveyRequestDTO dto) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<String> allergies = dto.getAllergies();
         if (allergies != null) {
@@ -497,6 +500,7 @@ public class MemberService {
                 case "전복" -> member.setAllergy_전복(true);
                 case "홍합" -> member.setAllergy_홍합(true);
                 case "잣" -> member.setAllergy_잣(true);
+                default -> throw new CustomException(ErrorCode.INVALID_ALLERGY_VALUE);
             }
         }
     }
@@ -508,6 +512,7 @@ public class MemberService {
                 case "고기위주" -> member.setMealStyle_고기위주(true);
                 case "채소위주" -> member.setMealStyle_채소위주(true);
                 case "혼합식" -> member.setMealStyle_혼합식(true);
+                default -> throw new CustomException(ErrorCode.INVALID_MEAL_STYLE);
             }
         }
     }
@@ -523,6 +528,7 @@ public class MemberService {
                 case "디저트" -> member.setRecipeStyle_디저트(true);
                 case "음료_차" -> member.setRecipeStyle_음료_차(true);
                 case "양념_소스_잼" -> member.setRecipeStyle_양념_소스_잼(true);
+                default -> throw new CustomException(ErrorCode.INVALID_RECIPE_STYLE);
             }
         }
     }
@@ -534,6 +540,7 @@ public class MemberService {
                 case "항산화강화" -> member.setReason_항산화강화(true);
                 case "혈당조절" -> member.setReason_혈당조절(true);
                 case "염증감소" -> member.setReason_염증감소(true);
+                default -> throw new CustomException(ErrorCode.INVALID_REASON);
             }
         }
     }
@@ -593,7 +600,7 @@ public class MemberService {
     // 다른 사용자가 업로드한 모든 레시피 조회하기
     public List<RecipeImageResponseDTO> getUserRecipes(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Recipe> recipes = recipeRepository.findAllByMember(member);
 
@@ -606,7 +613,7 @@ public class MemberService {
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
     public List<MemberAchievementResponseDTO> getAllAchievementsByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
         List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
@@ -639,7 +646,7 @@ public class MemberService {
     // 다른 사용자의 최신 업적 3개 조회
     public List<MemberAchievementResponseDTO> getTop3AchievementsByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
 

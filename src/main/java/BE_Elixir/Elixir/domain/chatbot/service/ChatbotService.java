@@ -3,6 +3,8 @@ package BE_Elixir.Elixir.domain.chatbot.service;
 import BE_Elixir.Elixir.domain.chatbot.dto.ChatbotRequestDTO;
 import BE_Elixir.Elixir.domain.chatbot.dto.ChatbotResponseDTO;
 import BE_Elixir.Elixir.global.config.GptConfig;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.redis.RedisChatbotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +33,7 @@ public class ChatbotService {
     private final HttpHeaders httpHeaders;
     private final ObjectMapper objectMapper = new ObjectMapper(); // 객체 생성
 
-    public ChatbotResponseDTO chatbot(ChatbotRequestDTO dto) throws Exception {
+    public ChatbotResponseDTO chatbot(ChatbotRequestDTO dto) {
         List<Map<String, String>> messages;
         String chatSessionId;
 
@@ -45,7 +47,7 @@ public class ChatbotService {
                 chatSessionId = redisChatbotService.saveInitialChatSession(dto.getType());
 
                 if (messages == null || messages.isEmpty()) {
-                    throw new IllegalStateException("초기 프롬프트 메시지를 생성하지 못했습니다.");
+                    throw new CustomException(ErrorCode.CHATBOT_INITIAL_PROMPT_MISSING);
                 }
 
                 // redis에 system message 먼저 저장
@@ -57,7 +59,7 @@ public class ChatbotService {
             } else { // 후속 요청
                 log.info("후속 호출");
                 if (dto.getMessage() == null || dto.getMessage().trim().isEmpty()) {
-                    throw new IllegalArgumentException("후속 요청에는 message 값이 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
 
                 // redis에서 sessionId로 history 조회
@@ -88,21 +90,13 @@ public class ChatbotService {
                     .chatSessionId(chatSessionId)
                     .message(cleanedContent)
                     .build();
-
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            log.error("잘못된 입력 또는 상태 오류: {}", e.getMessage());
-            throw e;
         } catch (JsonProcessingException e) {
-            log.error("GPT 응답 파싱 중 오류 발생", e);
-            throw new RuntimeException("GPT 응답 파싱 중 오류가 발생했습니다.", e);
-        } catch (Exception e) {
-            log.error("챗봇 처리 중 예외 발생", e);
-            throw new RuntimeException("챗봇 처리 중 오류가 발생했습니다.", e);
+            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
         }
     }
 
     // gpt 호출
-    private Map<String, String> callGpt(List<Map<String, String>> messages) throws JsonProcessingException {
+    private Map<String, String> callGpt(List<Map<String, String>> messages) {
         Map<String, Object> requestBody = Map.of(
                 "model", gptConfig.getModel(),
                 "messages", messages
@@ -116,18 +110,23 @@ public class ChatbotService {
             response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
         } catch (Exception e) {
             log.error("GPT API 호출 실패", e);
-            throw new RuntimeException("GPT API 호출에 실패했습니다.", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         // GPT 응답에서 content만 파싱
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());  //JsonProcessingException
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = objectMapper.readTree(response.getBody());
+        } catch (JsonProcessingException e) {
+            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
+        }
         if (!jsonNode.has("choices") || !jsonNode.get("choices").isArray() || jsonNode.get("choices").isEmpty()) {
-            throw new IllegalStateException("GPT 응답에 유효한 메시지가 없습니다.");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         JsonNode messageNode = jsonNode.get("choices").get(0).get("message");
         if (messageNode == null || !messageNode.has("content")) {
-            throw new IllegalStateException("GPT 응답 메시지 파싱 실패: content 없음");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         // Map으로 변환

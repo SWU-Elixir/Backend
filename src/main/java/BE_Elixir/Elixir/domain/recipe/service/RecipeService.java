@@ -14,8 +14,8 @@ import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
+import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
-import BE_Elixir.Elixir.global.exception.OccupiedException;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,22 +53,30 @@ public class RecipeService {
             MultipartFile image,
             List<MultipartFile> recipeStepImages,
             Member member
-    ) throws IOException {
+    ) {
         // 기본 필드 세팅
         Recipe recipe = Recipe.from(dto, member);
 
-        // 대표 이미지 업로드
+        // 대표 이미지 업로드 (IOException을 CustomException으로 변환)
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "recipe/main");
-            recipe.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "recipe/main");
+                recipe.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 단계별 이미지 업로드
         if (recipeStepImages != null && !recipeStepImages.isEmpty()) {
             List<String> stepUrls = new ArrayList<>();
             for (MultipartFile file : recipeStepImages) {
-                String url = s3Service.upload(file, "recipe/steps");
-                stepUrls.add(url);
+                try {
+                    String url = s3Service.upload(file, "recipe/steps");
+                    stepUrls.add(url);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+                }
             }
             recipe.setStepImageUrls(stepUrls);
         }
@@ -99,7 +107,7 @@ public class RecipeService {
     // 레시피 조회
     public RecipeResponseDTO getRecipe(Long recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         return new RecipeResponseDTO(recipe);
     }
@@ -109,7 +117,7 @@ public class RecipeService {
     public RecipeDetailResponseDTO getRecipeDetail(Long recipeId, Member member) {
         // 레시피 조회
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 레시피 작성자
         Member authorRecipe = recipe.getMember();
@@ -220,13 +228,13 @@ public class RecipeService {
             MultipartFile image,
             List<MultipartFile> recipeStepImages,
             Member member
-    ) throws IOException {
+    ) {
         // 레시피 조회
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         if (!recipe.getMember().getEmail().equals(member.getEmail())){
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION); // 권한 체크
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS); // 권한 체크
         }
 
         // 기본 필드 업데이트
@@ -234,21 +242,28 @@ public class RecipeService {
 
         // 대표 이미지 업데이트
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "recipe/main");
-            recipe.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "recipe/main");
+                recipe.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 단계 이미지 업데이트
         if (recipeStepImages != null && !recipeStepImages.isEmpty()) {
             List<String> stepUrls = new ArrayList<>();
             for (MultipartFile file : recipeStepImages) {
-                String url = s3Service.upload(file, "recipe/steps");
-                stepUrls.add(url);
+                try {
+                    String url = s3Service.upload(file, "recipe/steps");
+                    stepUrls.add(url);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+                }
             }
             if (!stepUrls.isEmpty()) {
                 recipe.setStepImageUrls(stepUrls);
             }
-            recipe.setStepImageUrls(stepUrls);
         }
 
         recipe.getIngredientTags().clear(); // 참조 유지
@@ -271,11 +286,11 @@ public class RecipeService {
     @Transactional
     public void deleteRecipe(Long recipeId, Member member) {
         Recipe recipe = recipeRepository.findWithAllById(recipeId)
-                .orElseThrow(() -> new OccupiedException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 작성자 본인만 삭제 가능
         if (!recipe.getMember().getEmail().equals(member.getEmail())) {
-            throw new OccupiedException(ErrorCode.UNAUTHORIZED_OPERATION);
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 레시피에 달린 댓글 먼저 삭제

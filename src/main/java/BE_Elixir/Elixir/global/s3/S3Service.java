@@ -1,5 +1,7 @@
 package BE_Elixir.Elixir.global.s3;
 
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -30,8 +32,10 @@ public class S3Service {
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
 
         File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+                .orElseThrow(() -> new CustomException(ErrorCode.S3_UPLOAD_ERROR));
+
         return upload(uploadFile, dirName);
+
     }
 
     private String upload(File uploadFile, String dirName) {
@@ -62,7 +66,7 @@ public class S3Service {
         }
     }
 
-    public Optional<File> convert(MultipartFile file) throws  IOException {
+    public Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename()); // 업로드한 파일의 이름
         if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -76,13 +80,12 @@ public class S3Service {
     // S3 버킷에서 파일 삭제
     public void deleteS3(String imageUrl, String dirName) {
         String fileName = extractFileName(imageUrl, dirName);
-
         try {
             amazonS3Client.deleteObject(bucket, fileName);
             log.info("파일 삭제 성공: {}", fileName);
         } catch (Exception e) {
             log.error("파일 삭제 실패: {}", fileName, e);
-            throw new RuntimeException("S3에서 파일 삭제 실패", e);
+            throw new CustomException(ErrorCode.S3_DELETE_ERROR);
         }
     }
 
@@ -91,7 +94,7 @@ public class S3Service {
     private String extractFileName(String imageUrl, String dirName) {
         int index = imageUrl.indexOf(dirName + "/");
         if (index == -1) {
-            throw new IllegalArgumentException("잘못된 S3 이미지 URL입니다: " + imageUrl);
+            throw new CustomException(ErrorCode.S3_INVALID_URL);
         }
         return imageUrl.substring(index);
     }

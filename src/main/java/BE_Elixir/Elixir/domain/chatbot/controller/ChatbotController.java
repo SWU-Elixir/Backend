@@ -32,19 +32,11 @@ public class ChatbotController implements ChatbotApi {
         log.info("챗봇 응답 받기 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            ChatbotResponseDTO responseDTO = chatbotService.chatbot(dto);
-            log.info("챗봇 응답 받기 성공 - 회원 ID: {}", memberId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "챗봇 응답 받기 성공 - 회원 ID:" + memberId, responseDTO));
-
-        } catch (Exception e) {
-            log.error("챗봇 응답 받기 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "챗봇 응답 받기 실패: " + e.getMessage()));
-        }
+        ChatbotResponseDTO responseDTO = chatbotService.chatbot(dto);
+        log.info("챗봇 응답 받기 성공 - 회원 ID: {}", memberId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "챗봇 응답 받기 성공 - 회원 ID:" + memberId, responseDTO));
     }
 
     @DeleteMapping("/{chatSessionId}")
@@ -55,18 +47,10 @@ public class ChatbotController implements ChatbotApi {
         log.info("챗봇 세션 삭제 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            chatbotService.deleteChatSession(chatSessionId);
-            log.info("챗봇 세션 삭제 성공 - 회원 ID: {}, 세션 ID: {}", memberId, chatSessionId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "챗봇 세션 삭제 성공 - 회원 ID:" + memberId));
-
-        } catch (Exception e) {
-            log.error("응답 실패 - 회원 ID: {}, , 세션 ID: {}, 메시지: {}", memberId, chatSessionId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "챗봇 세션 삭제 실패: " + e.getMessage()));
-        }
+        chatbotService.deleteChatSession(chatSessionId);
+        log.info("챗봇 세션 삭제 성공 - 회원 ID: {}, 세션 ID: {}", memberId, chatSessionId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "챗봇 세션 삭제 성공 - 회원 ID:" + memberId));
     }
 }

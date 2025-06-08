@@ -37,19 +37,11 @@ public class DietLogController implements DietLogApi {
         log.info("식단 기록 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            DietLogResponseDTO responseDTO = dietLogService.createDietLog(dto, memberId, image);
-            log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, responseDTO.getId());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
-                            "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + responseDTO.getId(), responseDTO));
-
-        } catch (Exception e) {
-            log.error("식단 기록 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "식단 기록 실패: " + e.getMessage()));
-        }
+        DietLogResponseDTO responseDTO = dietLogService.createDietLog(dto, memberId, image);
+        log.info("식단 기록 성공 - 회원 ID: {}, 식단 ID: {}", memberId, responseDTO.getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                        "식단 기록 성공 - 회원 ID:" + memberId + ",  식단 ID: " + responseDTO.getId(), responseDTO));
     }
 
     // 식단 삭제하기
@@ -61,18 +53,10 @@ public class DietLogController implements DietLogApi {
         log.info("식단 기록 삭제 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            dietLogService.deleteDietLog(DietLogId, memberId);
-            log.info("식단 삭제 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "식단 삭제 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId));
-
-        } catch (Exception e) {
-            log.error("식단 삭제 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "식단 삭제 실패: " + e.getMessage()));
-        }
+        dietLogService.deleteDietLog(DietLogId, memberId);
+        log.info("식단 삭제 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "식단 삭제 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId));
     }
 
     // 식단 수정하기
@@ -86,19 +70,11 @@ public class DietLogController implements DietLogApi {
         log.info("식단 기록 수정 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            DietLogResponseDTO responseDTO = dietLogService.updateDietLog(dietLogId, memberId, dto, image);
-            log.info("식단 수정 성공 - 회원 ID: {}, 식단 ID: {}", memberId, dietLogId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "식단 수정 성공 - 회원 ID:" + memberId + ",  식단 ID: " + dietLogId, responseDTO));
-
-        } catch (Exception e) {
-            log.error("식단 수정 실패 - 회원 ID: {}, 식단 ID: {}, 메시지: {}", memberId, e.getMessage(), dietLogId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "식단 수정 실패: " + e.getMessage()));
-        }
+        DietLogResponseDTO responseDTO = dietLogService.updateDietLog(dietLogId, memberId, dto, image);
+        log.info("식단 수정 성공 - 회원 ID: {}, 식단 ID: {}", memberId, dietLogId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "식단 수정 성공 - 회원 ID:" + memberId + ",  식단 ID: " + dietLogId, responseDTO));
     }
 
     // 식단 조회하기
@@ -110,19 +86,11 @@ public class DietLogController implements DietLogApi {
         log.info("식단 조회 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            DietLogResponseDTO responseDTO = dietLogService.getDietLog(DietLogId);
-            log.info("식단 조회 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "식단 조회 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId, responseDTO));
-
-        } catch (Exception e) {
-            log.error("식단 조회 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "식단 조회 실패: " + e.getMessage()));
-        }
+        DietLogResponseDTO responseDTO = dietLogService.getDietLog(DietLogId);
+        log.info("식단 조회 성공 - 회원 ID: {}, 식단 ID: {}", memberId, DietLogId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "식단 조회 성공 - 회원 ID:" + memberId + ",  식단 ID: " + DietLogId, responseDTO));
     }
 
     // 일별 식단 조회하기 (List<DietLogDTO>)
@@ -134,19 +102,11 @@ public class DietLogController implements DietLogApi {
         log.info("일별 식단 목록 조회 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            List<DietLogResponseDTO> responseDTO = dietLogService.getDietLogByDate(date, memberId);
-            log.info("일별 식단 목록 조회 성공 - 회원 ID: {}, 날짜: {}", memberId, date);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "일별 식단 목록 조회 성공 - 회원 ID:" + memberId + ",  날짜: " + date, responseDTO));
-
-        } catch (Exception e) {
-            log.error("일별 식단 목록 조회 실패 - 회원 ID: {}, 날짜: {}, 메시지: {}", memberId, e.getMessage(), date, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "일별 식단 목록 조회 실패: " + e.getMessage()));
-        }
+        List<DietLogResponseDTO> responseDTO = dietLogService.getDietLogByDate(date, memberId);
+        log.info("일별 식단 목록 조회 성공 - 회원 ID: {}, 날짜: {}", memberId, date);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "일별 식단 목록 조회 성공 - 회원 ID:" + memberId + ",  날짜: " + date, responseDTO));
     }
 
     // 월별 식단별 점수 조회하기 (List<점수 DTO>)
@@ -159,19 +119,11 @@ public class DietLogController implements DietLogApi {
         log.info("월별 식단별 점수 조회 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            List<MonthlyDietScoreDTO> responseDTO = dietLogService.getMonthlyDietScores(memberId, year, month);
-            log.info("월별 식단별 점수 조회 성공 - 회원 ID: {}, 연도: {}, 월: {}", memberId, year, month);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "월별 식단별 점수 조회 성공 - 회원 ID:" + memberId + ",  연도: " + year + ", 월: " + month, responseDTO));
-
-        } catch (Exception e) {
-            log.error("월별 식단별 점수 조회 실패 - 회원 ID: {}, 연도: {}, 월: {}, 메시지: {}", memberId, e.getMessage(), year, month, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "월별 식단별 점수 조회 실패: " + e.getMessage()));
-        }
+        List<MonthlyDietScoreDTO> responseDTO = dietLogService.getMonthlyDietScores(memberId, year, month);
+        log.info("월별 식단별 점수 조회 성공 - 회원 ID: {}, 연도: {}, 월: {}", memberId, year, month);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "월별 식단별 점수 조회 성공 - 회원 ID:" + memberId + ",  연도: " + year + ", 월: " + month, responseDTO));
     }
 
     // 최근 N일 식단 조회하기
@@ -183,18 +135,10 @@ public class DietLogController implements DietLogApi {
         log.info("최근 N일 식단 목록 조회 요청");
         Long memberId = memberDetails.getId();
 
-        try {
-            List<DietLogResponseDTO> responseDTO = dietLogService.getRecentDietLogs(memberId, days);
-            log.info("최근 N일 식단 목록 조회 성공 - 회원 ID: {}", memberId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                            "최근 N일 식단 목록 조회 성공 - 회원 ID:" + memberId, responseDTO));
-
-        } catch (Exception e) {
-            log.error("최근 N일 식단 목록 조회 실패 - 회원 ID: {}, 메시지: {}", memberId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "최근 N일 식단 목록 조회 실패: " + e.getMessage()));
-        }
+        List<DietLogResponseDTO> responseDTO = dietLogService.getRecentDietLogs(memberId, days);
+        log.info("최근 N일 식단 목록 조회 성공 - 회원 ID: {}", memberId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "최근 N일 식단 목록 조회 성공 - 회원 ID:" + memberId, responseDTO));
     }
 }

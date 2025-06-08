@@ -8,6 +8,8 @@ import BE_Elixir.Elixir.domain.ingredient.service.IngredientService;
 import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,41 +30,51 @@ public class PromptMessageFactory {
     // 최초 요청 시
     public List<Map<String, String>> create(ChatbotRequestDTO dto) {
         if (dto == null || dto.getType() == null) {
-            throw new IllegalArgumentException("요청 정보 또는 type이 null입니다.");
+            log.error("요청 정보 또는 type이 null입니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         return switch (dto.getType()) {
             case "DIET_FEEDBACK" -> {
                 if (dto.getTargetId() == null) {
-                    throw new IllegalArgumentException("DIET_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    log.error("DIET_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptDietFeedback(dto.getTargetId());
             }
             case "RECIPE_FEEDBACK" -> {
                 if (dto.getTargetId() == null) {
-                    throw new IllegalArgumentException("RECIPE_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    log.error("RECIPE_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptRecipeFeedback(dto.getTargetId());
             }
             case "RECOMMEND" -> {
                 if (dto.getDurationDays() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 durationDays가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 durationDays가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 if (dto.getIncludeChallengeIngredients() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 includeChallengeIngredients가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 includeChallengeIngredients가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 if (dto.getAdditionalConditions() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 additionalConditions가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 additionalConditions가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptRecommend(dto.getDurationDays(), dto.getIncludeChallengeIngredients(), dto.getAdditionalConditions());
             }
             case "FREETALK" -> {
                 if (dto.getMessage() == null) {
-                    throw new IllegalArgumentException("FREETALK 요청에는 message가 필요합니다.");
+                    log.error("FREETALK 요청에는 message가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptFreetalk(dto.getMessage());
             }
-            default -> throw new IllegalArgumentException("지원하지 않는 type입니다. type: " + dto.getType());
+            default -> {
+                log.error("지원하지 않는 type입니다. type: {}", dto.getType());
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
         };
     }
 
