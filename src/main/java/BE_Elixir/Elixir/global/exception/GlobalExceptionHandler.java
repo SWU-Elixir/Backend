@@ -1,8 +1,6 @@
 package BE_Elixir.Elixir.global.exception;
 
 import BE_Elixir.Elixir.global.response.CommonResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -11,9 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @RestControllerAdvice
