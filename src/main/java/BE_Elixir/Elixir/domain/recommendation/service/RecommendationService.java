@@ -184,13 +184,30 @@ public class RecommendationService {
         Set<String> keywords = new LinkedHashSet<>(); // 중복 제거 + 순서 유지
         Set<Long> ingredientIdSet = new HashSet<>();
 
+        // 불용어(조사 등) 목록
+        List<String> postpositions = List.of("은", "는", "이", "가", "을", "를", "에", "의", "도", "으로", "와", "과", "에게", "한테", "에서", "부터", "까지", "보다", "처럼", "만", "이나", "나", "이며", "든지", "라도", "조차");
+
 
         for (RecommendationResponseDTO dto : cached) {
             // 제목에서 키워드 추출
             if (dto.getTitle() != null) {
                 String[] words = dto.getTitle().split("\\s+");
                 for (String word : words) {
-                    if (!word.isBlank()) keywords.add(word.trim());
+                    word = word.trim();
+                    if (!word.isBlank()) {
+                        // 단어에서 조사 제거
+                        for (String josa : postpositions) {
+                            if (word.endsWith(josa)) {
+                                word = word.substring(0, word.length() - josa.length());
+                                break; // 하나만 제거하고 탈출
+                            }
+                        }
+
+                        // 최종 단어가 비어 있지 않으면 추가
+                        if (!word.isBlank()) {
+                            keywords.add(word);
+                        }
+                    }
                 }
             }
 
