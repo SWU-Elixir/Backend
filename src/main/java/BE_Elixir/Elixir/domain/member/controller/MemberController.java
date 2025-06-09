@@ -2,17 +2,12 @@ package BE_Elixir.Elixir.domain.member.controller;
 
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
-import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.*;
+import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
-import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
-import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +31,7 @@ public class MemberController implements MemberApi {
     private final MemberService memberService;
     private final FollowService followService;
     private final JwtProvider jwtProvider;
-    private final RedisService redisService;
+    private final RedisAuthService redisAuthService;
 
     // 이메일 중복 체크
     @GetMapping("/check-email")
@@ -57,19 +52,56 @@ public class MemberController implements MemberApi {
     ) {
         log.info("회원가입 요청 - 이메일: {}", dto.getEmail());
 
-        try {
-            Member member = memberService.signUp(dto, profileImage);
-            log.info("회원가입 성공 - 회원 ID: {}", member.getId());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(), "회원가입 성공 - memberId: " + member.getId()));
-
-        } catch (Exception e) {
-            log.error("회원가입 실패 - 이메일: {}, 메시지: {}", dto.getEmail(), e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.success(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
-                            "회원가입 실패: " + e.getMessage(), null));
-        }
+        Member member = memberService.signUp(dto, profileImage);
+        log.info("회원가입 성공 - 회원 ID: {}", member.getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                        "회원가입 성공 - memberId: " + member.getId()));
     }
+
+    // 이메일 인증 요청하기
+    @PostMapping("/email-verification")
+    public ResponseEntity<CommonResponse<?>> sendVerificationCode(
+            @RequestBody EmailVerificationRequestDTO dto
+    ) {
+        log.info("이메일 인증 요청 - 이메일: {}", dto.getEmail());
+
+        memberService.sendVerificationCode(dto.getEmail());
+        log.info("이메일 인증 요청 성공 - email: {}", dto.getEmail());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "이메일 인증 요청 성공 - memberId: " + dto.getEmail()));
+
+    }
+
+    // 인증번호 검증하기
+    @PostMapping("/email-verification/verify")
+    public ResponseEntity<CommonResponse<?>> verifyCode(
+            @RequestBody EmailVerificationCheckRequestDTO dto
+    ) {
+        log.info("이메일 인증 검증 요청 - 이메일: {}", dto.getEmail());
+
+        boolean result = memberService.verifyCode(dto.getEmail(), dto.getCode());
+        log.info("이메일 인증 검증 성공 - email: {}", dto.getEmail());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "이메일 인증 검증 성공 - email: " + dto.getEmail(), result));
+    }
+
+    // 비밀번호 수정하기
+    @PutMapping("/update-password")
+    public ResponseEntity<CommonResponse<?>> updatePassword(
+            @RequestBody UpdatePasswordRequestDTO dto
+    ) {
+        log.info("비밀번호 업데이트 요청 - 이메일: {}", dto.getEmail());
+
+        memberService.updatePassword(dto.getEmail(), dto.getNewPassword());
+
+        log.info("비밀번호 업데이트 성공 - email: {}", dto.getEmail());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "비밀번호 업데이트 성공 - email: " + dto.getEmail()));
+    }
+
 
     // 회원탈퇴
     @DeleteMapping("/withdrawal")
@@ -80,90 +112,13 @@ public class MemberController implements MemberApi {
         String email = memberDetails.getUsername();
         log.info("회원탈퇴 요청 - email: {}", email);
 
-        try {
-            String accessToken = jwtProvider.resolveToken(request);
-            String refreshToken = redisService.getRefreshToken(memberDetails.getUsername());
+        String accessToken = jwtProvider.resolveToken(request);
+        String refreshToken = redisAuthService.getRefreshToken(memberDetails.getUsername());
 
-            memberService.withdraw(email, accessToken, refreshToken);
-            log.info("회원탈퇴 성공 - email: {}", email);
+        memberService.withdraw(email, accessToken, refreshToken);
+        log.info("회원탈퇴 성공 - email: {}", email);
 
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "회원탈퇴 성공"));
-
-        } catch (Exception e) {
-            log.error("회원탈퇴 실패 - {}", e.getMessage(), e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "회원탈퇴 실패 - " + e.getMessage()));
-        }
-    }
-
-    // 회원 정보 조회 (이메일, 닉네임, 젠더, 생년, 프로필 url)
-    @GetMapping("")
-    public ResponseEntity<CommonResponse<MemberResponseDTO>> getMemberInfo(
-            @AuthenticationPrincipal MemberDetails memberDetails,
-            HttpServletRequest request)
-    {
-        String email = memberDetails.getUsername();
-        log.info("회원 정보 조회 요청 - email: {}", email);
-
-        try {
-            MemberResponseDTO response = memberService.getMemberInfo(email);
-            log.info("회원 정보 조회 성공 - email: {}", email);
-
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "회원조회 성공", response));
-
-        } catch (Exception e) {
-            log.warn("회원 정보 조회 실패 - email: {}, message: {}", email, e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "회원 정보 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-    // 로그인한 사용자가 업로드한 모든 레시피 조회하기
-    @GetMapping("/recipe")
-    public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyRecipes(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<RecipeImageResponseDTO> recipes = memberService.getMyRecipes(email);
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(), "내 레시피 조회 성공", recipes));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "내 레시피 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-
-    // 로그인한 사용자가 스크랩한 레시피 조회하기
-    @GetMapping("/recipe/scrap")
-    public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getMyScrapRecipes(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<RecipeImageResponseDTO> scrappedRecipes = memberService.getMyScrapRecipes(email);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "내가 스크랩한 레시피 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "회원탈퇴 성공"));
     }
 
     // 팔로우 하기
@@ -174,19 +129,11 @@ public class MemberController implements MemberApi {
     ) {
         Long followerId = memberDetails.getId();
 
-        try {
-            followService.follow(followerId, followingId);
+        followService.follow(followerId, followingId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "팔로우 성공"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "팔로우 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "팔로우 성공"));
     }
 
     // 언팔로우 하기
@@ -197,19 +144,11 @@ public class MemberController implements MemberApi {
     ) {
         Long followerId = memberDetails.getId();
 
-        try {
-            followService.unfollow(followerId, followingId);
+        followService.unfollow(followerId, followingId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "언팔로우 성공"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "언팔로우 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "언팔로우 성공"));
     }
 
     // (현재 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
@@ -219,21 +158,12 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<MemberSummaryDTO> dto = followService.getFollowings(memberId);
+        List<MemberSummaryDTO> dto = followService.getFollowings(memberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "현 사용자의 팔로잉 목록 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "현 사용자의 팔로잉 목록 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "현 사용자의 팔로잉 목록 조회 성공", dto));
     }
-
 
     // (현재 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
     @GetMapping("/follower")
@@ -242,151 +172,34 @@ public class MemberController implements MemberApi {
     ) {
         Long memberId = memberDetails.getId();
 
-        try {
-            List<MemberSummaryDTO> dto = followService.getFollowers(memberId);
+        List<MemberSummaryDTO> dto = followService.getFollowers(memberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "현 사용자의 팔로워 목록 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "현 사용자의 팔로워 목록 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "현 사용자의 팔로워 목록 조회 성공", dto));
     }
-
 
     // (특정 사용자의) 팔로잉 목록 조회하기 (사용자가 팔로우하는 목록)
     @GetMapping("/{targetMemberId}/following")
     public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowingByMemberId(
             @PathVariable("targetMemberId") Long targetMemberId
     ) {
-        try {
-            List<MemberSummaryDTO> dto = followService.getFollowings(targetMemberId);
+        List<MemberSummaryDTO> dto = followService.getFollowings(targetMemberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "특정 사용자의 팔로잉 목록 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "특정 사용자의 팔로잉 목록 조회 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "특정 사용자의 팔로잉 목록 조회 성공", dto));
     }
-
 
     // (특정 사용자의) 팔로우 목록 조회하기 (사용자를 팔로잉하는 목록)
     @GetMapping("/{targetMemberId}/follower")
     public ResponseEntity<CommonResponse<List<MemberSummaryDTO>>> getFollowerByMemberId(
             @PathVariable("targetMemberId") Long targetMemberId
     ) {
-        try {
-            List<MemberSummaryDTO> dto = followService.getFollowers(targetMemberId);
+        List<MemberSummaryDTO> dto = followService.getFollowers(targetMemberId);
 
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "특정 사용자의 팔로워 목록 조회 성공", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "특정 사용자의 팔로워 목록 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @GetMapping("/achievement")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<MemberAchievementResponseDTO> achievements = memberService.getAllAchievements(email);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "모든 챌린지 업적 조회 성공", achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "업적 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @GetMapping("/achievement/top3")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        String email = memberDetails.getUsername();
-
-        try {
-            List<MemberAchievementResponseDTO> top3Achievements = memberService.getTop3Achievements(email);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "최근 업적 3개 조회 성공", top3Achievements));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "최근 업적 3개 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-    // 로그인한 사용자의 설문조사 결과 조회하기
-    @GetMapping("/survey")
-    public ResponseEntity<CommonResponse<SurveyResponseDTO>> getSurvey(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        Long memberId = memberDetails.getId();
-
-        try {
-            SurveyResponseDTO responseDTO = memberService.getSurvey(memberId);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "설문조사 결과 조회 성공, 회원 ID: " + memberId, responseDTO));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "설문조사 결과 조회 실패 - " + e.getMessage()));
-        }
-    }
-
-    // 로그인한 사용자의 설문조사 결과 수정하기
-    @PutMapping("/survey")
-    public ResponseEntity<CommonResponse<SurveyResponseDTO>> updateSurvey(
-            @RequestBody SurveyRequestDTO dto,
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        Long memberId = memberDetails.getId();
-
-        try {
-            SurveyResponseDTO responseDTO = memberService.updateSurvey(memberId, dto);
-
-            return ResponseEntity.ok(CommonResponse.success(
-                    HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "설문조사 수정 성공, 회원 ID: " + memberId, responseDTO));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(CommonResponse.error(
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                            "설문조사 수정 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "특정 사용자의 팔로워 목록 조회 성공", dto));
     }
 }

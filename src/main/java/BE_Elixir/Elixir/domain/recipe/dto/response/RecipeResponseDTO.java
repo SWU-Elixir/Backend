@@ -1,6 +1,8 @@
 package BE_Elixir.Elixir.domain.recipe.dto.response;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
+import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
+import BE_Elixir.Elixir.domain.recipe.entity.Material;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
@@ -28,8 +30,8 @@ public class RecipeResponseDTO {
 
     // 태그된 식재료 정보
     private List<Long> ingredientTagIds;
-    private Map<String, String> ingredients;
-    private Map<String, String> seasoning;
+    private List<MaterialDTO> ingredients; // 재료
+    private List<MaterialDTO> seasonings;   // 양념
 
     private List<String> stepDescriptions;
     private List<String> stepImageUrls;
@@ -66,8 +68,15 @@ public class RecipeResponseDTO {
                 .map(tag -> tag.getIngredient().getId())
                 .collect(Collectors.toList());
 
-        this.ingredients = recipe.getIngredients();
-        this.seasoning = recipe.getSeasoning();
+        // 재료 & 양념
+        this.ingredients = recipe.getIngredients().stream()
+                .map(material -> new MaterialDTO(material.getName(), material.getValue(), material.getUnit()))
+                .collect(Collectors.toList());
+
+        this.seasonings = recipe.getSeasonings().stream()
+                .map(material -> new MaterialDTO(material.getName(), material.getValue(), material.getUnit()))
+                .collect(Collectors.toList());
+
 
         // 레시피 순서
         this.stepDescriptions = recipe.getStepDescriptions();

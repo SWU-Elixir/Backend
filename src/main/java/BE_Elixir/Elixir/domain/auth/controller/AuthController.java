@@ -6,7 +6,7 @@ import BE_Elixir.Elixir.domain.auth.service.AuthService;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
-import BE_Elixir.Elixir.global.redis.RedisService;
+import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,25 +25,16 @@ public class AuthController implements AuthApi {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
-    private final RedisService redisService;
+    private final RedisAuthService redisAuthService;
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<TokenResponseDTO>> login(@RequestBody LoginRequestDTO request) {
         log.info("로그인 요청 - email: {}", request.getEmail());
 
-        try {
-            TokenResponseDTO token = authService.signIn(request);
-            log.info("로그인 성공 - email: {}", request.getEmail());
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "로그인 성공", token));
-
-        } catch (Exception e) {
-            log.warn("로그인 실패 - email: {}, message: {}", request.getEmail(), e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(CommonResponse.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.toString(),
-                            "로그인 실패 - " + e.getMessage()));
-        }
+        TokenResponseDTO token = authService.signIn(request);
+        log.info("로그인 성공 - email: {}", request.getEmail());
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(), "로그인 성공", token));
     }
 
     // 로그아웃
@@ -55,21 +46,13 @@ public class AuthController implements AuthApi {
         String email = memberDetails.getUsername();
         log.info("로그아웃 요청 - email: {}", email);
 
-        try {
-            String accessToken = jwtProvider.resolveToken(request);
-            String refreshToken = redisService.getRefreshToken(email);
+        String accessToken = jwtProvider.resolveToken(request);
+        String refreshToken = redisAuthService.getRefreshToken(email);
 
-            authService.logout(email, accessToken, refreshToken);
-            log.info("로그아웃 성공 - email: {}", email);
+        authService.logout(email, accessToken, refreshToken);
+        log.info("로그아웃 성공 - email: {}", email);
 
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),"로그아웃 성공"));
-        } catch (Exception e) {
-            log.warn("로그아웃 실패 - email: {}, message: {}", email, e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.toString(),
-                            "로그아웃 실패 - " + e.getMessage()));
-        }
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),"로그아웃 성공"));
     }
 
     // Access Token 재발급
@@ -81,20 +64,11 @@ public class AuthController implements AuthApi {
         String email = memberDetails.getUsername();
         log.info("Access Token 재발급 요청 - email: {}", email);
 
-        try {
-            String refreshToken = redisService.getRefreshToken(email);
-            AccessTokenDTO token = authService.refreshAccessToken(email, refreshToken);
+        String refreshToken = redisAuthService.getRefreshToken(email);
+        AccessTokenDTO token = authService.refreshAccessToken(email, refreshToken);
 
-            log.info("Access Token 재발급 성공 - email: {}", email);
-            return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                    "Access Token 재발급 성공", token));
-
-        } catch (Exception e) {
-            log.warn("Access Token 재발급 실패 - email: {}, message: {}", email, e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(CommonResponse.error(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.toString(),
-                            "Access Token 재발급 실패 - " + e.getMessage()));
-        }
+        log.info("Access Token 재발급 성공 - email: {}", email);
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "Access Token 재발급 성공", token));
     }
 }

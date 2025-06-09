@@ -48,6 +48,10 @@ jobs:
                   secret: REDIS_PORT
                 - name: OPENAI_SECRETKEY
                   secret: OPENAI_SECRETKEY
+                - name: NAVER_ID
+                  secret: NAVER_ID
+                - name: NAVER_PW
+                  secret: NAVER_PW
               buildenv: []
             context:
               git:

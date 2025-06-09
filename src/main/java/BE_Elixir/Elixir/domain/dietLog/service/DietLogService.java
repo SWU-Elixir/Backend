@@ -13,6 +13,8 @@ import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.enums.DietLogType;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class DietLogService {
     private final ApplicationEventPublisher eventPublisher;
 
     // 식단 기록하기
-    public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) throws IOException{
+    public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) {
 
         // 회원 조회
         Member member = memberRepository.findById(memberId)
@@ -56,9 +58,14 @@ public class DietLogService {
 
         // 식단 이미지 업로드 및 url 세팅
         if (image != null && !image.isEmpty()) {
-            String imageUrl = s3Service.upload(image, "diet_log");
-            log.info("이미지 S3에 업로드 성공 imageUrl: {}", imageUrl);
-            dietLog.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "diet_log");
+
+                log.info("이미지 S3에 업로드 성공 imageUrl: {}", imageUrl);
+                dietLog.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // Ingredient ID 목록으로 Ingredient 엔티티들 조회
@@ -99,7 +106,7 @@ public class DietLogService {
     }
 
     // 식단 수정하기
-    public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) throws IOException {
+    public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) {
         // 기존 식단 조회
         DietLog dietLog = dietLogRepository.findById(dietLogId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
@@ -132,8 +139,12 @@ public class DietLogService {
                 s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
             }
             // 새 이미지 업로드
-            String imageUrl = s3Service.upload(image, "diet_log");
-            dietLog.setImageUrl(imageUrl);
+            try {
+                String imageUrl = s3Service.upload(image, "diet_log");
+                dietLog.setImageUrl(imageUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+            }
         }
 
         // 식단 점수 수정
@@ -153,7 +164,7 @@ public class DietLogService {
         }
 
         dietLogRepository.save(dietLog);
-        log.info("update save까지 완료");
+
         return dietLog.convertToResponseDTO();
 
     }
@@ -185,8 +196,10 @@ public class DietLogService {
 
     // 월별 식단 점수 조회
     public List<MonthlyDietScoreDTO> getMonthlyDietScores(Long memberId, int year, int month) {
-        // 해당 월에 대한 모든 식단 조회
-        List<DietLog> dietLogs = dietLogRepository.findByMemberIdAndYearAndMonth(memberId, year, month);
+        LocalDateTime start = LocalDate.of(year, month, 1).atStartOfDay();
+        LocalDateTime end = start.plusMonths(1);
+
+        List<DietLog> dietLogs = dietLogRepository.findByMemberIdAndMonthBetween(memberId, start, end);
 
         return dietLogs.stream()
                 .map(dietLog -> MonthlyDietScoreDTO.builder()
@@ -195,7 +208,15 @@ public class DietLogService {
                         .time(dietLog.getTime())
                         .build())
                 .collect(Collectors.toList());
-
     }
 
+    // 최근 N일 간 식단 기록 조회
+    public List<DietLogResponseDTO> getRecentDietLogs(Long memberId, int recentDays){
+        LocalDateTime from = LocalDate.now().minusDays(recentDays).atStartOfDay();
+
+
+        return dietLogRepository.findByMemberIdAndTimeAfter(memberId, from).stream()
+                .map(DietLog::convertToResponseDTO)
+                .toList();
+    }
 }

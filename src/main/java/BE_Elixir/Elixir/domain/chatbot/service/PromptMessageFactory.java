@@ -5,8 +5,11 @@ import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.service.DietLogService;
 import BE_Elixir.Elixir.domain.ingredient.dto.ChallengeIngredientDTO;
 import BE_Elixir.Elixir.domain.ingredient.service.IngredientService;
+import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,41 +30,51 @@ public class PromptMessageFactory {
     // 최초 요청 시
     public List<Map<String, String>> create(ChatbotRequestDTO dto) {
         if (dto == null || dto.getType() == null) {
-            throw new IllegalArgumentException("요청 정보 또는 type이 null입니다.");
+            log.error("요청 정보 또는 type이 null입니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         return switch (dto.getType()) {
             case "DIET_FEEDBACK" -> {
                 if (dto.getTargetId() == null) {
-                    throw new IllegalArgumentException("DIET_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    log.error("DIET_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptDietFeedback(dto.getTargetId());
             }
             case "RECIPE_FEEDBACK" -> {
                 if (dto.getTargetId() == null) {
-                    throw new IllegalArgumentException("RECIPE_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    log.error("RECIPE_FEEDBACK 요청에는 targetId가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptRecipeFeedback(dto.getTargetId());
             }
             case "RECOMMEND" -> {
                 if (dto.getDurationDays() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 durationDays가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 durationDays가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 if (dto.getIncludeChallengeIngredients() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 includeChallengeIngredients가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 includeChallengeIngredients가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 if (dto.getAdditionalConditions() == null) {
-                    throw new IllegalArgumentException("RECOMMEND 요청에는 additionalConditions가 필요합니다.");
+                    log.error("RECOMMEND 요청에는 additionalConditions가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptRecommend(dto.getDurationDays(), dto.getIncludeChallengeIngredients(), dto.getAdditionalConditions());
             }
             case "FREETALK" -> {
                 if (dto.getMessage() == null) {
-                    throw new IllegalArgumentException("FREETALK 요청에는 message가 필요합니다.");
+                    log.error("FREETALK 요청에는 message가 필요합니다.");
+                    throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
                 }
                 yield promptFreetalk(dto.getMessage());
             }
-            default -> throw new IllegalArgumentException("지원하지 않는 type입니다. type: " + dto.getType());
+            default -> {
+                log.error("지원하지 않는 type입니다. type: {}", dto.getType());
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+            }
         };
     }
 
@@ -110,7 +123,7 @@ public class PromptMessageFactory {
                 recipe.getCategorySlowAging(),
                 recipe.getCategoryType(),
                 formatMap(recipe.getIngredients()),
-                formatMap(recipe.getSeasoning()),
+                formatMap(recipe.getSeasonings()),
                 String.join(", ", recipe.getStepDescriptions()),
                 String.join(", ", recipe.getAllergies()),
                 recipe.getTips()
@@ -185,10 +198,10 @@ public class PromptMessageFactory {
         return createMessage(system, message);
     }
 
-    // 레시피 식재료, 양념 구조를 문자열로 변환 (Map<String, String> -> ' '과 ', '로 join하기 ex. 소금 1T, 설탕 2T)
-    private String formatMap(Map<String, String> map) {
-        return map.entrySet().stream()
-                .map(e -> e.getKey() + " " + e.getValue())
+    // 레시피 식재료, 양념 구조를 문자열로 변환 (MaterialDTO -> ' '과 ', ', ''로 join하기 ex. 소금 1T, 설탕 2T)
+    private String formatMap(List<MaterialDTO> map) {
+        return map.stream()
+                .map(e -> e.getName() + " " + e.getValue() + e.getUnit())
                 .collect(Collectors.joining(", "));
     }
 

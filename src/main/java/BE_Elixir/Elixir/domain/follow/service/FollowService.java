@@ -5,6 +5,8 @@ import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.global.exception.CustomException;
+import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,17 +28,17 @@ public class FollowService {
     // 팔로우하기
     public void follow(Long followerId, Long followingId) {
         if (followerId.equals(followingId)) {
-            throw new IllegalArgumentException("자기 자신을 팔로우할 수 없습니다.");
+            throw new CustomException(ErrorCode.SELF_FOLLOW_NOT_ALLOWED);
         }
 
         Member follower = memberRepository.findById(followerId)
-                .orElseThrow(() -> new NoSuchElementException("팔로워 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Member following = memberRepository.findById(followingId)
-                .orElseThrow(() -> new NoSuchElementException("팔로우 대상 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         boolean exists = followRepository.existsByFollowerAndFollowing(follower, following);
         if (exists) {
-            throw new IllegalArgumentException("이미 팔로우한 회원입니다.");
+            throw new CustomException(ErrorCode.ALREADY_FOLLOWING);
         }
 
         Follow follow = Follow.builder()
@@ -50,9 +52,15 @@ public class FollowService {
     // 팔로우 취소하기
     public void unfollow(Long followerId, Long followingId) {
         Member follower = memberRepository.findById(followerId)
-                .orElseThrow(() -> new NoSuchElementException("팔로워 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Member following = memberRepository.findById(followingId)
-                .orElseThrow(() -> new NoSuchElementException("팔로우 대상 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 팔로우 관계가 없는 경우 예외처리
+        boolean exists = followRepository.existsByFollowerAndFollowing(follower, following);
+        if (!exists) {
+            throw new CustomException(ErrorCode.FOLLOW_RELATION_NOT_FOUND);
+        }
 
         followRepository.deleteByFollowerAndFollowing(follower, following);
     }
@@ -60,7 +68,7 @@ public class FollowService {
     // 팔로워 목록 조회하기 (그 회원을 팔로우하는 목록)
     public List<MemberSummaryDTO> getFollowers(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException(("회원이 존재하지 않습니다.")));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return followRepository.findByFollowing(member).stream()
                 .map(Follow::getFollower)
@@ -77,7 +85,7 @@ public class FollowService {
     // 팔로잉 목록 조회하기 (그 회원이 팔로우하는 목록)
     public List<MemberSummaryDTO> getFollowings(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException(("회원이 존재하지 않습니다.")));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return followRepository.findByFollower(member).stream()
                 .map(Follow::getFollowing)

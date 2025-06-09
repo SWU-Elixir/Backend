@@ -86,4 +86,39 @@ public class ChallengeProgressResponseDTO {
                 .challengeCompleted(completed)
                 .build();
     }
+
+    public static ChallengeProgressResponseDTO empty(Challenge challenge) {
+        return ChallengeProgressResponseDTO.builder()
+                .challengeId(challenge.getId())
+                .name(challenge.getName())
+                .year(challenge.getYear())
+                .month(challenge.getMonth())
+
+                // 1단계
+                .step1Goal1Achieved(false)
+                .step1Goal2Achieved(false)
+
+                // 2단계
+                .step2Goal1Active(false)
+                .step2Goal2Active(false)
+                .step2Goal1Achieved(false)
+                .step2Goal2Achieved(false)
+
+                // 3단계
+                .step3Goal1Active(false)
+                .step3Goal2Active(false)
+                .step3Goal1Achieved(false)
+                .step3Goal2Achieved(false)
+
+                // 4단계
+                .step4Goal1Active(false)
+                .step4Goal2Active(false)
+                .step4Goal1Achieved(false)
+                .step4Goal2Achieved(false)
+
+                // 최종 완료 여부
+                .challengeCompleted(false)
+                .build();
+    }
+
 }

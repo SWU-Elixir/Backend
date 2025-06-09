@@ -19,6 +19,8 @@ public class Ingredient {
 
     private String category;
 
+    private String categoryGroup;
+
     private boolean isNova4;
 
     private Integer challengeMonth;

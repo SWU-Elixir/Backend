@@ -34,16 +34,28 @@ public interface IngredientApi {
                                       "data": [
                                         {
                                           "id": 1,
-                                          "name": "가시오가피",
+                                          "name": "감자",
+                                          "category": "농산물",
                                           "type": null
                                         },
                                         {
                                           "id": 2,
-                                          "name": "가지",
+                                          "name": "곤약(구약나물)",
+                                          "category": "농산물",
                                           "type": null
                                         }, ...
                                       ]
                                      }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "식재료 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<IngredientDTO>>> getAllIngredients();
@@ -63,17 +75,29 @@ public interface IngredientApi {
                                       "message": "당월 챌린지 식재료 목록 조회 성공",
                                       "data": [
                                         {
-                                          "id": 1,
+                                          "id": 142,
                                           "name": "딸기",
+                                          "category": "농산물",
                                           "month": 2
                                         },
                                         {
-                                          "id": 2,
+                                          "id": 1111,
                                           "name": "봄동",
+                                          "category": "농산물",
                                           "month": 2
                                         }, ...
                                       ]
                                      }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "당월 챌린지 식재료 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<ChallengeIngredientDTO>>> getChallengeIngredients();

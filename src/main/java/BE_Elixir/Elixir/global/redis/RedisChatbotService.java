@@ -23,19 +23,15 @@ public class RedisChatbotService {
     private static final int MAX_HISTORY_SIZE = 11;
 
     // 최초 세션 값 생성
-    public String saveInitialChatSession(String type) {
+    public String saveInitialChatSession(String type) throws JsonProcessingException {
         String chatSessionId = generateSessionId(); // 세션 ID 생성
         String key = CHAT_SESSION_KEY_PREFIX + chatSessionId;
 
         ChatSessionDTO sessionDTO = new ChatSessionDTO(type, List.of());
 
-        try {
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(sessionDTO));
-            log.info("새로운 챗봇 세션 생성. 세션 ID: {}\n{}", chatSessionId, sessionDTO);
-            return chatSessionId;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("챗봇 세션을 Redis에 저장하지 못했습니다.", e);
-        }
+        redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(sessionDTO));
+        log.info("새로운 챗봇 세션 생성. 세션 ID: {}\n{}", chatSessionId, sessionDTO);
+        return chatSessionId;
     }
 
     private String generateSessionId() {
@@ -43,17 +39,13 @@ public class RedisChatbotService {
     }
 
     // history 조회
-    public List<Map<String, String>> getHistory(String chatSessionId) {
+    public List<Map<String, String>> getHistory(String chatSessionId) throws JsonProcessingException {
         String key = CHAT_SESSION_KEY_PREFIX + chatSessionId;
         String value = redisTemplate.opsForValue().get(key);
 
-        try {
-            ChatSessionDTO sessionDTO = objectMapper.readValue(value, ChatSessionDTO.class);
-            log.info("{}\n{}", chatSessionId, sessionDTO);
-            return sessionDTO.getHistory();
-        } catch (IOException e) {
-            throw new RuntimeException("챗봇 세션 데이터를 파싱하는 중 오류가 발생했습니다.", e);
-        }
+        ChatSessionDTO sessionDTO = objectMapper.readValue(value, ChatSessionDTO.class);
+        log.info("{}\n{}", chatSessionId, sessionDTO);
+        return sessionDTO.getHistory();
     }
 
     // Redis 값 출력 (디버깅용)
@@ -65,29 +57,24 @@ public class RedisChatbotService {
     }
 
     // 세션 history에 메시지 추가 및 리스트 개수 유지
-    public void appendMessageToHistory(String chatSessionId, Map<String, String> message) {
+    public void appendMessageToHistory(String chatSessionId, Map<String, String> message) throws JsonProcessingException {
         String key = CHAT_SESSION_KEY_PREFIX + chatSessionId;
         String value = redisTemplate.opsForValue().get(key);
 
-        try {
-            ChatSessionDTO sessionDTO = objectMapper.readValue(value, ChatSessionDTO.class);
-            List<Map<String, String>> history = sessionDTO.getHistory();
+        ChatSessionDTO sessionDTO = objectMapper.readValue(value, ChatSessionDTO.class);
+        List<Map<String, String>> history = sessionDTO.getHistory();
 
-            if (history.size() > MAX_HISTORY_SIZE) {
-                if (sessionDTO.getType().equals("FREETALK"))
-                    history.remove(0);
-                else {
-                    history.remove(3);
-                }
+        if (history.size() > MAX_HISTORY_SIZE) {
+            if (sessionDTO.getType().equals("FREETALK"))
+                history.remove(0);
+            else {
+                history.remove(3);
             }
-
-            history.add(message);
-
-            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(sessionDTO));
-
-        } catch (IOException e) {
-            throw new RuntimeException("챗봇 세션의 history를 저장하는 중 문제가 발생했습니다.", e);
         }
+
+        history.add(message);
+
+        redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(sessionDTO));
     }
 
     // 세션 삭제

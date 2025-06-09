@@ -44,7 +44,7 @@ public interface ChatbotApi {
                                     {
                                       "status": 400,
                                       "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "챗봇 응답 받기 실패: 오류 메시지",
+                                      "message": "API를 정상적으로 호출하지 못했습니다.",
                                       "data": null
                                     }
                                     """)))
@@ -68,13 +68,13 @@ public interface ChatbotApi {
                                       "data": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "챗봇 세션 삭제 실패",
+            @ApiResponse(responseCode = "404", description = "챗봇 세션 삭제 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 400,
-                                      "code": "400 INTERNAL_SERVER_ERROR",
-                                      "message": "챗봇 세션 삭제 실패: 오류 메시지",
+                                      "status": 404,
+                                      "code": "404 NOT_FOUND",
+                                      "message": "챗봇 세션 ID를 찾을 수 없습니다.",
                                       "data": null
                                     }
                                     """)))

@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.dto.request;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
+import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
@@ -22,8 +23,8 @@ public class RecipeRequestDTO {
 
     // 태그용 식재료 리스트
     private List<Long> ingredientTagIds;
-    private Map<String, String> ingredients; // 재료 (ex. "고등어" : "1개")
-    private Map<String, String> seasoning;   // 양념 (ex. "간장" : "1T")
+    private List<MaterialDTO> ingredients; // 재료
+    private List<MaterialDTO> seasonings;   // 양념
     private List<String> stepDescriptions; // 요리 순서
 
     private String tips;

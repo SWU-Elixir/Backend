@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.entity;
 
 import BE_Elixir.Elixir.domain.member.entity.Member;
+import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import BE_Elixir.Elixir.global.enums.Difficulty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -59,16 +60,12 @@ public class Recipe {
     // 재료
     @ElementCollection
     @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
-    @MapKeyColumn(name = "ingredient_name")
-    @Column(name = "ingredient_amount")
-    private Map<String, String> ingredients;
+    private List<Material> ingredients;
 
     // 양념
     @ElementCollection
     @CollectionTable(name = "recipe_seasonings", joinColumns = @JoinColumn(name = "recipe_id"))
-    @MapKeyColumn(name = "seasoning_name")
-    @Column(name = "seasoning_amount")
-    private Map<String, String> seasoning;
+    private List<Material> seasonings;
 
     // 순서 설명 (문장) + 이미지 URL
     @ElementCollection
@@ -174,8 +171,18 @@ public class Recipe {
         recipe.setDifficulty(dto.getDifficulty());
         recipe.setTimeHours(dto.getTimeHours());
         recipe.setTimeMinutes(dto.getTimeMinutes());
-        recipe.setIngredients(dto.getIngredients());
-        recipe.setSeasoning(dto.getSeasoning());
+
+        // 재료 & 양념
+        List<Material> ingredientEntities = dto.getIngredients().stream()
+                .map(m -> new Material(m.getName(), m.getValue(), m.getUnit()))
+                .collect(Collectors.toList());
+
+        List<Material> seasoningEntities = dto.getSeasonings().stream()
+                .map(m -> new Material(m.getName(), m.getValue(), m.getUnit()))
+                .collect(Collectors.toList());
+        recipe.setIngredients(ingredientEntities);
+        recipe.setSeasonings(seasoningEntities);
+
         recipe.setTips(dto.getTips());
         recipe.setStepDescriptions(dto.getStepDescriptions());
 
@@ -220,8 +227,16 @@ public class Recipe {
         this.difficulty = dto.getDifficulty();
         this.timeHours = dto.getTimeHours();
         this.timeMinutes = dto.getTimeMinutes();
-        this.ingredients = dto.getIngredients();
-        this.seasoning = dto.getSeasoning();
+
+        // 재료 & 양념
+        this.ingredients = dto.getIngredients().stream()
+                .map(dtoMaterial -> new Material(dtoMaterial.getName(), dtoMaterial.getValue(), dtoMaterial.getUnit()))
+                .collect(Collectors.toList());
+
+        this.seasonings = dto.getSeasonings().stream()
+                .map(dtoMaterial -> new Material(dtoMaterial.getName(), dtoMaterial.getValue(), dtoMaterial.getUnit()))
+                .collect(Collectors.toList());
+
         this.tips = dto.getTips();
         this.stepDescriptions = dto.getStepDescriptions();
 
