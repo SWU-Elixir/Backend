@@ -35,13 +35,13 @@ public interface IngredientApi {
                                         {
                                           "id": 1,
                                           "name": "감자",
-                                          "category": "농산물",
+                                          "categoryGroup": "농산물",
                                           "type": null
                                         },
                                         {
                                           "id": 2,
                                           "name": "곤약(구약나물)",
-                                          "category": "농산물",
+                                          "categoryGroup": "농산물",
                                           "type": null
                                         }, ...
                                       ]
@@ -77,13 +77,11 @@ public interface IngredientApi {
                                         {
                                           "id": 142,
                                           "name": "딸기",
-                                          "category": "농산물",
                                           "month": 2
                                         },
                                         {
                                           "id": 1111,
                                           "name": "봄동",
-                                          "category": "농산물",
                                           "month": 2
                                         }, ...
                                       ]
