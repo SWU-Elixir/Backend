@@ -1,0 +1,157 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "elixir-container",
+      "image": "448270596607.dkr.ecr.ap-northeast-2.amazonaws.com/elixir:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "elixir-port",
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "AWS_ACCESSKEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/aws-acceskey-TOjdX1"
+        },
+        {
+          "name": "AWS_SECRETKEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/aws-secretkey-vDt2RY"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/rds-password-iVXJaX"
+        },
+        {
+          "name": "DB_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/rds-url-g2SVmy"
+        },
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/rds-username-R5c9sA"
+        },
+        {
+          "name": "DEFAULT_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/default-url-X3hYYc"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/jwt-secret-akpfFO"
+        },
+        {
+          "name": "NAVER_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/naver-id-uWloZZ"
+        },
+        {
+          "name": "NAVER_PW",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/naver-pw-0g09II"
+        },
+        {
+          "name": "OPENAI_SECRETKEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/openai-secretkey-W3uA0T"
+        },
+        {
+          "name": "REDIS_HOST",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/redis-host-j88dd6"
+        },
+        {
+          "name": "REDIS_PORT",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:448270596607:secret:prod/redis-port-XktJOU"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/elixir-task-df",
+          "mode": "non-blocking",
+          "awslogs-create-group": "true",
+          "max-buffer-size": "25m",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": []
+    },
+    {
+      "name": "redis-container",
+      "image": "redis:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "redis-port",
+          "containerPort": 6379,
+          "hostPort": 6379,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "systemControls": []
+    }
+  ],
+  "family": "elixir-task-df",
+  "taskRoleArn": "arn:aws:iam::448270596607:role/ecs-task-role",
+  "executionRoleArn": "arn:aws:iam::448270596607:role/ecs-task-execution-role",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.secrets.asm.environment-variables"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "cpu": "512",
+  "memory": "819",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "tags": []
+}
