@@ -22,6 +22,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.PrintWriter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -43,7 +45,13 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:8080", "http://localhost:8080/*");
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "http://localhost:8080",
+                                "https://sean-test.shop"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true); // 인증 관련 요청을 허용할 경우
             }
         };
     }
@@ -54,7 +62,7 @@ public class SecurityConfig {
                 // REST API 이기 떄문에 basic auth, csrf 보안 사용 X
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(withDefaults())
                 .headers((headerConfig) -> headerConfig.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 // jwt 사용 -> 세션 XX
                 .sessionManagement(configurer -> configurer
