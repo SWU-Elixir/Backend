@@ -14,8 +14,8 @@ jobs:
     env:
       AWS_REGION: ap-northeast-2
       ECR_REPOSITORY: elixir
-      ECS_SERVICE: elixir-task-df-service-7-1
-      ECS_CLUSTER: elixir-cluster
+      ECS_SERVICE: elixir-service
+      ECS_CLUSTER: ElixirCluster
       ECS_TASK_DEFINITION: task-definition.json
       CONTAINER_NAME: elixir-container
 
@@ -58,8 +58,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-#        docker build --platform linux/amd64 -t ecr 레포지토리 위치/ecr 레포지토리명:latest -f Dockerfile.production .
-
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -68,10 +66,10 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition without rolling update
+      - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: false
+          wait-for-service-stability: true
