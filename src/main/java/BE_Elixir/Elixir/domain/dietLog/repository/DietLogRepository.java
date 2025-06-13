@@ -13,6 +13,10 @@ import java.util.List;
 @Repository
 public interface DietLogRepository extends JpaRepository<DietLog, Long> {
 
+    // 식단 기록 시, 그날 해당 타입으로 기록된 식단이 있는지 여부
+    boolean existsByMemberIdAndTypeAndTimeBetween(Long memberId, DietLogType type, LocalDateTime start, LocalDateTime end);
+    boolean existsByMemberIdAndTypeAndTimeBetweenAndIdNot(Long memberId, DietLogType type, LocalDateTime start, LocalDateTime end, Long id);
+
     // 특정 사용자의 특정 날짜 식단 전체 조회
     List<DietLog> findAllByMemberIdAndTimeBetween(Long memberId, LocalDateTime start, LocalDateTime end);
 

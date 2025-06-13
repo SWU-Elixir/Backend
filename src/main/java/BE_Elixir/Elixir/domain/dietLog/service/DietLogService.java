@@ -43,6 +43,8 @@ public class DietLogService {
     private final S3Service s3Service;
     private final ApplicationEventPublisher eventPublisher;
 
+
+
     // 식단 기록하기
     public DietLogResponseDTO createDietLog(DietLogRequestDTO dto, Long memberId, MultipartFile image) {
 
@@ -50,8 +52,9 @@ public class DietLogService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. member id: " + memberId));
 
-        // 식단 타입을 enum 타입으로 변환
+        // 식단 타입을 enum 타입으로 변환 및 검사
         DietLogType typeEnum = DietLogType.valueOf(dto.getType().toUpperCase());
+        validateDuplicateDietLogType(memberId, typeEnum, dto.getTime());
 
         // 객체 생성
         DietLog dietLog = dto.toEntity(typeEnum, member);
@@ -125,6 +128,15 @@ public class DietLogService {
         // 식단 타입 수정
         if (dto.getType() != null) {
             DietLogType typeEnum = DietLogType.valueOf(dto.getType().toUpperCase());
+
+            // 타입 중복 검사
+            if (dto.getTime() != null) {
+                validateDuplicateDietLogType(memberId, typeEnum, dto.getTime(), dietLogId);
+            }
+            else {
+                LocalDateTime time = dietLog.getTime();
+                validateDuplicateDietLogType(memberId, typeEnum, time, dietLogId);
+            }
             dietLog.setType(typeEnum);
         }
 
@@ -220,4 +232,42 @@ public class DietLogService {
                 .map(DietLog::convertToResponseDTO)
                 .toList();
     }
+
+    // 중복 식사 타입 검사 (create인 경우)
+    private void validateDuplicateDietLogType(Long memberId, DietLogType typeEnum, LocalDateTime time) {
+        if (typeEnum == DietLogType.간식) return;
+
+        LocalDate date = time.toLocalDate();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // 중복 검사 시 현재 수정 대상은 제외
+        boolean exists = dietLogRepository.existsByMemberIdAndTypeAndTimeBetween(
+                memberId, typeEnum, startOfDay, endOfDay
+        );
+
+        if (exists) {
+            throw new CustomException(ErrorCode.DIET_LOG_TYPE_DUPLICATE);
+        }
+    }
+
+    // 중복 식사 타입 검사 (update인 경우)
+    private void validateDuplicateDietLogType(Long memberId, DietLogType typeEnum, LocalDateTime time, Long excludeDietLogId) {
+        if (typeEnum == DietLogType.간식) return;
+
+        LocalDate date = time.toLocalDate();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // 중복 검사 시 현재 수정 대상은 제외
+        boolean exists = dietLogRepository.existsByMemberIdAndTypeAndTimeBetweenAndIdNot(
+                memberId, typeEnum, startOfDay, endOfDay, excludeDietLogId
+        );
+
+        if (exists) {
+            throw new CustomException(ErrorCode.DIET_LOG_TYPE_DUPLICATE);
+        }
+    }
+
+
 }
