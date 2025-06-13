@@ -99,8 +99,9 @@ public class DietLogService {
         }
 
         // S3 버킷에서 이미지 삭제
-        s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
-
+        if (dietLog.getImageUrl() != null) {
+            s3Service.deleteS3(dietLog.getImageUrl(), "diet_log");
+        }
         // 식단 삭제
         dietLogRepository.delete(dietLog);
     }
