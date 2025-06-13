@@ -1,4 +1,15 @@
 {
+  "family": "elixir-task-df",
+  "taskRoleArn": "arn:aws:iam::448270596607:role/ecs-task-role",
+  "executionRoleArn": "arn:aws:iam::448270596607:role/ecs-task-execution-role",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "3072",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
   "containerDefinitions": [
     {
       "name": "elixir-container",
@@ -20,8 +31,6 @@
           "value": "prod"
         }
       ],
-      "mountPoints": [],
-      "volumesFrom": [],
       "secrets": [
         {
           "name": "AWS_ACCESSKEY",
@@ -81,10 +90,8 @@
           "max-buffer-size": "25m",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
-        },
-        "secretOptions": []
-      },
-      "systemControls": []
+        }
+      }
     },
     {
       "name": "redis-container",
@@ -98,60 +105,7 @@
           "protocol": "tcp"
         }
       ],
-      "essential": true,
-      "environment": [],
-      "environmentFiles": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "systemControls": []
+      "essential": true
     }
-  ],
-  "family": "elixir-task-df",
-  "taskRoleArn": "arn:aws:iam::448270596607:role/ecs-task-role",
-  "executionRoleArn": "arn:aws:iam::448270596607:role/ecs-task-execution-role",
-  "networkMode": "awsvpc",
-  "volumes": [],
-  "requiresAttributes": [
-    {
-      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-    },
-    {
-      "name": "ecs.capability.execution-role-awslogs"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.ecr-auth"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-    },
-    {
-      "name": "ecs.capability.secrets.asm.environment-variables"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.task-iam-role"
-    },
-    {
-      "name": "ecs.capability.execution-role-ecr-pull"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-    },
-    {
-      "name": "ecs.capability.task-eni"
-    },
-    {
-      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-    }
-  ],
-  "placementConstraints": [],
-  "cpu": "512",
-  "memory": "819",
-  "runtimePlatform": {
-    "cpuArchitecture": "X86_64",
-    "operatingSystemFamily": "LINUX"
-  },
-  "tags": []
+  ]
 }
