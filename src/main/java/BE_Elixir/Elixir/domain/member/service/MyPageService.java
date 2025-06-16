@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -274,28 +275,27 @@ public class MyPageService {
 
         List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
 
-        // 챌린지 ID만 가져오기
-        Set<Long> challengeIds = achievements.stream()
+        // 목표를 모두 달성한 업적만 필터링
+        List<ChallengeAchievement> completedAchievements = achievements.stream()
                 .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .collect(Collectors.toList());
+
+        // 관련된 챌린지 ID
+        Set<Long> challengeIds = completedAchievements.stream()
                 .map(ChallengeAchievement::getChallengeId)
                 .collect(Collectors.toSet());
 
-        // challengeId에 해당하는 챌린지를 한 번에 조회
-        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
-
         // challengeId → Challenge 매핑
-        Map<Long, Challenge> challengeMap = challenges.stream()
+        Map<Long, Challenge> challengeMap = challengeRepository.findAllById(challengeIds).stream()
                 .collect(Collectors.toMap(Challenge::getId, c -> c));
 
-        // 업적 필터 + 정렬 + DTO 변환
-        List<MemberAchievementResponseDTO> top3Achievements = achievements.stream()
-                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
-                .sorted((a1, a2) -> {
-                    Challenge c1 = challengeMap.get(a1.getChallengeId());
-                    Challenge c2 = challengeMap.get(a2.getChallengeId());
-                    int compareYear = Integer.compare(c2.getYear(), c1.getYear());
-                    return (compareYear != 0) ? compareYear : Integer.compare(c2.getMonth(), c1.getMonth());
-                })
+        // 정렬 + DTO 변환
+        return completedAchievements.stream()
+                .filter(a -> challengeMap.containsKey(a.getChallengeId())) // 누락된 챌린지 방지
+                .sorted(Comparator.comparing((ChallengeAchievement a) ->
+                                challengeMap.get(a.getChallengeId()).getYear()).reversed()
+                        .thenComparing(a ->
+                                challengeMap.get(a.getChallengeId()).getMonth(), Comparator.reverseOrder()))
                 .limit(3)
                 .map(a -> {
                     Challenge challenge = challengeMap.get(a.getChallengeId());
@@ -303,12 +303,11 @@ public class MyPageService {
                             challenge.getYear(),
                             challenge.getMonth(),
                             challenge.getAchievementName(),
-                            challenge.getAchievementImageUrl(), // 컬러 이미지
+                            challenge.getAchievementImageUrl(), // 컬러 이미지 URL
                             true
                     );
                 })
                 .collect(Collectors.toList());
-        return top3Achievements;
     }
 
     // 다른 사용자가 업로드한 모든 레시피 조회하기
