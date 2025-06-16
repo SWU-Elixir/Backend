@@ -3079,17 +3079,17 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"2월 챌린지",
-		"설명- 2월 챌린지입니다.(식재료: 봄동 id: 1111)",
-		"목적- 2월 챌린지입니다.",
+	"2월 봄맞이 챌린지",
+	"1단계\n• 하루 한 끼 재철 식재료(봄동, 딸기, 시금치, 아몬드)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 봄동, 딸기, 시금치, 아몬드 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(봄동, 딸기, 시금치, 아몬드)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(봄동, 딸기, 시금치, 아몬드)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(봄동, 딸기, 시금치, 아몬드)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 봄동, 딸기, 시금치, 아몬드 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 3월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "겨울의 끝자락, 체력이 떨어지기 쉬운 2월엔 비타민과 항산화 영양소 보충이 필수입니다.\n\n봄동은 비타민 C가 풍부해 환절기 면역력 강화에 도움을 주고,\n딸기는 피부 건강에 좋은 항산화 성분과 비타민 C가 가득해 피부 컨디션 개선에 탁월하죠.\n또한, 시금치는 베타카로틴과 철분이 많아 세포 노화 방지와 빈혈 예방에 효과적이며,\n아몬드는 피부 탄력과 심혈관 건강을 동시에 챙길 수 있는 영양 간식이에요.\n\n2월엔 이처럼 영양 가득한 제철 재료와 함께\n속부터 건강해지는 식습관을 만들어보세요!",
     2, 2025,
     "비타민 수호자",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_2.png',
-    'https://example.com/images/gray_2.png'
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/2%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/2%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
 -- 3월
@@ -3102,17 +3102,17 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"3월 챌린지",
-		"설명- 3월 챌린지입니다.(식재료: 쑥 id: 1142)",
-		"목적- 3월 챌린지입니다.",
+	"3월 환절기 건강 챌린지",
+	"1단계\n• 하루 한 끼 재철 식재료(달래, 냉이, 쑥)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 달래, 냉이, 쑥 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(달래, 냉이, 쑥)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(달래, 냉이, 쑥)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(달래, 냉이, 쑥)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 달래, 냉이, 쑥 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 3월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "꽃샘추위와 미세먼지로 유난히 몸이 예민해지는 3월,\n이럴 때일수록 면역력과 간 건강 관리가 중요합니다.\n\n달래는 알리신 성분이 풍부해 혈액순환을 돕고 피로 회복에 효과적이며,\n냉이는 아르기닌과 비타민이 풍부해 간 해독을 돕는 대표 봄나물이에요.\n또한 쑥은 항염 작용과 함께 장 건강과 소화를 돕는 식재료로, 미세먼지로 지친 몸에 안성맞춤이죠.\n\n이번 3월에는 매일 한 끼, 봄나물을 식단에 담아\n내 몸의 방어력을 끌어올리는 항산화 챌린지에 도전해보세요!",
     3, 2025,
-    "비타민 수호자",
+    "환절기 방어왕",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_3.png',
-    'https://example.com/images/gray_3.png'
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
 -- 4월
@@ -3125,17 +3125,17 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"4월 챌린지",
-		"설명- 4월 챌린지입니다.(식재료: 호두 id: 47)",
-		"목적- 4월 챌린지입니다.",
+	"4월 봄기운 충전 챌린지",
+	'1단계\n• 하루 한 끼 재철 식재료(두릅, 미나리, 부추, 호두)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 두릅, 미나리, 부추, 호두 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(두릅, 미나리, 부추, 호두)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(두릅, 미나리, 부추, 호두)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(두릅, 미나리, 부추, 호두)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 두릅, 미나리, 부추, 호두 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 5월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공',
+    '쌀쌀했던 공기가 따스해지고 새싹이 돋아나는 4월, 환절기 면역력 관리와 겨우내 약해진 체력 회복이 필요한 시기입니다.\n\n두릅은 봄철 대표 산나물로 풍부한 항산화 성분이 황사와 미세먼지로 인한 몸속 염증을 감소시키고,\n미나리는 따뜻해진 날씨에 늘어난 외식으로 쌓인 체내 독소와 과다한 나트륨을 배출하는데 탁월합니다.\n봄바람과 함께 찾아오는 춘곤증에는 부추의 피로 회복과 혈액순환 개선 효능이 도움이 되며,\n신학기 집중력이 필요한 시기에 호두의 두뇌 건강 개선과 오메가-3 지방산이 활력을 더해줍니다. \n\n완연한 봄기운이 느껴지는 4월, 이런 제철 식재료를 통해 겨우내 움츠렸던 몸과 마음에 활력을 불어넣어 보세요!',
     4, 2025,
-    "비타민 수호자",
+    "봄기운 충전소",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_4.png',
-    'https://example.com/images/gray_4.png'
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
 -- 5월
@@ -3147,18 +3147,18 @@ INSERT INTO challenge (
     step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
     achievement_image_url, gray_achievement_image_url
 )
-VALUES (
-		"5월 봄맞이 챌린지",
-		"설명- 5월 챌린지입니다.(식재료: 딸기 id: 142)",
-		"목적- 5월 챌린지입니다.",
+VALUES(
+    "5월 활력 챌린지",
+    "1단계\n• 하루 한 끼 재철 식재료(죽순, 양배추, 상추, 렌틸콩)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 죽순, 양배추, 상추, 렌틸콩 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(죽순, 양배추, 상추, 렌틸콩)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(죽순, 양배추, 상추, 렌틸콩)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(죽순, 양배추, 상추, 렌틸콩)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 죽순, 양배추, 상추, 렌틸콩 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 5월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "따스한 햇살과 산뜻한 바람이 어우러지는 5월, 야외 활동이 늘어나는 만큼 균형 잡힌 영양 섭취가 중요한 시기입니다.\n\n가정의 달 풍성한 식탁에 더할 죽순은 섬유질이 풍부해 과식하기 쉬운 계절에 장 건강을 개선하고,\n봄비 후 더워지는 날씨에 양배추의 풍부한 항산화 성분은 자외선으로부터 세포를 보호하며 면역력을 높여줍니다.\n더워지는 날씨에 수분 손실이 많아질 때 상추의 높은 수분 함량은 피부 건강과 체내 수분 균형을 유지해주고,\n렌틸콩은 단백질과 식이섬유가 풍부하여 혈당 조절에 도움을 주며, 콜레스테롤 수치를 낮추는 데도 효과적입니다.\n\n푸르름이 가득한 5월, 이 신선한 제철 식재료들로 건강하고 생기 넘치는 일상을 만들어 보세요!",
     5, 2025,
-    "비타민 수호자",
+    "활력 충전 마스터",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_5.png',
-    'https://example.com/images/gray_5.png'
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/5%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/5%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
 -- 6월
@@ -3171,17 +3171,17 @@ INSERT INTO challenge (
     achievement_image_url, gray_achievement_image_url
 )
 VALUES (
-		"6월 챌린지",
-		"설명- 6월 챌린지입니다.(식재료: 오이 id: 1166)",
-		"목적- 6월 챌린지입니다.",
+    "6월 초여름 웰빙 챌린지",
+    "1단계\n• 하루 한 끼 재철 식재료(완두콩, 귀리, 오이, 체리)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 완두콩, 귀리, 오이, 체리 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(완두콩, 귀리, 오이, 체리)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(완두콩, 귀리, 오이, 체리)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(완두콩, 귀리, 오이, 체리)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 완두콩, 귀리, 오이, 체리 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 5월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "장마철이 시작되고 습도가 높아지는 6월, 갑작스러운 더위와 습기로 인한 체력 저하를 막고 건강한 신체 밸런스를 유지하는 것이 중요합니다.\n\n높은 습도에 지치기 쉬운 요즘, 완두콩의 단백질과 비타민 B군은 에너지 생성과 근육 회복을 도와 활력을 되찾아주고,\n일교차가 큰 초여름에 귀리의 베타글루칸은 혈당을 안정화시켜 하루 종일 지속적인 에너지를 공급합니다.\n무더워지는 날씨에 오이의 풍부한 수분은 체온을 낮추고 더위에 지친 몸과 피부를 진정시켜주며,\n긴 낮 시간과 짧아진 밤으로 불규칙해진 수면에는 체리의 멜라토닌이 함유되어 수면의 질을 개선시킵니다.\n\n한 여름을 앞둔 6월, 이 영양 가득한 제철 식재료로 균형 잡힌 웰빙 라이프를 시작해보세요!",
     6, 2025,
-    "비타민 수호자",
+    "웰빙 라이프 마스터",
     'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
     'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
     '하루 한 끼 재철 식재료를 포함한 식사', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사', '아침 챙겨 먹기',
     '하루 한 끼 재철 식재료를 포함한 식사', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
-    'https://example.com/images/color_6.png',
-    'https://example.com/images/gray_6.png'
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/6%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/6%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
 -- 챌린지 미션 더미데이터
@@ -3305,6 +3305,38 @@ INSERT INTO challenge_achievement (
     0, 0, -- step4goal2achieved, step4goal2active
     NULL, -- challenge_completed_at
     4,  -- challenge_id (5월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
+
+-- A 회원의 6월 챌린지 3개만 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    0, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    0, 1, -- step2goal2achieved, step2goal2active
+    0, 0, -- step3goal1achieved, step3goal1active
+    0, 0, -- step3goal2achieved, step3goal2active
+    0, 0, -- step4goal1achieved, step4goal1active
+    0, 0, -- step4goal2achieved, step4goal2active
+    NULL, -- challenge_completed_at
+    5,  -- challenge_id (6월)
     2,  -- member_id (A@example.com)
     NOW() -- opened_at
 );
