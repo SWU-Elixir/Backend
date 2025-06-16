@@ -7507,7 +7507,7 @@ INSERT INTO challenge_achievement (
     1, 1, -- step3goal2achieved, step3goal2active
     1, 1, -- step4goal1achieved, step4goal1active
     1, 1, -- step4goal2achieved, step4goal2active
-    NOW(), -- challenge_completed_at
+    '2025-02-23 10:25:00', -- challenge_completed_at
     1,  -- challenge_id (2월)
     2,  -- member_id (A@example.com)
     NOW() -- opened_at
@@ -7538,7 +7538,7 @@ INSERT INTO challenge_achievement (
     1, 1, -- step3goal2achieved, step3goal2active
     1, 1, -- step4goal1achieved, step4goal1active
     1, 1, -- step4goal2achieved, step4goal2active
-    NOW(), -- challenge_completed_at
+    '2025-03-29 18:45:00', -- challenge_completed_at
     2,  -- challenge_id (3월)
     2,  -- member_id (A@example.com)
     NOW() -- opened_at
@@ -7569,7 +7569,7 @@ INSERT INTO challenge_achievement (
     1, 1, -- step3goal2achieved, step3goal2active
     1, 1, -- step4goal1achieved, step4goal1active
     1, 1, -- step4goal2achieved, step4goal2active
-    NOW(), -- challenge_completed_at
+    '2025-04-25 14:25:00', -- challenge_completed_at
     3,  -- challenge_id (4월)
     2,  -- member_id (A@example.com)
     NOW() -- opened_at
@@ -7669,7 +7669,36 @@ INSERT INTO challenge_achievement (
     NOW() -- opened_at
 );
 
-
+-- B 회원의 6월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    '2025-06-16 14:25:00', -- challenge_completed_at
+    5,  -- challenge_id (6월)
+    3,  -- member_id (B@example.com)
+    NOW() -- opened_at
+);
 
 
 -- 회원
