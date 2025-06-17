@@ -123,14 +123,17 @@ public class ChallengeEventListener {
         if (achievement.isStep1Goal1Achieved() && achievement.isStep1Goal2Achieved()) {
             achievement.setStep2Goal1Active(true);
             achievement.setStep2Goal2Active(true);
+            achievement.setOpenedAt(LocalDateTime.now());
         }
         if (achievement.isStep2Goal1Achieved() && achievement.isStep2Goal2Achieved()) {
             achievement.setStep3Goal1Active(true);
             achievement.setStep3Goal2Active(true);
+            achievement.setOpenedAt(LocalDateTime.now());
         }
         if (achievement.isStep3Goal1Achieved() && achievement.isStep3Goal2Achieved()) {
             achievement.setStep4Goal1Active(true);
             achievement.setStep4Goal2Active(true);
+            achievement.setOpenedAt(LocalDateTime.now());
         }
         
         // 서비스에서 달성 정보 저장

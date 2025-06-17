@@ -4,8 +4,10 @@ import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeCompletedResponse
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeProgressResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
+import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievementId;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
+import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,7 @@ public class ChallengeAchievementService {
 
     private final ChallengeRepository challengeRepository;
     private final ChallengeAchievementRepository challengeAchievementRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void save(ChallengeAchievement achievement) {
@@ -120,4 +123,40 @@ public class ChallengeAchievementService {
                 .orElseGet(() -> ChallengeProgressResponseDTO.empty(challenge));
     }
 
+    // 챌린지 자동 참여
+    @Transactional
+    public void challengeParticipation(String memberEmail) {
+        LocalDate now = LocalDate.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+
+        // 회원 정보 조회 (email -> memberId)
+        Long memberId = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND))
+                .getId();
+
+        Challenge challenge = challengeRepository.findByYearAndMonth(year, month)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHALLENGE_NOT_FOUND));
+
+        ChallengeAchievementId id = new ChallengeAchievementId(memberId, challenge.getId());
+
+        boolean exists = challengeAchievementRepository.existsById(id);
+
+        if (!exists) {
+            ChallengeAchievement achievement = new ChallengeAchievement();
+            achievement.setMemberId(memberId);
+            achievement.setChallengeId(challenge.getId());
+            achievement.setStep1Goal1Active(true);
+            achievement.setStep1Goal2Active(true);
+            achievement.setStep2Goal1Active(false);
+            achievement.setStep2Goal2Active(false);
+            achievement.setStep3Goal1Active(false);
+            achievement.setStep3Goal2Active(false);
+            achievement.setStep4Goal1Active(false);
+            achievement.setStep4Goal2Active(false);
+            achievement.setOpenedAt(LocalDateTime.now());
+
+            challengeAchievementRepository.save(achievement);
+        }
+    }
 }

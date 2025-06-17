@@ -12,6 +12,11 @@ public class ChallengeAchievementId implements Serializable {
     private Long memberId;
     private Long challengeId;
 
+    public ChallengeAchievementId(Long memberId, Long challengeId) {
+        this.memberId = memberId;
+        this.challengeId = challengeId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
