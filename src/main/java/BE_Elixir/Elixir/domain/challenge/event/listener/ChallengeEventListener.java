@@ -21,7 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -169,10 +171,28 @@ public class ChallengeEventListener {
             case DIET_LUNCH ->
                     achieved = dietLogRepository.existsByMemberIdAndTypeAndTimeAfter(memberId, DietLogType.점심, openedAt);
             case DIET_THREE_MEALS -> {
-                boolean hasBreakfast = dietLogRepository.existsByMemberIdAndTypeAndTimeAfter(memberId, DietLogType.아침, openedAt);
-                boolean hasLunch = dietLogRepository.existsByMemberIdAndTypeAndTimeAfter(memberId, DietLogType.점심, openedAt);
-                boolean hasDinner = dietLogRepository.existsByMemberIdAndTypeAndTimeAfter(memberId, DietLogType.저녁, openedAt);
-                achieved = hasBreakfast && hasLunch && hasDinner;
+                // 특정 날짜 단위로 아침/점심/저녁이 모두 기록된 날이 있는지를 체크
+                List<LocalDate> datesWithBreakfast = dietLogRepository.findTimesWithDietTypeAfter(memberId, DietLogType.아침, openedAt).stream()
+                        .map(LocalDateTime::toLocalDate)
+                        .distinct()
+                        .toList();
+
+                List<LocalDate> datesWithLunch = dietLogRepository.findTimesWithDietTypeAfter(memberId, DietLogType.점심, openedAt).stream()
+                        .map(LocalDateTime::toLocalDate)
+                        .distinct()
+                        .toList();
+
+                List<LocalDate> datesWithDinner = dietLogRepository.findTimesWithDietTypeAfter(memberId, DietLogType.저녁, openedAt).stream()
+                        .map(LocalDateTime::toLocalDate)
+                        .distinct()
+                        .toList();
+
+                // 교집합으로 하루라도 3끼 다 먹은 날이 있는지 확인
+                Set<LocalDate> breakfastSet = new HashSet<>(datesWithBreakfast);
+                breakfastSet.retainAll(datesWithLunch);
+                breakfastSet.retainAll(datesWithDinner);
+
+                achieved = !breakfastSet.isEmpty();
             }
             case DIET_SEASONAL_ONCE -> {
                 // 사용자의 식단에 포함된 식재료 목록

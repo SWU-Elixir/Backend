@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,5 +47,9 @@ public interface DietLogRepository extends JpaRepository<DietLog, Long> {
                              @Param("startOfMonth") LocalDateTime startOfMonth,
                              @Param("endOfMonth") LocalDateTime endOfMonth);
 
-
+    // - 특정 시간 이후에 작성된 기록
+    @Query("SELECT DISTINCT dl.time FROM DietLog dl WHERE dl.member.id = :memberId AND dl.type = :type AND dl.time > :after")
+    List<LocalDateTime> findTimesWithDietTypeAfter(@Param("memberId") Long memberId,
+                                                   @Param("type") DietLogType type,
+                                                   @Param("after") LocalDateTime after);
 }
