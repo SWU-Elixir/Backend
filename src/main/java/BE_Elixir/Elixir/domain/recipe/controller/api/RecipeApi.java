@@ -101,12 +101,24 @@ public interface RecipeApi {
                                       "message": "레시피 조회 성공",
                                       "data": {
                                         "authorFollowByCurrentUser": false,
-                                        "comments": [],
-                                        "likedByCurrentUser": false,
-                                        "scrappedByCurrentUser": false,
-                                        "id": 3,
-                                        "authorNickname": "mj",
-                                        "authorTitle": null,
+                                            "comments": [
+                                              {
+                                                "commentId": 1,
+                                                "recipeId": 1,
+                                                "nickName": "mj",
+                                                "title": "비타민 수호자",
+                                                "authorProfileUrl": "https://commentPostUserImage.com",
+                                                "content": "mj로 댓글달기",
+                                                "createdAt": "2025-06-17T07:52:47",
+                                                "updatedAt": "2025-06-17T07:52:47"
+                                              }
+                                            ],
+                                            "likedByCurrentUser": false,
+                                            "scrappedByCurrentUser": false,
+                                            "id": 1,
+                                            "authorNickname": "mj",
+                                            "authorTitle": "비타민 수호자",
+                                            "authorProfileUrl": "https://recipePostUserImage.com",
                                         "title": "방울토마토 소박이",
                                         "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00031_1.png",
                                         "description": "기타",
