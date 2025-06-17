@@ -3,6 +3,7 @@ package BE_Elixir.Elixir.domain.auth.service;
 import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.service.ChallengeAchievementService;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
 import BE_Elixir.Elixir.global.exception.CustomException;
@@ -30,6 +31,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final RedisAuthService redisAuthService;
     private final MemberDetailsService memberDetailsService;
+    private final ChallengeAchievementService challengeAchievementService;
 
     // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
@@ -50,6 +52,11 @@ public class AuthService {
             // Redis에 Refresh Token 저장
             redisAuthService.saveRefreshToken(email, refreshToken);
             log.info("Refresh Token Redis에 저장: email={}, token={}", email, refreshToken);
+
+            String memberEmail = request.getEmail();
+
+            // 자동 참여 메서드 호출
+            challengeAchievementService.challengeParticipation(memberEmail);
 
             return tokenResponse;
         } catch (BadCredentialsException e) {
