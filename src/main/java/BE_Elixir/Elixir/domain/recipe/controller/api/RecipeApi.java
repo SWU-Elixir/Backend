@@ -118,6 +118,7 @@ public interface RecipeApi {
                                             "id": 1,
                                             "authorNickname": "mj",
                                             "authorTitle": "비타민 수호자",
+                                            "authorId": 1,
                                             "authorProfileUrl": "https://recipePostUserImage.com",
                                         "title": "방울토마토 소박이",
                                         "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00031_1.png",

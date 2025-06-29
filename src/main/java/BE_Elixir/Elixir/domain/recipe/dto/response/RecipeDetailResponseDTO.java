@@ -21,6 +21,7 @@ public class RecipeDetailResponseDTO {
     private Long id;
     private String authorNickname; // 작성자의 닉네임
     private String authorTitle; // 작성자의 칭호
+    private Long authorId; // 작성자의 아이디
     private String authorProfileUrl; // 레시피 작성자의 프로필이미지
     private Boolean authorFollowByCurrentUser; // 현재 사용자가 작성자를 팔로우했는지 여부
     private String title;
@@ -57,6 +58,7 @@ public class RecipeDetailResponseDTO {
         this.id = recipe.getId();
         this.authorNickname = recipe.getMember().getNickname();
         this.authorTitle = recipe.getMember().getTitle();
+        this.authorId = recipe.getMember().getId();
         this.authorProfileUrl = recipe.getMember().getProfileUrl();
         this.authorFollowByCurrentUser = authorFollowByCurrentUser;
         this.title = recipe.getTitle();
