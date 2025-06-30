@@ -141,4 +141,19 @@ public class DietLogController implements DietLogApi {
                 .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
                         "최근 N일 식단 목록 조회 성공 - 회원 ID:" + memberId, responseDTO));
     }
+
+    // 회원의 모든 식단 조회하기 (최신순)
+    @GetMapping("/all")
+    public ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getAllDietLogs(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        log.info("최신순으로 모든 식단 목록 조회 요청");
+        Long memberId = memberDetails.getId();
+
+        List<DietLogResponseDTO> responseDTO = dietLogService.getAllDietLogs(memberId);
+        log.info("최신순으로 모든 식단 목록 조회 성공 - 회원 ID: {}", memberId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "최신순으로 모든 식단 목록 조회 성공 - 회원 ID:" + memberId, responseDTO));
+    }
 }

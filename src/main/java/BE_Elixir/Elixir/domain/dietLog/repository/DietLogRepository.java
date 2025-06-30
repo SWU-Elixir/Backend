@@ -32,6 +32,9 @@ public interface DietLogRepository extends JpaRepository<DietLog, Long> {
             @Param("end") LocalDateTime end
     );
 
+    // 전체 식단 목록 조회 (최신순)
+    List<DietLog> findByMemberIdOrderByTimeDesc(Long memberId);
+
     // 챌린지 목표 조건 확인
     // - 특정 식사 종류(아침/점심/저녁) 기록
     boolean existsByMemberIdAndTypeAndTimeAfter(Long memberId, DietLogType type, LocalDateTime time);

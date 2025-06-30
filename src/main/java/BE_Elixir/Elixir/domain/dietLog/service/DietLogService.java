@@ -233,6 +233,13 @@ public class DietLogService {
                 .toList();
     }
 
+    // 모든 식단 기록 조회(최신순)
+    public List<DietLogResponseDTO> getAllDietLogs(Long memberId) {
+        return dietLogRepository.findByMemberIdOrderByTimeDesc(memberId).stream()
+                .map(DietLog::convertToResponseDTO)
+                .toList();
+    }
+
     // 중복 식사 타입 검사 (create인 경우)
     private void validateDuplicateDietLogType(Long memberId, DietLogType typeEnum, LocalDateTime time) {
         if (typeEnum == DietLogType.간식) return;

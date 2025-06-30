@@ -312,4 +312,49 @@ public interface DietLogApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+
+    @Operation(summary = "최신순으로 모든 식단 목록 조회",
+            description = "사용자의 모든 식단 기록 정보를 최신순으로 조회합니다",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "최신순으로 모든 식단 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "최신순으로 모든 식단 목록 조회 성공 - 회원 ID:2",
+                                      "data": [
+                                        {
+                                          "id": 3,
+                                          "memberId": 2,
+                                          "name": "묵은지참치김밥",
+                                          "imageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/diet_log/%EB%AC%B5%EC%9D%80%EC%A7%80%EC%B0%B8%EC%B9%98%EA%B9%80%EB%B0%A5.jpg",
+                                          "type": "점심",
+                                          "score": 3,
+                                          "ingredientTagId": [
+                                            314,
+                                            1227,
+                                            988
+                                          ],
+                                          "time": "2025-05-27T13:11:10"
+                                        },
+                                        ...
+                                      ]
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "식단 정보 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 400,
+                                      "code": "400 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<DietLogResponseDTO>>> getAllDietLogs(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 }
