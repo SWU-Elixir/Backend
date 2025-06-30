@@ -15,6 +15,9 @@ import jakarta.transaction.Transactional;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class RecipeEventService {
@@ -22,6 +25,14 @@ public class RecipeEventService {
     private final RecipeRepository recipeRepository;
     private final RecipeEventRepository recipeEventRepository;
     private final S3Service s3Service;
+
+    // 레시피별 댓글 조회
+    public List<RecipeCommentResponseDTO> getCommentsByRecipeId(Long recipeId) {
+        return recipeEventRepository.findAllByRecipeId(recipeId)
+                .stream()
+                .map(RecipeCommentResponseDTO::new)
+                .collect(Collectors.toList());
+    }
 
     // 댓글 등록하기
     public RecipeCommentResponseDTO addComment(

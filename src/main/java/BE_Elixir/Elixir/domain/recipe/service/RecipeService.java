@@ -48,7 +48,7 @@ public class RecipeService {
 
     // 레시피 등록하기
     @Transactional
-    public RecipeResponseDTO createRecipe(
+    public RecipeDetailResponseDTO createRecipe(
             RecipeRequestDTO dto,
             MultipartFile image,
             List<MultipartFile> recipeStepImages,
@@ -101,7 +101,12 @@ public class RecipeService {
         // 챌린지 달성을 위한 이벤트 발행
         eventPublisher.publishEvent(new RecipeEvent(member.getId(), recipe.getId(), LocalDateTime.now()));
 
-        return new RecipeResponseDTO(recipe);
+        // 작성자 팔로우 여부 확인
+        boolean authorFollowByCurrentUser = followRepository.existsByFollowerAndFollowing(member, member);
+        // 좋아요 및 스크랩 여부 확인
+        boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId());
+        boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+        return new RecipeDetailResponseDTO(recipe, authorFollowByCurrentUser, likedByCurrentUser, scrappedByCurrentUser);
     }
 
     // 레시피 조회
@@ -122,18 +127,12 @@ public class RecipeService {
         // 레시피 작성자
         Member authorRecipe = recipe.getMember();
 
-        // 댓글 가져오기
-        List<RecipeCommentResponseDTO> comments = recipeEventRepository.findAllByRecipeId(recipeId)
-                .stream()
-                .map(RecipeCommentResponseDTO::new)
-                .collect(Collectors.toList());
-
         // 작성자 팔로우 여부 확인
         boolean authorFollowByCurrentUser = followRepository.existsByFollowerAndFollowing(member, authorRecipe);
         // 좋아요 및 스크랩 여부 확인
         boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
         boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
-        return new RecipeDetailResponseDTO(recipe, authorFollowByCurrentUser, comments, likedByCurrentUser, scrappedByCurrentUser);
+        return new RecipeDetailResponseDTO(recipe, authorFollowByCurrentUser, likedByCurrentUser, scrappedByCurrentUser);
     }
 
     // 레시피 목록(홈) 조회

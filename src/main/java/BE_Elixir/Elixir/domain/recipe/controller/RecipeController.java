@@ -41,7 +41,7 @@ public class RecipeController implements RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     ){
         Member member = memberDetails.getMember();
-        RecipeResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages, member);
+        RecipeDetailResponseDTO response = recipeService.createRecipe(dto, image, recipeStepImages, member);
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.CREATED.toString(),
                 "레시피 등록 성공", response

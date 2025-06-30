@@ -38,12 +38,15 @@ public interface RecipeApi {
                                       "code": "201 CREATED",
                                       "message": "레시피 등록 성공",
                                       "data": {
-                                        "id": 49,
-                                        "email": "A@example.com",
+                                        "authorFollowByCurrentUser": false,
+                                        "likedByCurrentUser": false,
+                                        "scrappedByCurrentUser": false,
+                                        "id": 181,
+                                        "authorId": 1,
                                         "title": "닭가슴살 덮밥",
-                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00281_1.png",
-                                        "description": "닭가슴살로 간단히 덮밥해먹기",
-                                        "categorySlowAging": "염증감소",
+                                        "imageUrl": "http://foodsafetykorea/food.jpg",
+                                        "description": "굽기",
+                                        "categorySlowAging": "항산화강화",
                                         "categoryType": "한식",
                                         "difficulty": "쉬움",
                                         "timeHours": 0,
@@ -51,19 +54,27 @@ public interface RecipeApi {
                                         "ingredientTagIds": [
                                           1
                                         ],
-                                        "ingredients": {
-                                          "물": "2ml(1/3작은술)"
-                                        },
-                                        "seasoning": {
-                                          "설탕": "2g(1/3작은술)"
-                                        },
+                                        "ingredients": [
+                                           {
+                                             "name": "닭",
+                                             "value": "1",
+                                             "unit": "마리"
+                                           }
+                                         ],
+                                         "seasonings": [
+                                           {
+                                             "name": "설탕",
+                                             "value": "1",
+                                             "unit": "T"
+                                           }
+                                         ],
                                         "stepDescriptions": [
                                           "닭가슴살을 전자레인지에 데운다"
                                         ],
                                         "stepImageUrls": "http://www.foodsafetykorea.go.kr/uploadimg/cook/20_00031_5.png",
                                         "tips": "닭가슴살을 잘게 자를수록 더 맛있음",
                                         "likes": 0,
-                                        "scraps": 0,
+                                        "scraps": 50,
                                         "createdAt": "2025-06-03T00:08:22.319638443",
                                         "updatedAt": "2025-06-03T00:08:22.31966641",
                                         "allergies": []
@@ -101,30 +112,15 @@ public interface RecipeApi {
                                       "message": "레시피 조회 성공",
                                       "data": {
                                         "authorFollowByCurrentUser": false,
-                                            "comments": [
-                                              {
-                                                "commentId": 1,
-                                                "recipeId": 1,
-                                                "nickName": "mj",
-                                                "title": "비타민 수호자",
-                                                "authorProfileUrl": "https://commentPostUserImage.com",
-                                                "content": "mj로 댓글달기",
-                                                "createdAt": "2025-06-17T07:52:47",
-                                                "updatedAt": "2025-06-17T07:52:47"
-                                              }
-                                            ],
-                                            "likedByCurrentUser": false,
-                                            "scrappedByCurrentUser": false,
-                                            "id": 1,
-                                            "authorNickname": "mj",
-                                            "authorTitle": "비타민 수호자",
-                                            "authorId": 1,
-                                            "authorProfileUrl": "https://recipePostUserImage.com",
+                                        "likedByCurrentUser": false,
+                                        "scrappedByCurrentUser": false,
+                                        "id": 3,
+                                        "authorId": 1,
                                         "title": "방울토마토 소박이",
-                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00031_1.png",
+                                        "imageUrl": "http://foodsafetykorea/food.jpg",
                                         "description": "기타",
                                         "categorySlowAging": "염증감소",
-                                        "categoryType": "한식",
+                                        "categoryType": "디저트",
                                         "difficulty": "쉬움",
                                         "timeHours": 0,
                                         "timeMinutes": 45,
@@ -134,20 +130,30 @@ public interface RecipeApi {
                                           5,
                                           1101
                                         ],
-                                        "ingredients": {
-                                          "통깨": "약간",
-                                          "방울토마토": "150g(5개)",
-                                          "부추": "10g(5줄기)",
-                                          "물": "2ml(1/3작은술)"
-                                        },
-                                        "seasoning": {
-                                          "고춧가루": "4g(1작은술)",
-                                          "멸치액젓": "3g(2/3작은술)",
-                                          "다진 마늘": "2.5g(1/2쪽)",
-                                          "매실액": "2g(1/3작은술)",
-                                          "양파": "10g(3×1cm)",
-                                          "설탕": "2g(1/3작은술)"
-                                        },
+                                        "ingredients": [
+                                              {
+                                                "name": "방울토마토",
+                                                "value": "5",
+                                                "unit": "개"
+                                              },
+                                              {
+                                                "name": "부추",
+                                                "value": "5",
+                                                "unit": "줄기"
+                                              }
+                                        ],
+                                        "seasonings": [
+                                              {
+                                                "name": "양파",
+                                                "value": "10",
+                                                "unit": "g"
+                                              },
+                                              {
+                                                "name": "고춧가루",
+                                                "value": "1",
+                                                "unit": "작은술"
+                                              }
+                                         ],
                                         "stepDescriptions": [
                                           "물기를 빼고 2cm 정도의 크기로 썰은 부추와 양파를 양념장에 섞어 양념속을 만든다.",
                                           "깨끗이 씻은 방울토마토는 꼭지를 떼고 윗부분에 칼로 십자모양으로 칼집을 낸다.",

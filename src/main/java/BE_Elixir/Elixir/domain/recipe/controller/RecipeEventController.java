@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/recipe")
@@ -22,6 +24,19 @@ import org.springframework.web.bind.annotation.*;
 public class RecipeEventController implements RecipeEventApi {
 
     private final RecipeEventService recipeEventService;
+
+    // 레시피별 댓글 조회
+    @GetMapping("/{recipeId}/comment")
+    public ResponseEntity<CommonResponse<List<RecipeCommentResponseDTO>>> getCommentsByRecipeId(
+            @PathVariable Long recipeId
+    ) {
+        List<RecipeCommentResponseDTO> comments = recipeEventService.getCommentsByRecipeId(recipeId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                        "댓글 조회 성공", comments
+                ));
+    }
 
     // 댓글 등록하기
     @PostMapping("/{recipeId}/comment")
