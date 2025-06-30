@@ -18,8 +18,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Tag(name = "Recipe Event API", description = "레시피 이벤트 관련 API")
 public interface RecipeEventApi {
+    // 레시피별 댓글 조회
+    @Operation(summary = "레시피별 댓글 조회", description = "레시피별 댓글을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "댓글 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                        {
+                                          "status": 200,
+                                          "code": "200 OK",
+                                          "message": "댓글 조회 성공 ",
+                                          "data": [
+                                              {
+                                                "commentId": 1,
+                                                "recipeId": 1,
+                                                "nickName": "mj",
+                                                "title": "비타민수호자",
+                                                "authorProfileUrl": "http://profile.img",
+                                                "content": "레시피1에 댓글달기",
+                                                "createdAt": "2025-06-30T06:17:39",
+                                                "updatedAt": "2025-06-30T06:17:39"
+                                              }
+                                          ]
+                                        }
+                                    """))),
+            @ApiResponse(responseCode = "500", description = "댓글 조회 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeCommentResponseDTO>>> getCommentsByRecipeId(
+            @PathVariable Long recipeId
+    );
+
     // 댓글 등록하기
     @Operation(summary = "레시피 댓글 등록", description = "레시피에 댓글을 등록합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
