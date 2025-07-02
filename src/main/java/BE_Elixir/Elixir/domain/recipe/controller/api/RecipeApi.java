@@ -374,12 +374,15 @@ public interface RecipeApi {
                                       "code": "200 OK",
                                       "message": "레시피 수정 성공",
                                       "data": {
-                                        "id": 49,
-                                        "email": "A@example.com",
-                                        "title": "닭가슴살 덮밥",
-                                        "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00281_1.png",
-                                        "description": "닭가슴살로 간단히 덮밥해먹기",
-                                        "categorySlowAging": "염증감소",
+                                        "authorFollowByCurrentUser": false,
+                                        "likedByCurrentUser": false,
+                                        "scrappedByCurrentUser": false,
+                                        "id": 181,
+                                        "authorId": 1,
+                                        "title": "닭가슴살 덮밥 수정하기",
+                                        "imageUrl": "http://foodsafetykorea/food.jpg",
+                                        "description": "굽기",
+                                        "categorySlowAging": "항산화강화",
                                         "categoryType": "한식",
                                         "difficulty": "쉬움",
                                         "timeHours": 0,
@@ -387,12 +390,20 @@ public interface RecipeApi {
                                         "ingredientTagIds": [
                                           1
                                         ],
-                                        "ingredients": {
-                                          "물": "2ml(1/3작은술)"
-                                        },
-                                        "seasoning": {
-                                          "설탕": "2g(1/3작은술)"
-                                        },
+                                        "ingredients": [
+                                           {
+                                             "name": "닭",
+                                             "value": "1",
+                                             "unit": "마리"
+                                           }
+                                         ],
+                                         "seasonings": [
+                                           {
+                                             "name": "설탕",
+                                             "value": "1",
+                                             "unit": "T"
+                                           }
+                                         ],
                                         "stepDescriptions": [
                                           "닭가슴살을 전자레인지에 데운다"
                                         ],

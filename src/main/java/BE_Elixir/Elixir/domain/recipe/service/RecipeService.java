@@ -221,7 +221,7 @@ public class RecipeService {
 
     // 레시피 수정
     @Transactional
-    public RecipeResponseDTO updateRecipe(
+    public RecipeDetailResponseDTO updateRecipe(
             Long recipeId,
             RecipeRequestDTO dto,
             MultipartFile image,
@@ -278,7 +278,16 @@ public class RecipeService {
         );
 
         recipeRepository.save(recipe);
-        return new RecipeResponseDTO(recipe);
+
+        // 레시피 작성자
+        Member authorRecipe = recipe.getMember();
+
+        // 작성자 팔로우 여부 확인
+        boolean authorFollowByCurrentUser = followRepository.existsByFollowerAndFollowing(member, authorRecipe);
+        // 좋아요 및 스크랩 여부 확인
+        boolean likedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
+        boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
+        return new RecipeDetailResponseDTO(recipe, authorFollowByCurrentUser, likedByCurrentUser, scrappedByCurrentUser);
     }
 
     // 레시피 삭제
