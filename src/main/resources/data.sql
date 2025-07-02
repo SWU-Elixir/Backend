@@ -7481,6 +7481,30 @@ VALUES (
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/6%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
+-- 7월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+    "7월 밸런스 푸드 챌린지",
+    "1단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 열무, 깻잎, 가지, 블루베리 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(열무, 깻잎, 가지, 블루베리)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 열무, 깻잎, 가지, 블루베리 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 7월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "무더위가 본격화되는 7월, 뜨거운 햇볕과 높은 기온으로 인한 피로 누적과 입맛 저하를 극복하고, 건강한 여름나기를 위한 식습관이 필요합니다.\n\n열무는 풍부한 섬유질과 수분으로 더위에 지친 몸의 수분 밸런스를 맞춰주고,\n깻잎은 특유의 향과 칼슘, 철분 등 무기질로 여름철 떨어진 식욕과 면역력을 보충해줍니다.\n가지는 항산화 성분인 안토시아닌이 풍부하여 여름철 강한 자외선으로부터 세포를 보호하고,\n블루베리는 시원한 과일로 간편하게 섭취 가능하며 눈 건강과 피로 회복에 도움을 줍니다.\n\n무더운 7월, 시원하고 영양 가득한 제철 식재료로 활기찬 여름을 준비해보세요!",
+    7, 2025,
+    "쿨밸런서",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사 기록', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사 기록', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사 기록', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/7%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/7%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
+);
+
+
 -- 챌린지 미션 더미데이터
 -- A 회원의 2월 챌린지 달성
 INSERT INTO challenge_achievement (
@@ -7638,6 +7662,37 @@ INSERT INTO challenge_achievement (
     NOW() -- opened_at
 );
 
+-- A 회원의 7월 챌린지 3개만 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    0, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    0, 1, -- step2goal2achieved, step2goal2active
+    0, 0, -- step3goal1achieved, step3goal1active
+    0, 0, -- step3goal2achieved, step3goal2active
+    0, 0, -- step4goal1achieved, step4goal1active
+    0, 0, -- step4goal2achieved, step4goal2active
+    NULL, -- challenge_completed_at
+    6,  -- challenge_id (7월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
 -- B 회원의 2월 챌린지 3개만 달성
 INSERT INTO challenge_achievement (
     challenge_completed,
@@ -7696,6 +7751,37 @@ INSERT INTO challenge_achievement (
     1, 1, -- step4goal2achieved, step4goal2active
     '2025-06-16 14:25:00', -- challenge_completed_at
     5,  -- challenge_id (6월)
+    3,  -- member_id (B@example.com)
+    NOW() -- opened_at
+);
+
+-- B 회원의 7월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    '2025-07-16 14:25:00', -- challenge_completed_at
+    6,  -- challenge_id (7월)
     3,  -- member_id (B@example.com)
     NOW() -- opened_at
 );

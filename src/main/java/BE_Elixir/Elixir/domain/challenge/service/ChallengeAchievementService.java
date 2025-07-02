@@ -12,6 +12,7 @@ import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChallengeAchievementService {
 
@@ -135,9 +137,14 @@ public class ChallengeAchievementService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND))
                 .getId();
 
-        Challenge challenge = challengeRepository.findByYearAndMonth(year, month)
-                .orElseThrow(() -> new CustomException(ErrorCode.CHALLENGE_NOT_FOUND));
+        Optional<Challenge> optionalChallenge = challengeRepository.findByYearAndMonth(year, month);
 
+        if (optionalChallenge.isEmpty()) {
+            log.info("이번 달 챌린지가 없어 자동 참여를 스킵합니다. memberEmail={}", memberEmail);
+            return;
+        }
+
+        Challenge challenge = optionalChallenge.get();
         ChallengeAchievementId id = new ChallengeAchievementId(memberId, challenge.getId());
 
         boolean exists = challengeAchievementRepository.existsById(id);
