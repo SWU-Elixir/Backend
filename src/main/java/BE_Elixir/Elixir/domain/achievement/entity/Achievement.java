@@ -22,6 +22,9 @@ public class Achievement {
     @Column(nullable = false)
     private int level;      // 업적의 레벨(초급, 중급, 고급)
 
+    @Column(unique = true, nullable = false)
+    private String code; // 예: "TOTAL_LOGIN_DAYS_LV1"
+
     @Column(nullable = false)
     private int targetValue;    // 업적 달성 목표 수치(7, 30, 100 등)
 

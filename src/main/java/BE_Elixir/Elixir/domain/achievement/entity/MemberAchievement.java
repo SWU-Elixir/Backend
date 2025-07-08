@@ -26,9 +26,17 @@ public class MemberAchievement {
     @JoinColumn(name = "achievement_id")
     private Achievement achievement;
 
-    private int currentProgress;    // 업적 진행도
+    private int currentProgress=0;    // 업적 진행도
 
     private boolean completed;  // 달성 여부
 
+    private LocalDateTime updatedAt;    // 최근 활동 확인용 - 업데이트 시간
+
     private LocalDateTime completedAt;   // 달성 시간
+
+    @PreUpdate
+    @PrePersist
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

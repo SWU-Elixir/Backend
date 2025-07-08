@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.challenge.service;
+package BE_Elixir.Elixir.domain.challenge.dto.service;
 
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
