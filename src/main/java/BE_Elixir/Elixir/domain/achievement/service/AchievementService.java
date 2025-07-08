@@ -5,6 +5,7 @@ import BE_Elixir.Elixir.domain.achievement.dto.AchievementProgressDTO;
 import BE_Elixir.Elixir.domain.achievement.dto.AllAchievementStatusResponseDTO;
 import BE_Elixir.Elixir.domain.achievement.entity.Achievement;
 import BE_Elixir.Elixir.domain.achievement.entity.MemberAchievement;
+import BE_Elixir.Elixir.domain.achievement.repository.AchievementRepository;
 import BE_Elixir.Elixir.domain.achievement.repository.MemberAchievementRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
@@ -15,15 +16,18 @@ import BE_Elixir.Elixir.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AchievementService {
     private final MemberAchievementRepository memberAchievementRepository;
+    private final AchievementRepository achievementRepository;
     private final MemberRepository memberRepository;
 
     // 업적 통합 조회
@@ -31,37 +35,42 @@ public class AchievementService {
         Member member = memberRepository.findByEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        List<MemberAchievement> achievements = memberAchievementRepository.findAllByMember(member);
+        List<MemberAchievement> userAchievements = memberAchievementRepository.findAllByMember(member);
+        Map<Long, MemberAchievement> userAchievementMap = userAchievements.stream()
+                .collect(Collectors.toMap(ma -> ma.getAchievement().getId(), ma -> ma));
 
-        Map<AchievementType, AchievementCategoryDTO> result = new HashMap<>();
+        List<Achievement> allAchievements = achievementRepository.findAll();
 
-        for (MemberAchievement ma : achievements) {
-            AchievementType type = ma.getAchievement().getType();
+        Map<AchievementType, AchievementCategoryDTO> achievementMap = new HashMap<>();
 
-            // 해당 타입이 아직 result에 없으면 새로 추가
-            result.putIfAbsent(type, new AchievementCategoryDTO(0, new ArrayList<>()));
+        for (Achievement achievement : allAchievements) {
+            AchievementType type = achievement.getType();
+            AchievementCategoryDTO category = achievementMap.computeIfAbsent(type,
+                    k -> new AchievementCategoryDTO(0, new ArrayList<>()));
 
-            AchievementCategoryDTO category = result.get(type);
+            MemberAchievement ma = userAchievementMap.get(achievement.getId());
 
-            // currentValue 갱신 (가장 높은 값 사용)
-            if (ma.getCurrentProgress() > category.getCurrentValue()) {
-                category.setCurrentValue(ma.getCurrentProgress());
+            boolean achieved = ma != null && ma.isCompleted();
+            int currentProgress = ma != null ? ma.getCurrentProgress() : 0;
+            LocalDateTime achievedAt = achieved ? ma.getCompletedAt() : null;
+
+            if (currentProgress > category.getCurrentValue()) {
+                category.setCurrentValue(currentProgress);
             }
 
-            Achievement a = ma.getAchievement();
-            AchievementProgressDTO dto = new AchievementProgressDTO(
-                    a.getId(),
-                    a.getAchievementName(),
-                    a.getLevel(),
-                    a.getTargetValue(),
-                    ma.isCompleted(),
-                    ma.isCompleted() ? null : ma.getCurrentProgress(),
-                    ma.isCompleted() ? ma.getCompletedAt() : null
+            AchievementProgressDTO progressDTO = new AchievementProgressDTO(
+                    achievement.getId(),
+                    achievement.getAchievementName(),
+                    achievement.getLevel(),
+                    achievement.getTargetValue(),
+                    achieved,
+                    achieved ? null : currentProgress,
+                    achievedAt
             );
 
-            category.getAchievements().add(dto);
+            category.getAchievements().add(progressDTO);
         }
 
-        return new AllAchievementStatusResponseDTO(result);
+        return new AllAchievementStatusResponseDTO(achievementMap);
     }
 }
