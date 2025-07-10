@@ -24,6 +24,8 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED.value(), "Refresh Token이 유효하지 않습니다."),
     TOKEN_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Token 발급 중 오류가 발생했습니다."),
 
+    SOCIAL_USER_INFO_FETCH_FAILED(HttpStatus.BAD_GATEWAY.value(), "소셜 사용자 정보 조회에 실패했습니다."),
+
     // 회원
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 회원을 찾을 수 없습니다."),
     EXISTS_MEMBER(HttpStatus.CONFLICT.value(), "이미 존재하는 회원입니다."),
