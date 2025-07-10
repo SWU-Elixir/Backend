@@ -7,6 +7,7 @@ import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
+import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
@@ -44,19 +45,35 @@ public class MemberController implements MemberApi {
                         "이메일 중복 체크 성공", isDuplicate));
     }
 
-    // 회원가입
+    // 일반 회원용 회원가입
     @PostMapping(value= "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> signUp(
             @RequestPart("dto") SignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
-        log.info("회원가입 요청 - 이메일: {}", dto.getEmail());
+        log.info("일반 회원용 회원가입 요청 - 이메일: {}", dto.getEmail());
 
-        Member member = memberService.signUp(dto, profileImage);
-        log.info("회원가입 성공 - 회원 ID: {}", member.getId());
+        Member member = memberService.localSignUp(dto, profileImage);
+        log.info("일반 회원용 회원가입 성공 - 회원 ID: {}", member.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
-                        "회원가입 성공 - memberId: " + member.getId()));
+                        "일반 회원용 회원가입 성공 - memberId: " + member.getId()));
+    }
+
+    // 소셜 회원용 회원가입
+    @PostMapping(value= "/signup/{loginType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<?>> socialSignUp(
+            @PathVariable(name="loginType") LoginType loginType,
+            @RequestPart("dto") SocialSignUpRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    ) {
+        log.info("소셜 회원용 회원가입 요청 - 이메일: {}", dto.getEmail());
+
+        Member member = memberService.socialSignUp(loginType, dto, profileImage);
+        log.info("소셜 회원용 회원가입 성공 - 회원 ID: {}", member.getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                        "소셜 회원용 회원가입 성공 - memberId: " + member.getId()));
     }
 
     // 이메일 인증 요청하기

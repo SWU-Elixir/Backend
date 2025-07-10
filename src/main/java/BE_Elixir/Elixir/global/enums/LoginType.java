@@ -5,4 +5,8 @@ public enum LoginType {
     GOOGLE,
     KAKAO,
     NAVER;
+
+    public boolean isSocial() {
+        return this != LOCAL;
+    }
 }

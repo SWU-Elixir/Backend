@@ -4,6 +4,7 @@ import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
+import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,21 +55,21 @@ public interface MemberApi {
     })
     ResponseEntity<CommonResponse<Boolean>> checkEmailDuplicate(@RequestParam String email);
 
-    @Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
+    @Operation(summary = "일반 회원용 회원가입", description = "새로운 일반 회원을 등록합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "회원가입 성공",
+            @ApiResponse(responseCode = "201", description = "일반 회원용 회원가입 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "회원가입 성공 - memberId: 1",
+                                      "message": "일반 회원용 회원가입 성공 - memberId: 1",
                                       "data": null
                                     }
                                     """))),
-            @ApiResponse(responseCode = "401", description = "회원가입 실패",
+            @ApiResponse(responseCode = "401", description = "일반 회원용 회원가입 실패",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
-                    examples = @ExampleObject(value = """
+                            examples = @ExampleObject(value = """
                                     {
                                       "status": 409,
                                       "code": "409 CONFLICT",
@@ -79,6 +80,35 @@ public interface MemberApi {
     })
     ResponseEntity<CommonResponse<?>> signUp(
             @RequestPart("dto") SignUpRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    );
+
+    @Operation(summary = "소셜 회원용 회원가입", description = "새로운 소셜 회원을 등록합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "소셜 회원용 회원가입 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "소셜 회원용 회원가입 성공 - memberId: 1",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "401", description = "소셜 회원용 회원가입 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 500,
+                                      "code": "500 INTERNAL_SERVER_ERROR",
+                                      "message": "서버 내부 오류가 발생했습니다.",
+                                      "data": null
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<?>> socialSignUp(
+            @PathVariable(name="loginType") LoginType loginType,
+            @RequestPart("dto") SocialSignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     );
 
