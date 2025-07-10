@@ -31,6 +31,11 @@ public enum ErrorCode {
     EMAIL_VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST.value(), "이메일 인증번호가 일치하지 않습니다."),
     EMAIL_VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST.value(), "이메일 인증번호의 유효 시간이 초과되었습니다."),
 
+    EMAIL_REGISTERED_WITH_LOCAL(HttpStatus.CONFLICT.value(), "이미 가입된 이메일입니다. 일반 로그인을 사용해주세요."),
+    EMAIL_REGISTERED_WITH_SOCIAL(HttpStatus.CONFLICT.value(), "이미 소셜 로그인으로 가입된 이메일입니다. 소셜 로그인을 사용해주세요."),
+    EMAIL_REGISTERED_WITH_ANOTHER_SOCIAL(HttpStatus.CONFLICT.value(), "이미 다른 소셜로 가입된 이메일입니다."),
+    LOGIN_TYPE_MISMATCH(HttpStatus.BAD_REQUEST.value(), "지원하지 않는 로그인 타입입니다."),
+
     // 회원 팔로우
     ALREADY_FOLLOWING(HttpStatus.CONFLICT.value(), "이미 팔로우 되어있는 회원입니다."),
     FOLLOW_RELATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "팔로우 관계가 없는 회원입니다."),
