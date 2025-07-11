@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentCreateRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
@@ -8,6 +9,7 @@ import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.s3.S3Service;
@@ -24,7 +26,7 @@ public class RecipeEventService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeEventRepository recipeEventRepository;
-    private final S3Service s3Service;
+    private final MemberStatsService memberStatsService;
 
     // 레시피별 댓글 조회
     public List<RecipeCommentResponseDTO> getCommentsByRecipeId(Long recipeId) {
@@ -111,6 +113,9 @@ public class RecipeEventService {
         scrap.setMember(member);
         scrap.setScrapFlag(true);
         recipeEventRepository.save(scrap);
+
+        // 업적 달성을 위한 스크랩 증가
+        memberStatsService.increaseStat(member.getId(), AchievementType.TOTAL_SCRAPS, 1);
     }
 
     // 레시피 스크랩 취소하기
@@ -134,6 +139,9 @@ public class RecipeEventService {
         scrap.setScrapFlag(false); // 스크랩 플래그 끄기
 
         recipeEventRepository.delete(scrap);
+
+        // 업적 달성을 위한 스크랩 감소
+        memberStatsService.increaseStat(member.getId(), AchievementType.TOTAL_SCRAPS, -1);
     }
 
     // 레시피 좋아요하기

@@ -1,6 +1,7 @@
 package BE_Elixir.Elixir.domain.recipe.service;
 
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
@@ -12,6 +13,7 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.exception.CustomException;
@@ -45,6 +47,7 @@ public class RecipeService {
     private final S3Service s3Service;
     private final RedisRecipeService redisRecipeService;
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberStatsService memberStatsService;
 
     // 레시피 등록하기
     @Transactional
@@ -85,7 +88,7 @@ public class RecipeService {
         List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
                 .map(id -> {
                     Ingredient ingredient = ingredientRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
+                            .orElseThrow(() -> new CustomException(ErrorCode.INGREDIENT_NOT_FOUND));
                     return new RecipeIngredient(recipe, ingredient);
                 }).collect(Collectors.toList());
 
@@ -100,6 +103,8 @@ public class RecipeService {
 
         // 챌린지 달성을 위한 이벤트 발행
         eventPublisher.publishEvent(new RecipeEvent(member.getId(), recipe.getId(), LocalDateTime.now()));
+        // 업적 달성을 위한
+        memberStatsService.increaseStat(member.getId(), AchievementType.TOTAL_RECIPE_LOGS, 1);
 
         // 작성자 팔로우 여부 확인
         boolean authorFollowByCurrentUser = followRepository.existsByFollowerAndFollowing(member, member);

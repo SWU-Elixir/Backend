@@ -6,16 +6,14 @@ import BE_Elixir.Elixir.domain.challenge.event.events.DietLogEvent;
 import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
-import BE_Elixir.Elixir.domain.challenge.service.ChallengeAchievementService;
+import BE_Elixir.Elixir.domain.challenge.dto.service.ChallengeAchievementService;
 import BE_Elixir.Elixir.domain.dietLog.repository.DietLogRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.enums.ChallengeGoalType;
 import BE_Elixir.Elixir.global.enums.DietLogType;
-import jakarta.transaction.Transactional;
 import lombok.*;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

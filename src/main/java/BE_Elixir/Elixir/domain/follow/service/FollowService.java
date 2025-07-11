@@ -1,10 +1,12 @@
 package BE_Elixir.Elixir.domain.follow.service;
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.follow.entity.Follow;
 import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberSummaryDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
+    private final MemberStatsService memberStatsService;
 
     // 팔로우하기
     public void follow(Long followerId, Long followingId) {
@@ -47,6 +50,8 @@ public class FollowService {
                 .build();
 
         followRepository.save(follow);
+        // 팔로워 수 증가 (팔로우 당하는 사람 기준)
+        memberStatsService.increaseStat(followingId, AchievementType.TOTAL_FOLLOWERS, 1);
     }
 
     // 팔로우 취소하기
@@ -63,6 +68,8 @@ public class FollowService {
         }
 
         followRepository.deleteByFollowerAndFollowing(follower, following);
+        // 팔로워 수 감소
+        memberStatsService.increaseStat(followingId, AchievementType.TOTAL_FOLLOWERS, -1);
     }
 
     // 팔로워 목록 조회하기 (그 회원을 팔로우하는 목록)
