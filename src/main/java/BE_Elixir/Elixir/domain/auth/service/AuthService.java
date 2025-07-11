@@ -1,11 +1,15 @@
 package BE_Elixir.Elixir.domain.auth.service;
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
 import BE_Elixir.Elixir.domain.challenge.event.events.LoginSuccessEvent;
+import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.redis.RedisAuthService;
@@ -32,6 +36,8 @@ public class AuthService {
     private final RedisAuthService redisAuthService;
     private final MemberDetailsService memberDetailsService;
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberStatsService memberStatsService;
+    private final MemberRepository memberRepository;
 
     // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
@@ -53,9 +59,17 @@ public class AuthService {
             redisAuthService.saveRefreshToken(email, refreshToken);
             log.info("Refresh Token Redis에 저장: email={}, token={}", email, refreshToken);
 
+            // 챌린지 및 업적 관련
             // 로그인 성공 이벤트 발행
             eventPublisher.publishEvent(new LoginSuccessEvent(request.getEmail()));
 
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            Long memberId = member.getId();
+            // 총 로그인 일수 증가
+            memberStatsService.increaseStat(memberId, AchievementType.TOTAL_LOGIN_DAYS, 1);
+            // 연속 로그인 일수 갱신
+            memberStatsService.increaseStat(memberId, AchievementType.CONSECUTIVE_LOGIN_DAYS, 1);
             return tokenResponse;
         } catch (BadCredentialsException e) {
             log.warn("로그인 실패 - 잘못된 비밀번호: {}", request.getEmail());

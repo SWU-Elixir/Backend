@@ -143,4 +143,18 @@ public class AchievementService {
             }
         }
     }
+    @Transactional
+    public void syncUserAchievements(Long memberId, AchievementType type, int newProgress) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Achievement> allAchievements = achievementRepository.findAllByType(type);
+        List<MemberAchievement> userAchievements = memberAchievementRepository.findAllByMember(member);
+        Map<Long, MemberAchievement> userAchievementMap = userAchievements.stream()
+                .collect(Collectors.toMap(ma -> ma.getAchievement().getId(), ma -> ma));
+
+        Map<AchievementType, Integer> progressMap = Map.of(type, newProgress);
+
+        syncUserAchievements(member, allAchievements, userAchievementMap, progressMap);
+    }
 }

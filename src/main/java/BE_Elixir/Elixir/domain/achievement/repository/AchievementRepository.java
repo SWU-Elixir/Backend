@@ -10,6 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepository extends JpaRepository<Achievement, Long> {
-    // 업적 코드로 업적을 조회
-    Optional<Achievement> findByCode(String code);
+    List<Achievement> findAllByType(AchievementType type);
 }
