@@ -88,7 +88,7 @@ public class RecipeService {
         List<RecipeIngredient> tagList = dto.getIngredientTagIds().stream()
                 .map(id -> {
                     Ingredient ingredient = ingredientRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("재료 없음: " + id));
+                            .orElseThrow(() -> new CustomException(ErrorCode.INGREDIENT_NOT_FOUND));
                     return new RecipeIngredient(recipe, ingredient);
                 }).collect(Collectors.toList());
 
