@@ -330,11 +330,11 @@ public interface MyPageApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 정보 조회하기", description = "로그인한 사용자의 모든 챌린지 업적 정보를 조회합니다.",
+    // 로그인한 사용자의 모든 챌린지 업적 조회
+    @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 조회하기", description = "로그인한 사용자의 모든 챌린지 업적을 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 챌린지 업적 정보 조회 성공",
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 챌린지 업적 조회 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
@@ -385,17 +385,17 @@ public interface MyPageApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @Operation(summary = "로그인한 사용자의 달성한 업적 최신 3개 조회하기", description = "로그인한 사용자의 달성한 업적 최신 3개를 조회합니다.",
+    // 로그인한 사용자가 달성한 최신 챌린지 업적 3개 조회하기
+    @Operation(summary = "로그인한 사용자가 달성한 최신 챌린지 업적 3개 조회하기", description = "로그인한 사용자가 달성한 최신 챌린지 업적 3개를 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 달성한 업적 최신 3개 조회 성공",
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 달성한 최신 챌린지 업적 3개 조회 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "최근 업적 3개 조회 성공",
+                                      "message": "로그인한 사용자가 달성한 최신 챌린지 업적 3개 성공",
                                       "data": [
                                         {
                                           "year": 2025,
@@ -462,10 +462,10 @@ public interface MyPageApi {
     );
 
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
-    @Operation(summary = "다른 사용자의 모든 챌린지 업적 정보 조회하기", description = "다른 사용자의 모든 챌린지 업적 정보 조회합니다.",
+    @Operation(summary = "다른 사용자의 모든 챌린지 업적 조회하기", description = "다른 사용자의 모든 챌린지 업적 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "다른 사용자의 모든 챌린지 업적 정보 조회 성공",
+            @ApiResponse(responseCode = "200", description = "다른 사용자의 모든 챌린지 업적 조회 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
@@ -498,17 +498,17 @@ public interface MyPageApi {
             @PathVariable Long memberId
     );
 
-    // 다른 사용자의 최근 3개 업적 조회하기
-    @Operation(summary = "다른 사용자의 최근 3개 업적 조회하기", description = "다른 사용자의 최근 3개 업적 조회합니다.",
+    // 다른 사용자가 달성한 최신 챌린지 업적 3개 조회하기
+    @Operation(summary = "다른 사용자가 달성한 최신 챌린지 업적 3개 조회하기", description = "다른 사용자가 달성한 최신 챌린지 업적 3개 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "다른 사용자의 최근 3개 업적 조회 성공",
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 달성한 최신 챌린지 업적 3개 조회 성공",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "다른 사용자의 최근 업적 3개 조회 성공",
+                                      "message": "다른 사용자가 달성한 최신 챌린지 업적 3개 조회 성공",
                                       "data": [
                                         {
                                           "year": 2025,
@@ -541,7 +541,7 @@ public interface MyPageApi {
 
 
     // 로그인한 사용자의 모든 업적 조회
-    @Operation(summary = "로그인한 사용자의 모든 업적 조회하기", description = "로그인한 사용자의 모든 업적 조회합니다.",
+    @Operation(summary = "로그인한 사용자의 모든 업적 조회하기", description = "로그인한 사용자의 모든 업적을 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 업적 조회 성공",

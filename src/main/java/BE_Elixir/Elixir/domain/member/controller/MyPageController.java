@@ -165,8 +165,8 @@ public class MyPageController implements MyPageApi {
                 "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
     }
 
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @GetMapping("/achievement")
+    // 로그인한 사용자의 모든 챌린지 업적 조회
+    @GetMapping("/challenge")
     public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
@@ -179,8 +179,8 @@ public class MyPageController implements MyPageApi {
                 "모든 챌린지 업적 조회 성공", achievements));
     }
 
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @GetMapping("/achievement/top3")
+    // 로그인한 사용자의 달성한 최신 챌린지 업적 3개 조회하기
+    @GetMapping("/challenge/top3")
     public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3Achievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
@@ -204,8 +204,8 @@ public class MyPageController implements MyPageApi {
 
     }
 
-    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
-    @GetMapping("/{memberId}/achievements")
+    // 다른 사용자의 모든 챌린지 업적 조회하기
+    @GetMapping("/{memberId}/challenge")
     public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievementsByMemberId(
             @PathVariable Long memberId
     ) {
@@ -215,8 +215,8 @@ public class MyPageController implements MyPageApi {
                 "다른 사용자의 모든 업적 조회 성공", achievements));
     }
 
-    // 다른 사용자의 최근 3개 업적 조회하기
-    @GetMapping("/{memberId}/achievements/top3")
+    // 다른 사용자의 달성한 최신 챌린지 업적 3개 조회하기
+    @GetMapping("/{memberId}/challenge/top3")
     public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3AchievementsByMemberId(
             @PathVariable Long memberId
     ) {
@@ -227,7 +227,7 @@ public class MyPageController implements MyPageApi {
     }
 
     // 로그인한 사용자의 모든 업적 조회
-    @GetMapping("/stats-achievements")
+    @GetMapping("/achievement")
     public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllMyStatsAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
