@@ -633,4 +633,33 @@ public interface MyPageApi {
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllStatsAchievementsByMemberId(
             @PathVariable Long memberId
     );
+
+
+    // 다른 사용자가 달성한 최신 업적 3개 조회
+    @Operation(summary = "다른 사용자가 달성한 최신 업적 3개 조회하기", description = "다른 사용자가 달성한 최신 업적 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 달성한 최신 업적 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자가 달성한 최신 업적 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "achievementName": "요리 탐험가",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
+                                          "completed": true,
+                                          "level": 1,
+                                          "type": "TOTAL_SCRAPS",
+                                          "code": "TOTAL_SCRAPS_LV1"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
+            @PathVariable Long memberId
+    );
 }

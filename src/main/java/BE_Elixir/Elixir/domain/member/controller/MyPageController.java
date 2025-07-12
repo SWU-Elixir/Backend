@@ -262,4 +262,16 @@ public class MyPageController implements MyPageApi {
                 "다른 사용자의 모든 업적 조회 성공", achievements));
     }
 
+    // 다른 사용자가 달성한 최신 업적 3개 조회
+    @GetMapping("/{memberId}/achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
+            @PathVariable Long memberId
+    ) {
+        List<MemberAchievementResponseDTO> top3 = myPageService.getTop3StatsAchievements(memberId);
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "다른 사용자가 달성한 최신 업적 3개 조회 성공", top3));
+    }
+
 }
