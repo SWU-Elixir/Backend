@@ -568,14 +568,6 @@ public interface MyPageApi {
                                             "type": "TOTAL_LOGIN_DAYS",
                                             "code": "TOTAL_LOGIN_DAYS_LV2"
                                           },
-                                          {
-                                            "achievementName": "엘릭서 수호자",
-                                            "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin3_g.png",
-                                            "completed": false,
-                                            "level": 3,
-                                            "type": "TOTAL_LOGIN_DAYS",
-                                            "code": "TOTAL_LOGIN_DAYS_LV3"
-                                         },
                                          {}...
                                        ]
                                     }
@@ -611,5 +603,34 @@ public interface MyPageApi {
     })
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getMyTop3Achievements(
             @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 다른 사용자의 모든 업적 조회
+    @Operation(summary = "다른 사용자의 모든 업적 조회하기", description = "다른 사용자의 모든 업적을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자의 모든 업적 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자의 모든 업적 조회 성공",
+                                      "data": [
+                                          {
+                                            "achievementName": "꾸준함 입문자",
+                                            "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
+                                            "completed": false,
+                                            "level": 1,
+                                            "type": "TOTAL_LOGIN_DAYS",
+                                            "code": "TOTAL_LOGIN_DAYS_LV1"
+                                          },
+                                          {}...
+                                       ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllStatsAchievementsByMemberId(
+            @PathVariable Long memberId
     );
 }
