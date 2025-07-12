@@ -1,6 +1,8 @@
 package BE_Elixir.Elixir.domain.member.service;
 
+import BE_Elixir.Elixir.domain.achievement.entity.Achievement;
 import BE_Elixir.Elixir.domain.achievement.entity.MemberAchievement;
+import BE_Elixir.Elixir.domain.achievement.repository.AchievementRepository;
 import BE_Elixir.Elixir.domain.achievement.repository.MemberAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +47,7 @@ public class MyPageService {
     private final RecipeEventRepository recipeEventRepository;
     private final S3Service s3Service;
     private final MemberAchievementRepository memberAchievementRepository;
+    private final AchievementRepository achievementRepository;
 
 
     // 회원 정보 조회
@@ -399,19 +403,42 @@ public class MyPageService {
                 .collect(Collectors.toList());
     }
 
-    // 로그인한 사용자의 모든 업적 조회
+    // 사용자의 모든 업적 조회
+    @Transactional
     public List<MemberAchievementResponseDTO> getAllMyStatsAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        List<MemberAchievement> achievements = memberAchievementRepository.findAllByMember(member);
+        List<Achievement> allAchievements = achievementRepository.findAll(); // 총 18개
+        List<MemberAchievement> existingAchievements = memberAchievementRepository.findAllByMember(member);
 
-        return achievements.stream()
-                .map(MemberAchievementResponseDTO::from)
-                .toList();
+        // 이미 존재하는 업적 정리
+        Map<Long, MemberAchievement> achievementMap = existingAchievements.stream()
+                .collect(Collectors.toMap(ma -> ma.getAchievement().getId(), ma -> ma));
+
+        List<MemberAchievementResponseDTO> result = new ArrayList<>();
+
+        for (Achievement achievement : allAchievements) {
+            MemberAchievement ma = achievementMap.get(achievement.getId());
+
+            // 누락된 업적 자동 생성
+            if (ma == null) {
+                ma = new MemberAchievement();
+                ma.setMember(member);
+                ma.setAchievement(achievement);
+                ma.setCurrentProgress(0);
+                ma.setCompleted(false);
+                memberAchievementRepository.save(ma);
+            }
+
+            result.add(MemberAchievementResponseDTO.from(achievement, ma));
+        }
+
+        return result;
     }
 
-    // 로그인한 사용자가 달성한 최신 업적 3개 조회
+
+    // 사용자가 달성한 최신 업적 3개 조회
     public List<MemberAchievementResponseDTO> getTop3StatsAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));

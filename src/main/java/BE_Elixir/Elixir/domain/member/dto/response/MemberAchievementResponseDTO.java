@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.member.dto.response;
 
+import BE_Elixir.Elixir.domain.achievement.entity.Achievement;
 import BE_Elixir.Elixir.domain.achievement.entity.MemberAchievement;
 import BE_Elixir.Elixir.global.enums.AchievementType;
 import lombok.*;
@@ -27,4 +28,20 @@ public class MemberAchievementResponseDTO {
                 ma.getAchievement().getCode()
         );
     }
+
+    public static MemberAchievementResponseDTO from(Achievement achievement, MemberAchievement ma) {
+        String imageUrl = ma.isCompleted()
+                ? achievement.getAchievementImageUrl()
+                : achievement.getGrayAchievementImageUrl();
+
+        return MemberAchievementResponseDTO.builder()
+                .achievementName(achievement.getAchievementName())
+                .achievementImageUrl(imageUrl)
+                .completed(ma.isCompleted())
+                .level(achievement.getLevel())
+                .type(achievement.getType())
+                .code(achievement.getCode())
+                .build();
+    }
+
 }
