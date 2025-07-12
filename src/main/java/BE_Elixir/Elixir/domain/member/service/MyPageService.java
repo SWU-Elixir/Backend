@@ -1,15 +1,14 @@
 package BE_Elixir.Elixir.domain.member.service;
 
+import BE_Elixir.Elixir.domain.achievement.entity.MemberAchievement;
+import BE_Elixir.Elixir.domain.achievement.repository.MemberAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberAchievementResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberProfileResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
-import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeImageResponseDTO;
@@ -44,6 +43,8 @@ public class MyPageService {
     private final ChallengeAchievementRepository challengeAchievementRepository;
     private final RecipeEventRepository recipeEventRepository;
     private final S3Service s3Service;
+    private final MemberAchievementRepository memberAchievementRepository;
+
 
     // 회원 정보 조회
     public MemberResponseDTO getMemberInfo(String email) {
@@ -229,7 +230,7 @@ public class MyPageService {
     }
 
     // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    public List<MemberAchievementResponseDTO> getAllAchievements(Long memberId) {
+    public List<MemberChallengeResponseDTO> getAllAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -256,7 +257,7 @@ public class MyPageService {
                             challenge.getAchievementImageUrl() :
                             challenge.getGrayAchievementImageUrl();
 
-                    return new MemberAchievementResponseDTO(
+                    return new MemberChallengeResponseDTO(
                             challenge.getYear(),
                             challenge.getMonth(),
                             challenge.getAchievementName(),
@@ -268,7 +269,7 @@ public class MyPageService {
     }
 
     // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    public List<MemberAchievementResponseDTO> getTop3Achievements(Long memberId) {
+    public List<MemberChallengeResponseDTO> getTop3Achievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -288,7 +289,7 @@ public class MyPageService {
                 .collect(Collectors.toMap(Challenge::getId, c -> c));
 
         // 업적 필터 + 정렬 + DTO 변환
-        List<MemberAchievementResponseDTO> top3Achievements = achievements.stream()
+        List<MemberChallengeResponseDTO> top3Achievements = achievements.stream()
                 .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
                 .sorted((a1, a2) -> {
                     Challenge c1 = challengeMap.get(a1.getChallengeId());
@@ -299,7 +300,7 @@ public class MyPageService {
                 .limit(3)
                 .map(a -> {
                     Challenge challenge = challengeMap.get(a.getChallengeId());
-                    return new MemberAchievementResponseDTO(
+                    return new MemberChallengeResponseDTO(
                             challenge.getYear(),
                             challenge.getMonth(),
                             challenge.getAchievementName(),
@@ -325,7 +326,7 @@ public class MyPageService {
     }
 
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
-    public List<MemberAchievementResponseDTO> getAllAchievementsByMemberId(Long memberId) {
+    public List<MemberChallengeResponseDTO> getAllAchievementsByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -347,7 +348,7 @@ public class MyPageService {
                             ? challenge.getAchievementImageUrl()
                             : challenge.getGrayAchievementImageUrl();
 
-                    return new MemberAchievementResponseDTO(
+                    return new MemberChallengeResponseDTO(
                             challenge.getYear(),
                             challenge.getMonth(),
                             challenge.getAchievementName(),
@@ -358,7 +359,7 @@ public class MyPageService {
     }
 
     // 다른 사용자의 최신 업적 3개 조회
-    public List<MemberAchievementResponseDTO> getTop3AchievementsByMemberId(Long memberId) {
+    public List<MemberChallengeResponseDTO> getTop3AchievementsByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -387,7 +388,7 @@ public class MyPageService {
                 .limit(3)
                 .map(a -> {
                     Challenge challenge = challengeMap.get(a.getChallengeId());
-                    return new MemberAchievementResponseDTO(
+                    return new MemberChallengeResponseDTO(
                             challenge.getYear(),
                             challenge.getMonth(),
                             challenge.getAchievementName(),
@@ -398,5 +399,15 @@ public class MyPageService {
                 .collect(Collectors.toList());
     }
 
+    // 로그인한 사용자의 모든 업적 조회
+    public List<MemberAchievementResponseDTO> getAllMyStatsAchievements(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
+        List<MemberAchievement> achievements = memberAchievementRepository.findAllByMember(member);
+
+        return achievements.stream()
+                .map(MemberAchievementResponseDTO::from)
+                .toList();
+    }
 }

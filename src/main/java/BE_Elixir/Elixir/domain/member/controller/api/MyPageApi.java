@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -380,7 +381,7 @@ public interface MyPageApi {
                                      }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
@@ -421,7 +422,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3Achievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
@@ -493,7 +494,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievementsByMemberId(
             @PathVariable Long memberId
     );
 
@@ -534,7 +535,28 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3AchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3AchievementsByMemberId(
             @PathVariable Long memberId
+    );
+
+
+    // 로그인한 사용자의 모든 업적 조회
+    @Operation(summary = "로그인한 사용자의 모든 업적 조회하기", description = "로그인한 사용자의 모든 업적 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자의 모든 업적 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "로그인한 사용자의 모든 업적 조회 성공",
+                                      "data": [
+                                        ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllMyStatsAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
     );
 }
