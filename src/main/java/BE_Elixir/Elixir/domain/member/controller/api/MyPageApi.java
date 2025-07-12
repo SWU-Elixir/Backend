@@ -471,7 +471,7 @@ public interface MyPageApi {
                                     {
                                       "status": 200,
                                       "code": "200 OK",
-                                      "message": "다른 사용자의 모든 업적 조회 성공",
+                                      "message": "다른 사용자의 모든 챌린지 업적 조회 성공",
                                       "data": [
                                         {
                                           "year": 2025,
@@ -552,11 +552,64 @@ public interface MyPageApi {
                                       "code": "200 OK",
                                       "message": "로그인한 사용자의 모든 업적 조회 성공",
                                       "data": [
-                                        ]
+                                          {
+                                            "achievementName": "꾸준함 입문자",
+                                            "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
+                                            "completed": false,
+                                            "level": 1,
+                                            "type": "TOTAL_LOGIN_DAYS",
+                                            "code": "TOTAL_LOGIN_DAYS_LV1"
+                                          },
+                                          {
+                                            "achievementName": "생활 루틴러",
+                                            "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png",
+                                            "completed": false,
+                                            "level": 2,
+                                            "type": "TOTAL_LOGIN_DAYS",
+                                            "code": "TOTAL_LOGIN_DAYS_LV2"
+                                          },
+                                          {
+                                            "achievementName": "엘릭서 수호자",
+                                            "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin3_g.png",
+                                            "completed": false,
+                                            "level": 3,
+                                            "type": "TOTAL_LOGIN_DAYS",
+                                            "code": "TOTAL_LOGIN_DAYS_LV3"
+                                         },
+                                         {}...
+                                       ]
                                     }
                                     """)))
     })
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllMyStatsAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+    // 로그인한 사용자가 달성한 최신 업적 3개 조회
+    @Operation(summary = "로그인한 사용자가 달성한 최신 업적 3개 조회하기", description = "로그인한 사용자가 달성한 최신 업적 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 달성한 최신 업적 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "로그인한 사용자가 달성한 최신 업적 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "achievementName": "요리 탐험가",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
+                                          "completed": true,
+                                          "level": 1,
+                                          "type": "TOTAL_SCRAPS",
+                                          "code": "TOTAL_SCRAPS_LV1"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getMyTop3Achievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 }

@@ -176,7 +176,7 @@ public class MyPageController implements MyPageApi {
 
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "모든 챌린지 업적 조회 성공", achievements));
+                "로그인한 사용자의 모든 챌린지 업적 조회 성공", achievements));
     }
 
     // 로그인한 사용자의 달성한 최신 챌린지 업적 3개 조회하기
@@ -190,7 +190,7 @@ public class MyPageController implements MyPageApi {
 
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "최근 업적 3개 조회 성공", top3Achievements));
+                "로그인한 사용자가 달성한 최신 챌린지 업적 3개 조회 성공", top3Achievements));
     }
 
     // 다른 사용자가 업로드한 모든 레시피 조회하기
@@ -212,7 +212,7 @@ public class MyPageController implements MyPageApi {
         List<MemberChallengeResponseDTO> achievements = myPageService.getAllAchievementsByMemberId(memberId);
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "다른 사용자의 모든 업적 조회 성공", achievements));
+                "다른 사용자의 모든 챌린지 업적 조회 성공", achievements));
     }
 
     // 다른 사용자의 달성한 최신 챌린지 업적 3개 조회하기
@@ -223,7 +223,7 @@ public class MyPageController implements MyPageApi {
         List<MemberChallengeResponseDTO> achievements = myPageService.getTop3AchievementsByMemberId(memberId);
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "다른 사용자의 최근 업적 3개 조회 성공", achievements));
+                "다른 사용자가 달성한 최신 챌린지 업적 3개 조회 성공", achievements));
     }
 
     // 로그인한 사용자의 모든 업적 조회
@@ -238,4 +238,15 @@ public class MyPageController implements MyPageApi {
                 "로그인한 사용자의 모든 업적 조회 성공", achievements));
     }
 
+    // 로그인한 사용자가 달성한 최신 업적 3개 조회
+    @GetMapping("/achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getMyTop3Achievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        List<MemberAchievementResponseDTO> top3 = myPageService.getTop3StatsAchievements(memberDetails.getId());
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "로그인한 사용자가 달성한 최신 업적 3개 조회 성공", top3));
+    }
 }

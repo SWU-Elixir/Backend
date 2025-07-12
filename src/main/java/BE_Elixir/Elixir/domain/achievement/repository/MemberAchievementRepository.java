@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface MemberAchievementRepository extends JpaRepository<MemberAchievement, Long> {
     List<MemberAchievement> findAllByMember(Member member);
+
+    List<MemberAchievement> findTop3ByMemberAndCompletedTrueOrderByCompletedAtDescUpdatedAtDesc(Member member);
 }

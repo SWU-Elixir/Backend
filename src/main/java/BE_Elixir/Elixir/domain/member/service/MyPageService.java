@@ -410,4 +410,17 @@ public class MyPageService {
                 .map(MemberAchievementResponseDTO::from)
                 .toList();
     }
+
+    // 로그인한 사용자가 달성한 최신 업적 3개 조회
+    public List<MemberAchievementResponseDTO> getTop3StatsAchievements(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<MemberAchievement> recent3Achievements = memberAchievementRepository
+                .findTop3ByMemberAndCompletedTrueOrderByCompletedAtDescUpdatedAtDesc(member);
+
+        return recent3Achievements.stream()
+                .map(MemberAchievementResponseDTO::from)
+                .collect(Collectors.toList());
+    }
 }
