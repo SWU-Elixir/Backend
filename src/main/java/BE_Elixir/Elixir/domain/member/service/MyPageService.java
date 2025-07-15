@@ -233,8 +233,21 @@ public class MyPageService {
                 .toList();
     }
 
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    public List<MemberChallengeResponseDTO> getAllAchievements(Long memberId) {
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    public List<RecipeImageResponseDTO> getUserRecipes(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Recipe> recipes = recipeRepository.findAllByMember(member);
+
+        return recipes.stream()
+                .map(recipe -> new RecipeImageResponseDTO(recipe.getId(), recipe.getImageUrl()))
+                .limit(9)
+                .collect(Collectors.toList());
+    }
+
+    // 사용자의 모든 챌린지 업적 정보 조회
+    public List<MemberChallengeResponseDTO> getAllChallengeAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -272,8 +285,8 @@ public class MyPageService {
                 .collect(Collectors.toList());
     }
 
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    public List<MemberChallengeResponseDTO> getTop3Achievements(Long memberId) {
+    // 사용자가 달성한 챌린지 업적 최신 3개 조회하기
+    public List<MemberChallengeResponseDTO> getTop3ChallengeAchievements(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -316,92 +329,6 @@ public class MyPageService {
         return top3Achievements;
     }
 
-    // 다른 사용자가 업로드한 모든 레시피 조회하기
-    public List<RecipeImageResponseDTO> getUserRecipes(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        List<Recipe> recipes = recipeRepository.findAllByMember(member);
-
-        return recipes.stream()
-                .map(recipe -> new RecipeImageResponseDTO(recipe.getId(), recipe.getImageUrl()))
-                .limit(9)
-                .collect(Collectors.toList());
-    }
-
-    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
-    public List<MemberChallengeResponseDTO> getAllAchievementsByMemberId(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        List<Challenge> allChallenges = challengeRepository.findAllOrderedByYearAndMonth();
-        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
-
-        Map<Long, ChallengeAchievement> achievementMap = achievements.stream()
-                .collect(Collectors.toMap(ChallengeAchievement::getChallengeId, a -> a));
-
-        return allChallenges.stream()
-                .map(challenge -> {
-                    ChallengeAchievement achievement = achievementMap.get(challenge.getId());
-
-                    boolean completed = (achievement != null)
-                            && achievement.isStep4Goal1Achieved()
-                            && achievement.isStep4Goal2Achieved();
-
-                    String imageUrl = completed
-                            ? challenge.getAchievementImageUrl()
-                            : challenge.getGrayAchievementImageUrl();
-
-                    return new MemberChallengeResponseDTO(
-                            challenge.getYear(),
-                            challenge.getMonth(),
-                            challenge.getAchievementName(),
-                            imageUrl,
-                            completed
-                    );
-                }).collect(Collectors.toList());
-    }
-
-    // 다른 사용자의 최신 업적 3개 조회
-    public List<MemberChallengeResponseDTO> getTop3AchievementsByMemberId(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        List<ChallengeAchievement> achievements = challengeAchievementRepository.findByMemberId(member.getId());
-
-        Set<Long> challengeIds = achievements.stream()
-                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
-                .map(ChallengeAchievement::getChallengeId)
-                .collect(Collectors.toSet());
-
-        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
-
-        Map<Long, Challenge> challengeMap = challenges.stream()
-                .collect(Collectors.toMap(Challenge::getId, c -> c));
-
-        return achievements.stream()
-                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
-                .sorted((a1, a2) -> {
-                    Challenge c1 = challengeMap.get(a1.getChallengeId());
-                    Challenge c2 = challengeMap.get(a2.getChallengeId());
-                    int compareYear = Integer.compare(c2.getYear(), c1.getYear());
-                    return (compareYear != 0)
-                            ? compareYear
-                            : Integer.compare(c2.getMonth(), c1.getMonth());
-                })
-                .limit(3)
-                .map(a -> {
-                    Challenge challenge = challengeMap.get(a.getChallengeId());
-                    return new MemberChallengeResponseDTO(
-                            challenge.getYear(),
-                            challenge.getMonth(),
-                            challenge.getAchievementName(),
-                            challenge.getAchievementImageUrl(),
-                            true
-                    );
-                })
-                .collect(Collectors.toList());
-    }
 
     // 사용자의 모든 업적 조회
     @Transactional
