@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class AchievementProgressDTO {
     private Long id;
     private String name;
+    private String description; // 설명 문구
     private int level;
     private int targetValue;
     private boolean achieved;
