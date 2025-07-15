@@ -28,6 +28,7 @@ public class Achievement {
     @Column(nullable = false)
     private int targetValue;    // 업적 달성 목표 수치(7, 30, 100 등)
 
+    private String description; // 설명 문구
     private String achievementName; // 업적 명
     private String achievementImageUrl; // 업적 이미지
     private String grayAchievementImageUrl; // 업적 달성 안 한 이미지

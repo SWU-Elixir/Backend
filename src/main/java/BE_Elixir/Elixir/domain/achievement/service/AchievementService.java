@@ -95,6 +95,7 @@ public class AchievementService {
             AchievementProgressDTO progressDTO = new AchievementProgressDTO(
                     a.getId(),
                     a.getAchievementName(),
+                    a.getDescription(),
                     a.getLevel(),
                     a.getTargetValue(),
                     ma.isCompleted(),
