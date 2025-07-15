@@ -81,16 +81,32 @@ public class MyPageService {
 
     // 프로필 수정 시, 얻은 칭호 목록 조회
     public List<String> getTitles(Long memberId) {
-        // memberId 기반 챌린지 최종 달성 여부 조회 및
+        // memberId 기반 챌린지 최종 달성 여부 조회
         List<Long> achievedChallengeIds = challengeAchievementRepository.findByMemberId(memberId).stream()
                 .filter(ChallengeAchievement::isAllGoalsAchieved)
                 .map(ChallengeAchievement::getChallengeId)
                 .collect(Collectors.toList());
 
-        // 업적명 조회
-        return challengeRepository.findAllById(achievedChallengeIds).stream()
+        // 챌린지 업적명 조회
+        List<String> challengeAchievementNames = challengeRepository.findAllById(achievedChallengeIds).stream()
                 .map(Challenge::getAchievementName)
-                .collect(Collectors.toList());
+                .toList();
+
+        // memberId 기반 챌린지 외 업적 달성 여부 조회
+        List<Long> completedAchievementIds = memberAchievementRepository.findByMemberIdAndCompleted(memberId, true).stream()
+                .map(ma -> ma.getAchievement().getId())
+                .toList();
+
+        // 챌린지 외 업적명 조회
+        List<String> achievementNames = achievementRepository.findAllById(completedAchievementIds).stream()
+                .map(Achievement::getAchievementName)
+                .toList();
+
+        List<String> allTitles = new ArrayList<>();
+        allTitles.addAll(achievementNames);
+        allTitles.addAll(challengeAchievementNames);
+
+        return allTitles;
     }
 
     // 로그인한 사용자 프로필 수정하기
