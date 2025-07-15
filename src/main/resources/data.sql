@@ -7481,6 +7481,30 @@ VALUES (
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/6%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
 );
 
+-- 7월
+INSERT INTO challenge (
+    name, description, purpose, month, year, achievement_name,
+    step1goal1type, step1goal2type, step2goal1type, step2goal2type,
+    step3goal1type, step3goal2type, step4goal1type, step4goal2type,
+    step1goal1desc, step1goal2desc, step2goal1desc, step2goal2desc,
+    step3goal1desc, step3goal2desc, step4goal1desc, step4goal2desc,
+    achievement_image_url, gray_achievement_image_url
+)
+VALUES (
+    "7월 밸런스 푸드 챌린지",
+    "1단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록\n   - 식단 기록 시 챌린지 태그 선택 시 성공\n   - 열무, 깻잎, 가지, 블루베리 중 하나만 포함해도 성공 인정\n• 점심 챙겨 먹기\n   - 점심 시간(11시~14시) 내 식단 기록 시 성공\n\n2단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록 (1단계와 동일)\n• 아침 챙겨 먹기\n   - 아침 시간(6시~9시) 내 식단 기록 시 성공\n\n3단계\n• 하루 한 끼 재철 식재료(열무, 깻잎, 가지, 블루베리)를 포함한 식사 기록 (1단계와 동일)\n• 하루 3끼 식단 기록\n   - 아침, 점심, 저녁 전부 기록 시 성공\n\n4단계\n• 재철 식재료(열무, 깻잎, 가지, 블루베리)를 활용한 레시피 작성\n   - 레시피 작성 시 챌린지 태그 선택 시 성공\n   - 열무, 깻잎, 가지, 블루베리 중 하나만 포함해도 성공 인정\n• 1달 동안 누적 60끼 식단 기록\n   - 7월 1달간 식단(아침, 점심, 저녁, 간식) 누적 60개 이상 시 성공",
+    "무더위가 본격화되는 7월, 뜨거운 햇볕과 높은 기온으로 인한 피로 누적과 입맛 저하를 극복하고, 건강한 여름나기를 위한 식습관이 필요합니다.\n\n열무는 풍부한 섬유질과 수분으로 더위에 지친 몸의 수분 밸런스를 맞춰주고,\n깻잎은 특유의 향과 칼슘, 철분 등 무기질로 여름철 떨어진 식욕과 면역력을 보충해줍니다.\n가지는 항산화 성분인 안토시아닌이 풍부하여 여름철 강한 자외선으로부터 세포를 보호하고,\n블루베리는 시원한 과일로 간편하게 섭취 가능하며 눈 건강과 피로 회복에 도움을 줍니다.\n\n무더운 7월, 시원하고 영양 가득한 제철 식재료로 활기찬 여름을 준비해보세요!",
+    7, 2025,
+    "쿨밸런서",
+    'DIET_SEASONAL_ONCE', 'DIET_LUNCH', 'DIET_SEASONAL_ONCE', 'DIET_BREAKFAST',
+    'DIET_SEASONAL_ONCE', 'DIET_THREE_MEALS', 'RECIPE_SEASONAL_ONCE', 'DIET_60_A_MONTH',
+    '하루 한 끼 재철 식재료를 포함한 식사 기록', '점심 챙겨 먹기', '하루 한 끼 재철 식재료를 포함한 식사 기록', '아침 챙겨 먹기',
+    '하루 한 끼 재철 식재료를 포함한 식사 기록', '하루 3끼 식단 기록', '재철 식재료를 활용한 레시피 작성', '1달 동안 누적 60끼 식단 기록',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/7%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png',
+    'https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-gray/7%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%ED%9D%91%EB%B0%B1.png'
+);
+
+
 -- 챌린지 미션 더미데이터
 -- A 회원의 2월 챌린지 달성
 INSERT INTO challenge_achievement (
@@ -7638,6 +7662,37 @@ INSERT INTO challenge_achievement (
     NOW() -- opened_at
 );
 
+-- A 회원의 7월 챌린지 3개만 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    0, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    0, 1, -- step2goal2achieved, step2goal2active
+    0, 0, -- step3goal1achieved, step3goal1active
+    0, 0, -- step3goal2achieved, step3goal2active
+    0, 0, -- step4goal1achieved, step4goal1active
+    0, 0, -- step4goal2achieved, step4goal2active
+    NULL, -- challenge_completed_at
+    6,  -- challenge_id (7월)
+    2,  -- member_id (A@example.com)
+    NOW() -- opened_at
+);
+
 -- B 회원의 2월 챌린지 3개만 달성
 INSERT INTO challenge_achievement (
     challenge_completed,
@@ -7700,6 +7755,37 @@ INSERT INTO challenge_achievement (
     NOW() -- opened_at
 );
 
+-- B 회원의 7월 챌린지 달성
+INSERT INTO challenge_achievement (
+    challenge_completed,
+    step1goal1achieved, step1goal1active,
+    step1goal2achieved, step1goal2active,
+    step2goal1achieved, step2goal1active,
+    step2goal2achieved, step2goal2active,
+    step3goal1achieved, step3goal1active,
+    step3goal2achieved, step3goal2active,
+    step4goal1achieved, step4goal1active,
+    step4goal2achieved, step4goal2active,
+    challenge_completed_at,
+    challenge_id,
+    member_id,
+    opened_at
+) VALUES (
+    1, -- challenge_completed
+    1, 1, -- step1goal1achieved, step1goal1active
+    1, 1, -- step1goal2achieved, step1goal2active
+    1, 1, -- step2goal1achieved, step2goal1active
+    1, 1, -- step2goal2achieved, step2goal2active
+    1, 1, -- step3goal1achieved, step3goal1active
+    1, 1, -- step3goal2achieved, step3goal2active
+    1, 1, -- step4goal1achieved, step4goal1active
+    1, 1, -- step4goal2achieved, step4goal2active
+    '2025-07-16 14:25:00', -- challenge_completed_at
+    6,  -- challenge_id (7월)
+    3,  -- member_id (B@example.com)
+    NOW() -- opened_at
+);
+
 
 -- 회원
 INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
@@ -7720,3 +7806,46 @@ VALUES (
 
 INSERT INTO member_roles (member_id, roles)
 VALUES (83, 'USER');
+
+
+-- 총 접속 일수 (TOTAL_LOGIN_DAYS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 7, 'TOTAL_LOGIN_DAYS_LV1', '꾸준함 입문자', '총 7일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png', 'TOTAL_LOGIN_DAYS'),
+(2, 30, 'TOTAL_LOGIN_DAYS_LV2', '생활 루틴러', '총 30일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png', 'TOTAL_LOGIN_DAYS'),
+(3, 100, 'TOTAL_LOGIN_DAYS_LV3', '엘릭서 수호자', '총 100일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin3_g.png', 'TOTAL_LOGIN_DAYS');
+
+-- 연속 접속 일수 (CONSECUTIVE_LOGIN_DAYS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 3, 'CONSECUTIVE_LOGIN_DAYS_LV1', '새싹신입', '3일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin1_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
+(2, 7, 'CONSECUTIVE_LOGIN_DAYS_LV2', '의지력 수호자', '7일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin2_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
+(3, 30, 'CONSECUTIVE_LOGIN_DAYS_LV3', '앱 중독자', '30일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin3_g.png', 'CONSECUTIVE_LOGIN_DAYS');
+
+-- 식단 기록 수 (TOTAL_DIET_LOGS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 10, 'TOTAL_DIET_LOGS_LV1', '식단 파수꾼', '식단 10개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog1_g.png', 'TOTAL_DIET_LOGS'),
+(2, 30, 'TOTAL_DIET_LOGS_LV2', '밥상 전문자', '식단 30개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog2_g.png', 'TOTAL_DIET_LOGS'),
+(3, 100, 'TOTAL_DIET_LOGS_LV3', '쩝쩝박사', '식단 100개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog3_g.png', 'TOTAL_DIET_LOGS');
+
+-- 레시피 등록 수 (TOTAL_RECIPE_LOGS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 1, 'TOTAL_RECIPE_LOGS_LV1', '초보 요리사', '레시피 1개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload1_g.png', 'TOTAL_RECIPE_LOGS'),
+(2, 5, 'TOTAL_RECIPE_LOGS_LV2', '맛 연구소', '레시피 5개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload2_g.png', 'TOTAL_RECIPE_LOGS'),
+(3, 20, 'TOTAL_RECIPE_LOGS_LV3', '요리 창조자', '레시피 20개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload3_g.png', 'TOTAL_RECIPE_LOGS');
+
+-- 스크랩 수 (TOTAL_SCRAPS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 3, 'TOTAL_SCRAPS_LV1', '요리 탐험가', '3개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap1_g.png', 'TOTAL_SCRAPS'),
+(2, 10, 'TOTAL_SCRAPS_LV2', '레시피 컬렉터', '10개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap2_g.png', 'TOTAL_SCRAPS'),
+(3, 30, 'TOTAL_SCRAPS_LV3', '엘릭서 아카이브', '30개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap3_g.png', 'TOTAL_SCRAPS');
+
+-- 팔로워 수 (TOTAL_FOLLOWERS)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
+VALUES
+(1, 3, 'TOTAL_FOLLOWERS_LV1', '식단 친구', '팔로워 3명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower1_g.png', 'TOTAL_FOLLOWERS'),
+(2, 10, 'TOTAL_FOLLOWERS_LV2', '엘릭서 인기인', '팔로워 10명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower2_g.png', 'TOTAL_FOLLOWERS'),
+(3, 50, 'TOTAL_FOLLOWERS_LV3', '저속노화 리더', '팔로워 50명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower3_g.png', 'TOTAL_FOLLOWERS');

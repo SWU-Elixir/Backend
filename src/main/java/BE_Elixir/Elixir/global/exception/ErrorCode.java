@@ -65,6 +65,7 @@ public enum ErrorCode {
 
     // 챌린지
     CHALLENGE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "챌린지를 찾을 수 없습니다."),
+    CHALLENGE_THIS_MONTH_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "이번 달 챌린지가 없습니다."),
     CHALLENGE_ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "챌린지 기록이 없습니다."),
 
     // 설문조사

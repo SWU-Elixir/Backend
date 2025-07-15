@@ -13,9 +13,7 @@ import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.enums.ChallengeGoalType;
 import BE_Elixir.Elixir.global.enums.DietLogType;
-import jakarta.transaction.Transactional;
 import lombok.*;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

@@ -139,7 +139,7 @@ public class RecipeController implements RecipeApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         Member member = memberDetails.getMember();
-        RecipeResponseDTO response = recipeService.updateRecipe(recipeId, dto, image, recipeStepImages, member);
+        RecipeDetailResponseDTO response = recipeService.updateRecipe(recipeId, dto, image, recipeStepImages, member);
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "레시피 수정 성공", response

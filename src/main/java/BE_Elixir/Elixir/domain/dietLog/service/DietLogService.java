@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.dietLog.service;
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.challenge.event.events.DietLogEvent;
 import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
@@ -12,6 +13,7 @@ import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.enums.DietLogType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
@@ -42,7 +44,7 @@ public class DietLogService {
     private final IngredientRepository ingredientRepository;
     private final S3Service s3Service;
     private final ApplicationEventPublisher eventPublisher;
-
+    private final MemberStatsService memberStatsService;
 
 
     // 식단 기록하기
@@ -87,6 +89,8 @@ public class DietLogService {
         // 챌린지 달성을 위한 이벤트 발행
         eventPublisher.publishEvent(new DietLogEvent(member.getId(), dietLog.getId(), dietLog.getType(), LocalDateTime.now()));
 
+        // 업적 달성을 위한
+        memberStatsService.increaseStat(memberId, AchievementType.TOTAL_DIET_LOGS, 1);
         return dietLog.convertToResponseDTO();
     }
 

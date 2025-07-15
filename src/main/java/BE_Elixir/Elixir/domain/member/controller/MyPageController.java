@@ -164,35 +164,6 @@ public class MyPageController implements MyPageApi {
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "내가 스크랩한 레시피 조회 성공", scrappedRecipes));
     }
-
-    // 로그인한 사용자의 모든 챌린지 업적 정보 조회
-    @GetMapping("/achievement")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        Long memberId = memberDetails.getId();
-
-        List<MemberAchievementResponseDTO> achievements = myPageService.getAllAchievements(memberId);
-
-        return ResponseEntity.ok(CommonResponse.success(
-                HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "모든 챌린지 업적 조회 성공", achievements));
-    }
-
-    // 로그인한 사용자의 달성한 업적 최신 3개 조회하기
-    @GetMapping("/achievement/top3")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3Achievements(
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) {
-        Long memberId = memberDetails.getId();
-
-        List<MemberAchievementResponseDTO> top3Achievements = myPageService.getTop3Achievements(memberId);
-
-        return ResponseEntity.ok(CommonResponse.success(
-                HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "최근 업적 3개 조회 성공", top3Achievements));
-    }
-
     // 다른 사용자가 업로드한 모든 레시피 조회하기
     @GetMapping("/{memberId}/recipes")
     public ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
@@ -204,25 +175,125 @@ public class MyPageController implements MyPageApi {
 
     }
 
-    // 다른 사용자의 모든 챌린지 업적 정보 조회하기
-    @GetMapping("/{memberId}/achievements")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllAchievementsByMemberId(
+    // 로그인한 사용자의 모든 챌린지 업적 조회
+    @GetMapping("/challenge")
+    public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllChallengeAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        List<MemberChallengeResponseDTO> achievements = myPageService.getAllChallengeAchievements(memberId);
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "로그인한 사용자의 모든 챌린지 업적 조회 성공", achievements));
+    }
+
+    // 로그인한 사용자의 달성한 최신 챌린지 업적 3개 조회하기
+    @GetMapping("/challenge/top3")
+    public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3ChallengeAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        Long memberId = memberDetails.getId();
+
+        List<MemberChallengeResponseDTO> top3Achievements = myPageService.getTop3ChallengeAchievements(memberId);
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "로그인한 사용자가 달성한 최신 챌린지 업적 3개 조회 성공", top3Achievements));
+    }
+
+    // 다른 사용자의 모든 챌린지 업적 조회하기
+    @GetMapping("/{memberId}/challenge")
+    public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherAllChallengeAchievements(
             @PathVariable Long memberId
     ) {
-        List<MemberAchievementResponseDTO> achievements = myPageService.getAllAchievementsByMemberId(memberId);
+        List<MemberChallengeResponseDTO> achievements = myPageService.getAllChallengeAchievements(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "다른 사용자의 모든 챌린지 업적 조회 성공", achievements));
+    }
+
+    // 다른 사용자의 달성한 최신 챌린지 업적 3개 조회하기
+    @GetMapping("/{memberId}/challenge/top3")
+    public ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherTop3ChallengeAchievements(
+            @PathVariable Long memberId
+    ) {
+        List<MemberChallengeResponseDTO> achievements = myPageService.getTop3ChallengeAchievements(memberId);
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "다른 사용자가 달성한 최신 챌린지 업적 3개 조회 성공", achievements));
+    }
+
+    // 로그인한 사용자의 모든 업적 조회
+    @GetMapping("/achievement")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllMyStatsAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        List<MemberAchievementResponseDTO> achievements = myPageService.getAllMyStatsAchievements(memberDetails.getId());
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "로그인한 사용자의 모든 업적 조회 성공", achievements));
+    }
+
+    // 로그인한 사용자가 달성한 최신 업적 3개 조회
+    @GetMapping("/achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getMyTop3Achievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        List<MemberAchievementResponseDTO> top3 = myPageService.getTop3StatsAchievements(memberDetails.getId());
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "로그인한 사용자가 달성한 최신 업적 3개 조회 성공", top3));
+    }
+
+    // 다른 사용자의 모든 업적 조회
+    @GetMapping("/{memberId}/achievement")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getAllStatsAchievementsByMemberId(
+            @PathVariable Long memberId
+    ) {
+        List<MemberAchievementResponseDTO> achievements = myPageService.getAllMyStatsAchievements(memberId);
+
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "다른 사용자의 모든 업적 조회 성공", achievements));
     }
 
-    // 다른 사용자의 최근 3개 업적 조회하기
-    @GetMapping("/{memberId}/achievements/top3")
-    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3AchievementsByMemberId(
+    // 다른 사용자가 달성한 최신 업적 3개 조회
+    @GetMapping("/{memberId}/achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
             @PathVariable Long memberId
     ) {
-        List<MemberAchievementResponseDTO> achievements = myPageService.getTop3AchievementsByMemberId(memberId);
+        List<MemberAchievementResponseDTO> top3 = myPageService.getTop3StatsAchievements(memberId);
+
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
-                "다른 사용자의 최근 업적 3개 조회 성공", achievements));
+                "다른 사용자가 달성한 최신 업적 3개 조회 성공", top3));
+    }
+
+    // 로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @GetMapping("/all-achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        List<MemberRecentAchievementDTO> result = myPageService.getTop3AllAchievements(memberDetails.getId());
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공", result));
+    }
+
+    // 다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @GetMapping("/{memberId}/all-achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @PathVariable Long memberId
+    ) {
+        List<MemberRecentAchievementDTO> result = myPageService.getTop3AllAchievements(memberId);
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공", result));
     }
 }

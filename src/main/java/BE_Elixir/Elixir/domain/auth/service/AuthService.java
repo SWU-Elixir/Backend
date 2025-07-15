@@ -1,15 +1,17 @@
 package BE_Elixir.Elixir.domain.auth.service;
 
+import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
 import BE_Elixir.Elixir.domain.auth.dto.SocialUserInfo;
 import BE_Elixir.Elixir.domain.auth.dto.response.SocialLoginResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
-import BE_Elixir.Elixir.domain.challenge.service.ChallengeAchievementService;
+import BE_Elixir.Elixir.domain.challenge.event.events.LoginSuccessEvent;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.member.service.MemberDetailsService;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
@@ -18,14 +20,13 @@ import BE_Elixir.Elixir.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -39,12 +40,12 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final RedisAuthService redisAuthService;
     private final MemberDetailsService memberDetailsService;
-    private final ChallengeAchievementService challengeAchievementService;
     private final OauthClientFactory oauthClientFactory;
     private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final MemberStatsService memberStatsService;
 
-
-    // 일반 회원 로그인 (jwt 발급 및 Redis 저장)
+    // 로그인 (jwt 발급 및 Redis 저장)
     public TokenResponseDTO signIn(LoginRequestDTO request) {
         try {
             // 일반 회원 검증
@@ -71,11 +72,17 @@ public class AuthService {
             redisAuthService.saveRefreshToken(email, refreshToken);
             log.info("Refresh Token Redis에 저장: email={}, token={}", email, refreshToken);
 
-            String memberEmail = request.getEmail();
+            // 챌린지 및 업적 관련
+            // 로그인 성공 이벤트 발행
+            eventPublisher.publishEvent(new LoginSuccessEvent(request.getEmail()));
 
-            // 자동 참여 메서드 호출
-            challengeAchievementService.challengeParticipation(memberEmail);
-
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            Long memberId = member.getId();
+            // 총 로그인 일수 증가
+            memberStatsService.increaseStat(memberId, AchievementType.TOTAL_LOGIN_DAYS, 1);
+            // 연속 로그인 일수 갱신
+            memberStatsService.increaseStat(memberId, AchievementType.CONSECUTIVE_LOGIN_DAYS, 1);
             return tokenResponse;
         } catch (BadCredentialsException e) {
             log.warn("로그인 실패 - 잘못된 비밀번호: {}", request.getEmail());
