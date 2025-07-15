@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class MemberAchievementResponseDTO {
     private String achievementName;
+    private String description; // 설명 문구
     private String achievementImageUrl;
     private boolean completed;
     private int level;
@@ -20,6 +21,7 @@ public class MemberAchievementResponseDTO {
         boolean isCompleted = ma.isCompleted();
         return new MemberAchievementResponseDTO(
                 ma.getAchievement().getAchievementName(),
+                ma.getAchievement().getDescription(),
                 isCompleted ? ma.getAchievement().getAchievementImageUrl()
                         : ma.getAchievement().getGrayAchievementImageUrl(),
                 isCompleted,
@@ -36,6 +38,7 @@ public class MemberAchievementResponseDTO {
 
         return MemberAchievementResponseDTO.builder()
                 .achievementName(achievement.getAchievementName())
+                .description(achievement.getDescription())
                 .achievementImageUrl(imageUrl)
                 .completed(ma.isCompleted())
                 .level(achievement.getLevel())

@@ -555,6 +555,7 @@ public interface MyPageApi {
                                       "data": [
                                           {
                                             "achievementName": "꾸준함 입문자",
+                                            "description": "총 7일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
                                             "completed": false,
                                             "level": 1,
@@ -563,6 +564,7 @@ public interface MyPageApi {
                                           },
                                           {
                                             "achievementName": "생활 루틴러",
+                                            "description": "총 30일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png",
                                             "completed": false,
                                             "level": 2,
@@ -592,6 +594,7 @@ public interface MyPageApi {
                                       "data": [
                                         {
                                           "achievementName": "요리 탐험가",
+                                          "description": "3개 이상 콘텐츠 스크랩",
                                           "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
                                           "completed": true,
                                           "level": 1,
@@ -620,6 +623,7 @@ public interface MyPageApi {
                                       "data": [
                                           {
                                             "achievementName": "꾸준함 입문자",
+                                            "description": "총 7일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
                                             "completed": false,
                                             "level": 1,
@@ -650,6 +654,7 @@ public interface MyPageApi {
                                       "data": [
                                         {
                                           "achievementName": "요리 탐험가",
+                                          "description": "3개 이상 콘텐츠 스크랩",
                                           "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
                                           "completed": true,
                                           "level": 1,
@@ -676,7 +681,24 @@ public interface MyPageApi {
                                       "code": "200 OK",
                                       "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
                                       "data": [
-                                       
+                                        {
+                                          "achievementName": "초보 요리사",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png",
+                                          "completed": true,
+                                          "completedAt": "2025-07-15T13:37:07"
+                                        },
+                                        {
+                                          "achievementName": "봄기운 충전소",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-04-01T00:00:00"
+                                        },
+                                        {
+                                          "achievementName": "환절기 방어왕",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-03-01T00:00:00"
+                                        }
                                       ]
                                     }
                                     """)))
@@ -698,7 +720,24 @@ public interface MyPageApi {
                                       "code": "200 OK",
                                       "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
                                       "data": [
-                                        
+                                        {
+                                          "achievementName": "초보 요리사",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png",
+                                          "completed": true,
+                                          "completedAt": "2025-07-15T13:37:07"
+                                        },
+                                        {
+                                          "achievementName": "봄기운 충전소",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-04-01T00:00:00"
+                                        },
+                                        {
+                                          "achievementName": "환절기 방어왕",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-03-01T00:00:00"
+                                        }
                                       ]
                                     }
                                     """)))
