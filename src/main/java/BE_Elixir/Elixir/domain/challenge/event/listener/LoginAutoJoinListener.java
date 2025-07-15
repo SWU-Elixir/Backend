@@ -2,7 +2,7 @@ package BE_Elixir.Elixir.domain.challenge.event.listener;
 
 
 import BE_Elixir.Elixir.domain.challenge.event.events.LoginSuccessEvent;
-import BE_Elixir.Elixir.domain.challenge.dto.service.ChallengeAchievementService;
+import BE_Elixir.Elixir.domain.challenge.service.ChallengeAchievementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
