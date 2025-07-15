@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -375,6 +373,67 @@ public class MyPageService {
 
         return recent3Achievements.stream()
                 .map(MemberAchievementResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+
+    // 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    public List<MemberRecentAchievementDTO> getTop3AllAchievements(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<MemberRecentAchievementDTO> tempList = new ArrayList<>();
+
+        // 달성한 일반 업적
+        List<MemberAchievement> achievements = memberAchievementRepository
+                .findTop3ByMemberAndCompletedTrueOrderByCompletedAtDescUpdatedAtDesc(member);
+
+        for (MemberAchievement a : achievements) {
+            tempList.add(new MemberRecentAchievementDTO(
+                    a.getAchievement().getAchievementName(),
+                    a.getAchievement().getAchievementImageUrl(),
+                    true,
+                    a.getCompletedAt()
+            ));
+        }
+
+        // 달성한 챌린지 업적
+        List<ChallengeAchievement> challengeAchievements = challengeAchievementRepository.findByMemberId(memberId);
+
+        Set<Long> challengeIds = challengeAchievements.stream()
+                .filter(a -> a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved())
+                .map(ChallengeAchievement::getChallengeId)
+                .collect(Collectors.toSet());
+
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+
+        Map<Long, Challenge> challengeMap = challenges.stream()
+                .collect(Collectors.toMap(Challenge::getId, c -> c));
+
+        for (ChallengeAchievement a : challengeAchievements) {
+            if (a.isStep4Goal1Achieved() && a.isStep4Goal2Achieved()) {
+                Challenge challenge = challengeMap.get(a.getChallengeId());
+                LocalDateTime completedAt = LocalDateTime.of(challenge.getYear(), challenge.getMonth(), 1, 0, 0);
+
+                tempList.add(new MemberRecentAchievementDTO(
+                        challenge.getAchievementName(),
+                        challenge.getAchievementImageUrl(),
+                        true,
+                        completedAt
+                ));
+            }
+        }
+
+        // 정렬 및 3개 추출
+        return tempList.stream()
+                .sorted(Comparator.comparing(MemberRecentAchievementDTO::getCompletedAt).reversed())
+                .limit(3)
+                .map(dto -> new MemberRecentAchievementDTO(
+                        dto.getAchievementName(),
+                        dto.getAchievementImageUrl(),
+                        dto.isCompleted(),
+                        dto.getCompletedAt()
+                ))
                 .collect(Collectors.toList());
     }
 }

@@ -663,4 +663,47 @@ public interface MyPageApi {
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
             @PathVariable Long memberId
     );
+
+    // 로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                       
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+
+    // 다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                        
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @PathVariable Long memberId
+    );
 }

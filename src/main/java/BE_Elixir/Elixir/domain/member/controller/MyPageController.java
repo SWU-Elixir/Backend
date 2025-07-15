@@ -273,4 +273,27 @@ public class MyPageController implements MyPageApi {
                 "다른 사용자가 달성한 최신 업적 3개 조회 성공", top3));
     }
 
+    // 로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @GetMapping("/all-achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        List<MemberRecentAchievementDTO> result = myPageService.getTop3AllAchievements(memberDetails.getId());
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공", result));
+    }
+
+    // 다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @GetMapping("/{memberId}/all-achievement/top3")
+    public ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @PathVariable Long memberId
+    ) {
+        List<MemberRecentAchievementDTO> result = myPageService.getTop3AllAchievements(memberId);
+
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공", result));
+    }
 }
