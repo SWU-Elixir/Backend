@@ -330,6 +330,41 @@ public interface MyPageApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    @Operation(summary = "다른 사용자가 업로드한 모든 레시피 조회하기", description = "다른 사용자가 업로드한 모든 레시피 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 업로드한 모든 레시피 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자 레시피 조회 성공",
+                                      "data": [
+                                        {
+                                          "recipeId": 1,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
+                                        },
+                                        {
+                                          "recipeId": 2,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
+                                        },
+                                        .
+                                        .
+                                        .
+                                        {
+                                          "recipeId": 9,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00089_1.png"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
+            @PathVariable("memberId") Long memberId
+    );
+
     // 로그인한 사용자의 모든 챌린지 업적 조회
     @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 조회하기", description = "로그인한 사용자의 모든 챌린지 업적을 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -381,7 +416,7 @@ public interface MyPageApi {
                                      }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllChallengeAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
@@ -422,44 +457,10 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3Achievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3ChallengeAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    // 다른 사용자가 업로드한 모든 레시피 조회하기
-    @Operation(summary = "다른 사용자가 업로드한 모든 레시피 조회하기", description = "다른 사용자가 업로드한 모든 레시피 조회합니다.",
-            security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "다른 사용자가 업로드한 모든 레시피 조회 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "다른 사용자 레시피 조회 성공",
-                                      "data": [
-                                        {
-                                          "recipeId": 1,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
-                                        },
-                                        {
-                                          "recipeId": 2,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
-                                        },
-                                        .
-                                        .
-                                        .
-                                        {
-                                          "recipeId": 9,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00089_1.png"
-                                        }
-                                      ]
-                                    }
-                                    """)))
-    })
-    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
-            @PathVariable("memberId") Long memberId
-    );
 
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
     @Operation(summary = "다른 사용자의 모든 챌린지 업적 조회하기", description = "다른 사용자의 모든 챌린지 업적 조회합니다.",
@@ -494,7 +495,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherAllChallengeAchievements(
             @PathVariable Long memberId
     );
 
@@ -535,7 +536,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3AchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherTop3ChallengeAchievements(
             @PathVariable Long memberId
     );
 
@@ -660,6 +661,49 @@ public interface MyPageApi {
                                     """)))
     })
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
+            @PathVariable Long memberId
+    );
+
+    // 로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                       
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+
+    // 다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                        
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
             @PathVariable Long memberId
     );
 }
