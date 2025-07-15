@@ -9,6 +9,7 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.domain.recommendation.dto.RecommendationResponseDTO;
+import BE_Elixir.Elixir.domain.recommendation.repository.RecommendationRepository;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,32 +29,40 @@ public class RecommendationService {
     private final RedisRecipeService redisRecipeService;
     private final RecipeEventRepository recipeEventRepository;
     private final IngredientRepository ingredientRepository;
+    private final RecommendationRepository recommendationRepository;
 
 
     // 사용자 맞춤형 레시피 추천
     @Transactional(readOnly = true)
     public List<RecommendationResponseDTO> getRecommendationsForUser(Member member) {
+        // 시작 시간
+        long startTime = System.currentTimeMillis();
+
         // 캐시 확인
         List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(member.getId());
-        if (cached != null) return cached;
+        if (cached != null) {
+            log.info("[추천 API] 캐시 응답 시간: {}ms", System.currentTimeMillis() - startTime); // 캐시 응답 시간 측정
+            return cached;
+        }
 
         List<Recipe> allRecipes = recipeRepository.findAll();
 
         // 필터링
-        List<Recipe> filtered = allRecipes.stream()
-                .filter(recipe -> !hasAllergyConflict(member, recipe))
+        List<Recipe> filteredFromDb = recommendationRepository.findFilteredRecipes(
+                member.getRecipeStyles(),
+                member.getReasons()
+        );
+        List<Recipe> filtered = filteredFromDb.stream()
+                .filter(recipe -> hasAllergyConflict(member, recipe))
                 .filter(recipe -> matchesMealStyle(member, recipe))
-                .filter(recipe -> matchesRecipeStyle(member, recipe))
-                .filter(recipe -> matchesReason(member, recipe))
-                .limit(3)
                 .collect(Collectors.toList());
-
         // 필터링된 레시피가 없을 경우 → 랜덤
         if (filtered.isEmpty()) {
-            Collections.shuffle(allRecipes); // 리스트를 무작위로
-            filtered = allRecipes.stream()
-                    .limit(3)
-                    .collect(Collectors.toList());
+            Collections.shuffle(allRecipes);
+            filtered = allRecipes.stream().limit(3).collect(Collectors.toList());
+        } else {
+            Collections.shuffle(filtered);
+            filtered = filtered.stream().limit(3).collect(Collectors.toList());
         }
 
         // 스크랩 여부 확인 및 DTO 변환
@@ -65,7 +74,11 @@ public class RecommendationService {
                 .collect(Collectors.toList());
 
         // 캐싱 (1시간)
-        redisRecipeService.cacheRecommendations(member.getId(), recommendations, Duration.ofHours(1));
+        redisRecipeService.cacheRecommendations(member.getId(), recommendations, Duration.ofSeconds(1));
+
+        long endTime = System.currentTimeMillis(); // 끝 시간 기록
+        log.info("[추천 API] 전체 처리 시간: {}ms", (endTime - startTime));
+
         return recommendations;
     }
 
