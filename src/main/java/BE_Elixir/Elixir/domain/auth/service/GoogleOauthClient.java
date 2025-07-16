@@ -1,7 +1,7 @@
 package BE_Elixir.Elixir.domain.auth.service;
 
-import BE_Elixir.Elixir.domain.auth.dto.GoogleUserInfoResponse;
-import BE_Elixir.Elixir.domain.auth.dto.SocialUserInfo;
+import BE_Elixir.Elixir.domain.auth.dto.social.GoogleUserInfoResponse;
+import BE_Elixir.Elixir.domain.auth.dto.social.SocialUserInfo;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;

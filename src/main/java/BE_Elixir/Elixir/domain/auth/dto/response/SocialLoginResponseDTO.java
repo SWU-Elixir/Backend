@@ -1,6 +1,6 @@
 package BE_Elixir.Elixir.domain.auth.dto.response;
 
-import BE_Elixir.Elixir.domain.auth.dto.SocialUserInfo;
+import BE_Elixir.Elixir.domain.auth.dto.social.SocialUserInfo;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

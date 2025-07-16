@@ -1,4 +1,4 @@
-package BE_Elixir.Elixir.domain.auth.dto;
+package BE_Elixir.Elixir.domain.auth.dto.social;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

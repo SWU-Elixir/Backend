@@ -2,7 +2,7 @@ package BE_Elixir.Elixir.domain.auth.service;
 
 import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
-import BE_Elixir.Elixir.domain.auth.dto.SocialUserInfo;
+import BE_Elixir.Elixir.domain.auth.dto.social.SocialUserInfo;
 import BE_Elixir.Elixir.domain.auth.dto.response.SocialLoginResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
