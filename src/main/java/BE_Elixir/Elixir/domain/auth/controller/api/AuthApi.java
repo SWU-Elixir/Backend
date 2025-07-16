@@ -119,7 +119,7 @@ public interface AuthApi {
 
     @Operation(summary = "소셜 로그인", description = "구글, 네이버, 카카오를 이용해 소셜 로그인을 진행합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "소셜 로그인 성공",
+            @ApiResponse(responseCode = "200", description = "소셜 로그인 성공(이미 가입한 회원의 경우)",
                     content = @Content(schema = @Schema(implementation = CommonResponse.class),
                             examples = @ExampleObject(value = """
                                     {
@@ -127,9 +127,33 @@ public interface AuthApi {
                                       "code": "200 OK",
                                       "message": "소셜 로그인 성공",
                                       "data": {
-                                        "grantType": "bearer",
                                         "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                                        "refreshToken": "dGhpc2lzYXJlZnJlc2h0b2tlbg=="
+                                        "refreshToken": "dGhpc2lzYXJlZnJlc2h0b2tlbg==",
+                                        "loginType": "NAVER",
+                                        "registered": false,
+                                        "socialUserInfo": null
+                                      }
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "200", description = "소셜 로그인 성공(아직 가입하지 않은 회원의 경우)",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "소셜 로그인 성공",
+                                      "data": {
+                                        "accessToken": null,
+                                        "refreshToken": null,
+                                        "loginType": "NAVER",
+                                        "socialUserInfo": {
+                                          "email": "test@naver.com",
+                                          "nickname": "홍길동",
+                                          "gender": "F",
+                                          "birthYear": 2002,
+                                          "profileImage": "https://...jpg"
+                                        },
+                                        "registered": false
                                       }
                                     }
                                     """))),
