@@ -49,7 +49,7 @@ public class NaverOauthClient implements OauthClient {
 
         return new SocialUserInfo(
                 naver.getEmail(),
-                naver.getName(),
+                naver.getNickname(),
                 naver.getGender(),
                 birthYear,
                 naver.getProfile_image()
