@@ -1264,10 +1264,11 @@ INSERT INTO ingredient (id, category_group, category, name, is_nova4, challenge_
 INSERT INTO ingredient (id, category_group, category, name, is_nova4, challenge_month) VALUES (1262, '수산물', '해조류', '파래', False, NULL);
 
 -- 회원
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     1,
     'mj@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'mj',
     NULL,
@@ -7152,10 +7153,11 @@ INSERT INTO recipe_step_images (recipe_id, step_image_urls) VALUES (180, 'http:/
 
 -- 회원 .더미 데이터
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
-		2,
+    2,
     'A@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'A',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/A_profile.jpg',
@@ -7172,10 +7174,11 @@ INSERT INTO member_roles (member_id, roles)
 VALUES (2, 'USER');
 
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     3,
     'B@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'B',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/B_profile.jpg',
@@ -7191,10 +7194,11 @@ VALUES (
 INSERT INTO member_roles (member_id, roles)
 VALUES (3, 'USER');
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     4,
     'C@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'C',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/C_profile.jpg',
@@ -7788,24 +7792,25 @@ INSERT INTO challenge_achievement (
 
 
 -- 회원
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
-VALUES (
-    83,
-    'mool848777@naver.com',
-    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
-    'sy',
-    NULL,
-    NULL,
-    2002,
-    NULL,
-    false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보 (모두 false로 예시)
-    false, false, false, -- 식사 스타일
-    false, false, false, false, false, false, false, -- 레시피 스타일
-    false, true, false -- 식단 이유
-);
-
-INSERT INTO member_roles (member_id, roles)
-VALUES (83, 'USER');
+--INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+--VALUES (
+--    83,
+--    'mool848777@naver.com',
+--    'NAVER',
+--    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
+--    'sy',
+--    NULL,
+--    NULL,
+--    2002,
+--    NULL,
+--    false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보 (모두 false로 예시)
+--    false, false, false, -- 식사 스타일
+--    false, false, false, false, false, false, false, -- 레시피 스타일
+--    false, true, false -- 식단 이유
+--);
+--
+--INSERT INTO member_roles (member_id, roles)
+--VALUES (83, 'USER');
 
 
 -- 총 접속 일수 (TOTAL_LOGIN_DAYS)
