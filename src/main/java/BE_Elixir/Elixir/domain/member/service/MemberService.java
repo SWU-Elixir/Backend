@@ -1,8 +1,10 @@
 package BE_Elixir.Elixir.domain.member.service;
 
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
+import BE_Elixir.Elixir.domain.member.dto.request.SocialSignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.email.EmailService;
@@ -42,9 +44,10 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
 
-    // 회원가입 (USER 권한을 추가하여 데이터 추가)
-    public Member signUp(SignUpRequestDTO request, MultipartFile profileImage) {
+    // 일반 회원용 회원가입 메소드
+    public Member localSignUp(SignUpRequestDTO request, MultipartFile profileImage) {
         List<String> roles = new ArrayList<>();
+        // USER 권한을 추가하여 데이터 추가
         roles.add("USER");
 
         try {
@@ -53,6 +56,7 @@ public class MemberService {
                 passwordEncoder.encode(request.getPassword()), roles
         );
         member.setRoles(roles);
+        member.setLoginType(LoginType.LOCAL);
 
         // 설문조사 결과 세팅
         // allergy 값 세팅
@@ -99,11 +103,79 @@ public class MemberService {
         }
     }
 
+    // 소셜 회원용 회원가입 메소드
+    public Member socialSignUp(LoginType loginType, SocialSignUpRequestDTO request, MultipartFile profileImage) {
+        // 소셜 회원이 맞는지 검증
+        if (!loginType.isSocial()) {
+            throw new CustomException(ErrorCode.LOGIN_TYPE_MISMATCH);
+        }
+
+        List<String> roles = new ArrayList<>();
+        // USER 권한을 추가
+        roles.add("USER");
+
+        try {
+            // Member entity 값 세팅
+            Member member = request.toEntity(roles, loginType);
+            member.setRoles(roles);
+
+            // 설문조사 결과 세팅
+            // allergy 값 세팅
+            List<String> allergies = request.getAllergies();
+            if (allergies != null) {
+                member.applyAllergies(allergies);
+            }
+
+            // meal style 값 세팅
+            List<String> mealStyles = request.getMealStyles();
+            if (mealStyles != null) {
+                member.applyMealStyles(mealStyles);
+            }
+
+            // recipe style 값 세팅
+            List<String> recipeStyles = request.getRecipeStyles();
+            if (recipeStyles != null) {
+                member.applyRecipeStyles(recipeStyles);
+            }
+
+            // reason 값 세팅
+            List<String> reasons = request.getReasons();
+            if (reasons != null) {
+                member.applyReasons(reasons);
+            }
+
+            // 프로필 이미지 업로드 및 url 세팅
+            if (profileImage != null && !profileImage.isEmpty()) {
+                try {
+                    String imageUrl = s3Service.upload(profileImage, "member");
+                    member.setProfileUrl(imageUrl);
+                } catch (IOException e) {
+                    throw new CustomException(ErrorCode.S3_UPLOAD_ERROR);
+                }
+            } else if (request.getProfileImageUrl() != null) {
+                member.setProfileUrl(request.getProfileImageUrl());
+            }
+
+            return memberRepository.save(member);
+
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {
+                throw new CustomException(ErrorCode.EXISTS_MEMBER);
+            }
+            throw e;
+        }
+    }
+
     // 이메일 인증 요청하기
     public void sendVerificationCode(String email) {
         // 해당 이메일의 회원이 존재하는지 검증
-        memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 일반 가입 회원이 맞는지 검증
+        if (member.getLoginType() != LoginType.LOCAL) {
+            throw new CustomException(ErrorCode.EMAIL_REGISTERED_WITH_SOCIAL);
+        }
 
         // 인증코드 만들기 및 메일 보내기
         String key = mailService.sendMail(email);

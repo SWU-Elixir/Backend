@@ -2,10 +2,13 @@ package BE_Elixir.Elixir.domain.auth.controller;
 
 import BE_Elixir.Elixir.domain.auth.controller.api.AuthApi;
 import BE_Elixir.Elixir.domain.auth.dto.AccessTokenDTO;
+import BE_Elixir.Elixir.domain.auth.dto.request.SocialLoginRequestDTO;
+import BE_Elixir.Elixir.domain.auth.dto.response.SocialLoginResponseDTO;
 import BE_Elixir.Elixir.domain.auth.service.AuthService;
 import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.auth.dto.request.LoginRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
@@ -29,7 +32,9 @@ public class AuthController implements AuthApi {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<TokenResponseDTO>> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<CommonResponse<TokenResponseDTO>> login(
+            @RequestBody LoginRequestDTO request
+    ) {
         log.info("로그인 요청 - email: {}", request.getEmail());
 
         TokenResponseDTO token = authService.signIn(request);
@@ -71,4 +76,19 @@ public class AuthController implements AuthApi {
         return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "Access Token 재발급 성공", token));
     }
+
+    // sns 소셜 로그인
+    @PostMapping(value="/oauth/{loginType}")
+    public ResponseEntity<CommonResponse<SocialLoginResponseDTO>> socialLogin(
+            @PathVariable(name="loginType") LoginType loginType,
+            @RequestBody SocialLoginRequestDTO request
+    ) {
+        log.info("소셜 로그인 요청 - type: {}", loginType);
+        SocialLoginResponseDTO response = authService.handleSocialLogin(loginType, request.getAccessToken());
+
+        log.info("소셜 로그인 성공");
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "소셜 로그인 성공", response));
+    }
+
 }
