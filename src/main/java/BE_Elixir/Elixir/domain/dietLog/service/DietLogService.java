@@ -2,7 +2,6 @@ package BE_Elixir.Elixir.domain.dietLog.service;
 
 import BE_Elixir.Elixir.domain.achievement.service.MemberStatsService;
 import BE_Elixir.Elixir.domain.challenge.event.events.DietLogEvent;
-import BE_Elixir.Elixir.domain.challenge.event.events.RecipeEvent;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogRequestDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.DietLogResponseDTO;
 import BE_Elixir.Elixir.domain.dietLog.dto.MonthlyDietScoreDTO;
@@ -52,7 +51,7 @@ public class DietLogService {
 
         // 회원 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. member id: " + memberId));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 식단 타입을 enum 타입으로 변환 및 검사
         DietLogType typeEnum = DietLogType.valueOf(dto.getType().toUpperCase());
@@ -98,11 +97,11 @@ public class DietLogService {
     public void deleteDietLog(Long dietLogId, Long memberId) {
         // 식단 기록 객체 찾기
         DietLog dietLog = dietLogRepository.findById(dietLogId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
+                .orElseThrow(() -> new CustomException(ErrorCode.DIETLOG_NOT_FOUND));
 
         // 권한 확인: 본인만 삭제 가능
         if (!dietLog.getMember().getId().equals(memberId)) {
-            throw new SecurityException("해당 식단을 삭제할 권한이 없습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // S3 버킷에서 이미지 삭제
@@ -117,11 +116,11 @@ public class DietLogService {
     public DietLogResponseDTO updateDietLog(Long dietLogId, Long memberId, DietLogRequestDTO dto, MultipartFile image) {
         // 기존 식단 조회
         DietLog dietLog = dietLogRepository.findById(dietLogId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
+                .orElseThrow(() -> new CustomException(ErrorCode.DIETLOG_NOT_FOUND));
 
         // 권한 확인: 본인만 수정 가능
         if (!dietLog.getMember().getId().equals(memberId)) {
-            throw new SecurityException("해당 식단을 수정할 권한이 없습니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS);
         }
 
         // 이름 수정
@@ -192,7 +191,7 @@ public class DietLogService {
 
         // 식단 기록 객체 찾기
         DietLog dietLog = dietLogRepository.findById(dietLogId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식단이 존재하지 않습니다. 식단 ID: " + dietLogId));
+                .orElseThrow(() -> new CustomException(ErrorCode.DIETLOG_NOT_FOUND));
 
         return dietLog.convertToResponseDTO();
 
@@ -258,7 +257,7 @@ public class DietLogService {
         );
 
         if (exists) {
-            throw new CustomException(ErrorCode.DIET_LOG_TYPE_DUPLICATE);
+            throw new CustomException(ErrorCode.DIETLOG_TYPE_DUPLICATE);
         }
     }
 
@@ -276,7 +275,7 @@ public class DietLogService {
         );
 
         if (exists) {
-            throw new CustomException(ErrorCode.DIET_LOG_TYPE_DUPLICATE);
+            throw new CustomException(ErrorCode.DIETLOG_TYPE_DUPLICATE);
         }
     }
 
