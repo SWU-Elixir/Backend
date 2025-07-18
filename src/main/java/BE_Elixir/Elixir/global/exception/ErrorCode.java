@@ -49,7 +49,7 @@ public enum ErrorCode {
     // 식단
     DIETLOG_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "식단 기록이 존재하지 않습니다."),
     INVALID_DIETLOG_TYPE(HttpStatus.BAD_REQUEST.value(), "잘못된 식단 타입(아침, 점심 등)입니다."),
-    DIET_LOG_TYPE_DUPLICATE(HttpStatus.BAD_REQUEST.value(), "오늘은 이미 해당 식사 유형을 기록하셨습니다."),
+    DIETLOG_TYPE_DUPLICATE(HttpStatus.BAD_REQUEST.value(), "오늘은 이미 해당 식사 유형을 기록하셨습니다."),
 
     // 레시피
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "레시피가 존재하지 않습니다."),
