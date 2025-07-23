@@ -21,9 +21,13 @@ public class MemberStatsService {
     public void increaseStat(Long memberId, AchievementType type, int amount) {
         MemberStats stats = memberStatsRepository.findById(memberId)
                 .orElseGet(() -> createDefaultStats(memberId));
-
+        LocalDate today = LocalDate.now();
         switch (type) {
-            case TOTAL_LOGIN_DAYS -> stats.setTotalLoginDays(stats.getTotalLoginDays() + amount);
+            case TOTAL_LOGIN_DAYS -> {
+                if (!today.equals(stats.getLastLoginDate())) {
+                    stats.setTotalLoginDays(stats.getTotalLoginDays() + 1);
+                }
+            }
             case CONSECUTIVE_LOGIN_DAYS -> updateConsecutiveLogin(stats);
             case TOTAL_DIET_LOGS -> stats.setTotalDietLogs(stats.getTotalDietLogs() + amount);
             case TOTAL_RECIPE_LOGS -> stats.setTotalRecipeLogs(stats.getTotalRecipeLogs() + amount);
@@ -44,18 +48,21 @@ public class MemberStatsService {
     // 연속 로그인 일수
     private void updateConsecutiveLogin(MemberStats stats) {
         LocalDate today = LocalDate.now();
-        LocalDate lastUpdated = stats.getUpdatedAt() != null
-                ? stats.getUpdatedAt().toLocalDate()
-                : null;
+        LocalDate lastLoginDate = stats.getLastLoginDate();
 
-        if (lastUpdated == null || lastUpdated.isBefore(today.minusDays(1))) {
-            // 어제보다 이전이면 리셋
+        if (lastLoginDate == null || lastLoginDate.isBefore(today.minusDays(1))) {
+            // 마지막 로그인일이 2일 이상 전이면 연속 로그인 리셋
             stats.setConsecutiveLoginDays(1);
-        } else if (lastUpdated.equals(today.minusDays(1))) {
-            // 어제 접속 → 연속 증가
+        } else if (lastLoginDate.equals(today.minusDays(1))) {
+            // 어제 접속, 연속 로그인 성공
             stats.setConsecutiveLoginDays(stats.getConsecutiveLoginDays() + 1);
+        } else if (lastLoginDate.equals(today)) {
+            // 이미 오늘 접속, 중복 증가 방지
+            return;
         }
-        // 오늘 이미 업데이트된 경우는 무시 (중복 증가 방지)
+
+        // 마지막 로그인일 갱신
+        stats.setLastLoginDate(today);
     }
 
 
