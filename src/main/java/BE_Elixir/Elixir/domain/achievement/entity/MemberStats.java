@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import jakarta.persistence.Id;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,6 +23,9 @@ public class MemberStats {
     private int totalFollowers;
 
     private LocalDateTime updatedAt;
+
+    @Column(name = "last_login_date")
+    private LocalDate lastLoginDate;
 
     @PrePersist
     @PreUpdate
