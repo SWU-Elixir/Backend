@@ -6,6 +6,7 @@ import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.member.service.MemberAccessService;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.redis.RedisAuthService;
@@ -33,6 +34,7 @@ public class MemberController implements MemberApi {
     private final FollowService followService;
     private final JwtProvider jwtProvider;
     private final RedisAuthService redisAuthService;
+    private final MemberAccessService memberAccessService;
 
     // 이메일 중복 체크
     @GetMapping("/check-email")
@@ -218,5 +220,17 @@ public class MemberController implements MemberApi {
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "특정 사용자의 팔로워 목록 조회 성공", dto));
+    }
+
+    // 앱 접속 호출하기
+    @PostMapping("/access")
+    public ResponseEntity<CommonResponse> onAppAccess(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        memberAccessService.handleAppAccess(memberDetails.getId(), memberDetails.getUsername());
+        log.info("앱 접속 - email: {}", memberDetails.getUsername());
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "앱 접속 호출 성공", null));
     }
 }

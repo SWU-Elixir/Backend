@@ -433,5 +433,25 @@ public interface MemberApi {
             @PathVariable("targetMemberId") Long targetMemberId
     );
 
+    // 앱 접속 호출하기
+    @Operation(summary = "사용자가 앱 접속 API 호출", description = "접속 API를 호출합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "접속 API 호출 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "앱 접속 호출 성공",
+                                      "data": null
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "500", description = "접속 API 호출 실패",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    })
+    ResponseEntity<CommonResponse> onAppAccess(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
 
 }
