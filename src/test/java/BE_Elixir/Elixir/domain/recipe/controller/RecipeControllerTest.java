@@ -56,8 +56,18 @@ public class RecipeControllerTest {
     }
     private Member createMockMember() {
         Member member = mock(Member.class);
-        when(member.getId()).thenReturn(500L);
+        when(member.getId()).thenReturn(1L);
         return member;
+    }
+
+    // 인증 객체
+    private void setAuthentication() {
+        Member mockMember = createMockMember();
+        MemberDetails memberDetails = new MemberDetails(mockMember);
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(memberDetails, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private Recipe createMockRecipe() {
@@ -65,7 +75,7 @@ public class RecipeControllerTest {
         Member mockMember = createMockMember();
 
         when(recipe.getMember()).thenReturn(mockMember);
-        when(recipe.getId()).thenReturn(500L);
+        when(recipe.getId()).thenReturn(1L);
         when(recipe.getTitle()).thenReturn("테스트 레시피");
         when(recipe.getImageUrl()).thenReturn("https://example.com/image.jpg");
         when(recipe.getDescription()).thenReturn("테스트 설명");
@@ -77,7 +87,7 @@ public class RecipeControllerTest {
 
         RecipeIngredient mockTag = mock(RecipeIngredient.class);
         Ingredient mockIngredient = mock(Ingredient.class);
-        when(mockIngredient.getId()).thenReturn(10L);
+        when(mockIngredient.getId()).thenReturn(1L);
         when(mockTag.getIngredient()).thenReturn(mockIngredient);
         when(recipe.getIngredientTags()).thenReturn(List.of(mockTag));
 
@@ -108,7 +118,8 @@ public class RecipeControllerTest {
     @DisplayName("레시피_상세_조회")
     void getRecipe() throws Exception {
         // given
-        String url = "/api/recipe/500";
+        String url = "/api/recipe/1";
+        setAuthentication();
         Recipe recipe = createMockRecipe();
 
         RecipeDetailResponseDTO dto = new RecipeDetailResponseDTO(
@@ -118,26 +129,15 @@ public class RecipeControllerTest {
                 false
         );
 
-        given(recipeService.getRecipeDetail(eq(500L), any())).willReturn(dto);
-
-        Member mockMember = createMockMember();
-        MemberDetails memberDetails = new MemberDetails(mockMember);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(memberDetails, null, List.of()));
-        SecurityContextHolder.setContext(context);
-
+        given(recipeService.getRecipeDetail(eq(1L), any())).willReturn(dto);
 
         // when - API 호출
         final ResultActions result = mockMvc.perform(get(url)
-                .with(SecurityMockMvcRequestPostProcessors.authentication(
-                        new UsernamePasswordAuthenticationToken(memberDetails, null, List.of()))
-                )
                 .accept(MediaType.APPLICATION_JSON));
 
         // then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(500L))
+                .andExpect(jsonPath("$.data.id").value(1L))
                 .andExpect(jsonPath("$.data.title").value("테스트 레시피"))
                 .andExpect(jsonPath("$.data.likes").value(10 ))
                 .andExpect(jsonPath("$.data.ingredients[0].name").value("재료/양념 1"))
