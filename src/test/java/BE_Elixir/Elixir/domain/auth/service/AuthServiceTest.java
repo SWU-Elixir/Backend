@@ -72,7 +72,7 @@ class AuthServiceTest {
                 .email("test@test.com")
                 .password("encoded-password")
                 .loginType(LoginType.LOCAL)
-                .roles(Collections.singletonList("ROLE_USER"))
+                .roles(Collections.singletonList("USER"))
                 .build();
 
         memberDetails = MemberDetails.builder()
