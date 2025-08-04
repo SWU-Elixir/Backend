@@ -2,8 +2,14 @@ package BE_Elixir.Elixir.domain.recipe.controller;
 
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeHomeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Material;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.junit.jupiter.api.Test;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
@@ -13,7 +19,6 @@ import BE_Elixir.Elixir.domain.recipe.service.RecipeService;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,8 +32,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,13 +48,7 @@ public class RecipeControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private RecipeService recipeService;
-    @Autowired
-    private RecipeRepository recipeRepository;
 
-    @AfterEach
-    public void cleanUp() {
-        recipeRepository.deleteAll();
-    }
     private Member createMockMember() {
         Member member = mock(Member.class);
         when(member.getId()).thenReturn(1L);
@@ -108,7 +106,7 @@ public class RecipeControllerTest {
 
     @Test
     @DisplayName("레시피_등록")
-    void createRecipe() {
+    void createRecipe() throws Exception {
     }
 
     @Test
@@ -142,7 +140,28 @@ public class RecipeControllerTest {
     }
 
     @Test
-    void getRecipes() {
+    @DisplayName("전체_레시피_목록_조회")
+    void getRecipes() throws Exception {
+        // given
+        String url = "/api/recipe";
+        setAuthentication();
+
+        RecipeHomeResponseDTO dto1 = mock(RecipeHomeResponseDTO.class);
+        RecipeHomeResponseDTO dto2 = mock(RecipeHomeResponseDTO.class);
+        List<RecipeHomeResponseDTO> content = List.of(dto1, dto2);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Page<RecipeHomeResponseDTO> page = new PageImpl<>(content, pageable, content.size());
+        given(recipeService.getRecipeList(any(Pageable.class), any())).willReturn(page);
+
+        // when
+        ResultActions result = mockMvc.perform(get(url)
+                .param("page", "0")
+                .param("size", "10")
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content").isArray());
     }
 
     @Test
