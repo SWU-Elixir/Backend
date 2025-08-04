@@ -1,8 +1,11 @@
 package BE_Elixir.Elixir.domain.member.service;
 
+import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
+import BE_Elixir.Elixir.domain.member.dto.SocialSignUpDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SocialSignUpRequestDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
+import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.exception.CustomException;
@@ -17,6 +20,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +37,13 @@ import java.util.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberDetailsService memberDetailsService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisAuthService redisAuthService;
     private final RedisEmailVerificationService redisMailVerificationService;
     private final S3Service s3Service;
     private final EmailService mailService;
-
     // 이메일 중복 체크
     public boolean isEmailDuplicated(String email) {
         return memberRepository.existsByEmail(email);
@@ -104,7 +109,7 @@ public class MemberService {
     }
 
     // 소셜 회원용 회원가입 메소드
-    public Member socialSignUp(LoginType loginType, SocialSignUpRequestDTO request, MultipartFile profileImage) {
+    public SocialSignUpDTO socialSignUp(LoginType loginType, SocialSignUpRequestDTO request, MultipartFile profileImage) {
         // 소셜 회원이 맞는지 검증
         if (!loginType.isSocial()) {
             throw new CustomException(ErrorCode.LOGIN_TYPE_MISMATCH);
@@ -156,7 +161,27 @@ public class MemberService {
                 member.setProfileUrl(request.getProfileImageUrl());
             }
 
-            return memberRepository.save(member);
+            memberRepository.save(member);
+
+            // JWT 토큰 발급
+            // Spring Security Authentication 객체 생성
+            MemberDetails memberDetails = memberDetailsService.loadUserByUsername(member.getEmail());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    memberDetails, "", memberDetails.getAuthorities()
+            );
+
+            // JWT 생성
+            TokenResponseDTO tokenResponse = jwtProvider.generateToken(authentication);
+            String refreshToken = tokenResponse.getRefreshToken();
+
+            // Redis에 Refresh Token 저장
+            redisAuthService.saveRefreshToken(member.getEmail(), refreshToken);
+            log.info("[소셜 로그인] Refresh Token Redis에 저장: email={}, token={}", member.getEmail(), refreshToken);
+
+            return SocialSignUpDTO.builder()
+                    .member(member)
+                    .tokenResponseDTO(tokenResponse)
+                    .build();
 
         } catch (DataIntegrityViolationException e) {
             if (e.getMessage().toUpperCase().contains("EMAIL_UNIQUE")) {

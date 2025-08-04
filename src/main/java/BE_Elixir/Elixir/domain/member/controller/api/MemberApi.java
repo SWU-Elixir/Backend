@@ -1,5 +1,6 @@
 package BE_Elixir.Elixir.domain.member.controller.api;
 
+import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
@@ -92,7 +93,10 @@ public interface MemberApi {
                                       "status": 200,
                                       "code": "200 OK",
                                       "message": "소셜 회원용 회원가입 성공 - memberId: 1",
-                                      "data": null
+                                      "data": {
+                                          "grantType": "Bearer",
+                                          "accessToken": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJtb29sMDIwODAzQGdtYWlsLmNvbSIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNzUzNTk4NDQxfQ.YW8gIVXLWMFEm_ywGtDI4TTSJTHOpNVOxKG2wLeBBC2fCW_ZaG1rF7e_9Xps9gnp",
+                                          "refreshToken": "eyJhbGciOiJIUzM4NCJ9.eyJleHAiOjE3NTQ4MDQ0NDF9.Ew5909EU638VuUe3gzNDUv50r162BMrZuDlJD43brRr8dSIclat71BOtPRzZZX9Q"
                                     }
                                     """))),
             @ApiResponse(responseCode = "401", description = "소셜 회원용 회원가입 실패",
@@ -106,7 +110,7 @@ public interface MemberApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<?>> socialSignUp(
+    ResponseEntity<CommonResponse<TokenResponseDTO>> socialSignUp(
             @PathVariable(name="loginType") LoginType loginType,
             @RequestPart("dto") SocialSignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage

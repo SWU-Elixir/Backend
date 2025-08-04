@@ -1,7 +1,9 @@
 package BE_Elixir.Elixir.domain.member.controller;
 
+import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
+import BE_Elixir.Elixir.domain.member.dto.SocialSignUpDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
@@ -64,18 +66,18 @@ public class MemberController implements MemberApi {
 
     // 소셜 회원용 회원가입
     @PostMapping(value= "/signup/{loginType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<?>> socialSignUp(
+    public ResponseEntity<CommonResponse<TokenResponseDTO>> socialSignUp(
             @PathVariable(name="loginType") LoginType loginType,
             @RequestPart("dto") SocialSignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
         log.info("소셜 회원용 회원가입 요청 - 이메일: {}", dto.getEmail());
 
-        Member member = memberService.socialSignUp(loginType, dto, profileImage);
-        log.info("소셜 회원용 회원가입 성공 - 회원 ID: {}", member.getId());
+        SocialSignUpDTO socialSignUpDTO = memberService.socialSignUp(loginType, dto, profileImage);
+        log.info("소셜 회원용 회원가입 성공 - 회원 ID: {}", socialSignUpDTO.getMember().getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
-                        "소셜 회원용 회원가입 성공 - memberId: " + member.getId()));
+                        "소셜 회원용 회원가입 성공 - memberId: " + socialSignUpDTO.getMember().getId(), socialSignUpDTO.getTokenResponseDTO()));
     }
 
     // 이메일 인증 요청하기
