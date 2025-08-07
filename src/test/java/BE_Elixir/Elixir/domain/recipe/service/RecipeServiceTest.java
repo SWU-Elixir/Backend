@@ -413,4 +413,145 @@ class RecipeServiceTest {
         assertThat(result).isEqualTo(mockKeywords);
         verify(redisRecipeService, times(1)).getTopKeywords(5);
     }
+
+    @Nested
+    @DisplayName("레시피 수정 테스트")
+    class updateRecipeTests {
+        @Test
+        @DisplayName("성공: 레시피 수정")
+        void updateRecipe_Success() throws IOException {
+            // given
+            Long recipeId = 1L;
+            Recipe existingRecipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            existingRecipe.setId(recipeId);
+            existingRecipe.setMember(member);
+            existingRecipe.setIngredientTags(new ArrayList<>());
+
+            // 수정 요청 DTO
+            RecipeRequestDTO updateDto = createSampleRecipeRequestDTO();
+            updateDto.setTitle("수정된 감자조림");
+            updateDto.setIngredientTagIds(List.of(1L, 2L));
+
+            // 재료
+            Ingredient ingredient1 = new Ingredient();
+            ingredient1.setId(1L);
+            Ingredient ingredient2 = new Ingredient();
+            ingredient2.setId(2L);
+
+            // MultipartFile Mock 객체
+            MultipartFile mockImage = mock(MultipartFile.class);
+            MultipartFile mockStepImage1 = mock(MultipartFile.class);
+            List<MultipartFile> mockStepImages = List.of(mockStepImage1);
+
+            // Mocking
+            given(recipeRepository.findWithAllById(recipeId)).willReturn(Optional.of(existingRecipe));
+            given(s3Service.upload(eq(mockImage), anyString())).willReturn("http://new-image.url/main.jpg");
+            given(s3Service.upload(eq(mockStepImage1), anyString())).willReturn("http://new-image.url/step1.jpg");
+            given(ingredientRepository.findById(anyLong())).willAnswer(invocation -> {
+                Long id = invocation.getArgument(0);
+                if (id == 1L) return Optional.of(ingredient1);
+                if (id == 2L) return Optional.of(ingredient2);
+                return Optional.empty();
+            });
+            given(followRepository.existsByFollowerAndFollowing(any(Member.class), any(Member.class))).willReturn(false);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(anyLong(), anyLong())).willReturn(false);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(anyLong(), anyLong())).willReturn(false);
+
+            // when
+            RecipeDetailResponseDTO result = recipeService.updateRecipe(recipeId, updateDto, mockImage, mockStepImages, member);
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getTitle()).isEqualTo("수정된 감자조림");
+            assertThat(result.getImageUrl()).isEqualTo("http://new-image.url/main.jpg");
+            assertThat(result.getStepImageUrls()).hasSize(1);
+            assertThat(result.getIngredientTagIds()).hasSize(2);
+
+            verify(recipeRepository, times(1)).findWithAllById(recipeId);
+            verify(s3Service, times(1)).upload(eq(mockImage), anyString());
+            verify(s3Service, times(1)).upload(eq(mockStepImage1), anyString());
+            verify(ingredientRepository, times(1)).findById(1L);
+            verify(ingredientRepository, times(1)).findById(2L);
+            verify(recipeRepository, times(1)).save(any(Recipe.class));
+            verify(followRepository, times(1)).existsByFollowerAndFollowing(any(Member.class), any(Member.class));
+            verify(recipeEventRepository, times(1)).existsByRecipeIdAndMemberIdAndLikeFlagTrue(anyLong(), anyLong());
+            verify(recipeEventRepository, times(1)).existsByRecipeIdAndMemberIdAndScrapFlagTrue(anyLong(), anyLong());
+        }
+        
+        @Test
+        @DisplayName("예외: 레시피를 찾을 수 없음")
+        void updateRecipe_RecipeNotFound_Exception() {
+            // given
+            Long nonExistentRecipeId = 999L;
+            given(recipeRepository.findWithAllById(nonExistentRecipeId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeService.updateRecipe(
+                    nonExistentRecipeId,
+                    createSampleRecipeRequestDTO(),
+                    null,
+                    null,
+                    member)
+            ).isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.RECIPE_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 레시피 수정 권한 없음")
+        void updateRecipe_ForbiddenAccess_Exception() {
+            // given
+            Long recipeId = 1L;
+
+            Member otherMember = Member.builder()
+                    .id(2L)
+                    .email("otherMember@test.com")
+                    .nickname("otherMember")
+                    .build();
+
+            Recipe existingRecipe = new Recipe();
+            existingRecipe.setMember(member);
+
+            given(recipeRepository.findWithAllById(recipeId))
+                    .willReturn(Optional.of(existingRecipe));
+
+            // when & then
+            assertThatThrownBy(() -> recipeService.updateRecipe(
+                    recipeId,
+                    createSampleRecipeRequestDTO(),
+                    null,
+                    null,
+                    otherMember)
+            ).isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: S3 업로드 오류")
+        void updateRecipe_S3UploadError_Exception() throws IOException {
+            // given
+            Long recipeId = 1L;
+            Recipe existingRecipe = new Recipe();
+            existingRecipe.setMember(member);
+            MultipartFile mockImage = mock(MultipartFile.class);
+
+            given(recipeRepository.findWithAllById(recipeId))
+                    .willReturn(Optional.of(existingRecipe));
+            given(mockImage.isEmpty()).willReturn(false);
+
+            // S3 업로드 시 IOException 발생하도록 설정
+            given(s3Service.upload(any(MultipartFile.class), anyString()))
+                    .willThrow(new IOException("S3 업로드 에러"));
+
+            // when & then
+            assertThatThrownBy(() -> recipeService.updateRecipe(
+                    recipeId,
+                    createSampleRecipeRequestDTO(),
+                    mockImage,
+                    null,
+                    member)
+            ).isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.S3_UPLOAD_ERROR.getMessage());
+        }
+    }
 }
