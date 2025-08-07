@@ -397,4 +397,20 @@ class RecipeServiceTest {
             verify(recipeRepository).findByTitleContaining(keyword, pageable);
         }
     }
+
+    @Test
+    @DisplayName("인기 검색어 조회")
+    void getPopularSearchKeywords() {
+        // given
+        // getTopKeywords(5)가 호출될 때 반환할 값 설정
+        List<String> mockKeywords = List.of("감자조림", "비빔밥", "김치찌개", "파스타", "카레");
+        given(redisRecipeService.getTopKeywords(5)).willReturn(mockKeywords);
+
+        // when
+        List<String> result = recipeService.getPopularSearchKeywords();
+
+        // then
+        assertThat(result).isEqualTo(mockKeywords);
+        verify(redisRecipeService, times(1)).getTopKeywords(5);
+    }
 }
