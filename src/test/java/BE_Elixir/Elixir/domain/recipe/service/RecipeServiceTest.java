@@ -6,10 +6,12 @@ import BE_Elixir.Elixir.domain.follow.repository.FollowRepository;
 import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
+import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
 import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeDetailResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeHomeResponseDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeSummaryResponse;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
@@ -37,10 +39,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -52,6 +53,7 @@ class RecipeServiceTest {
     private RecipeService recipeService;
 
     @Mock private RecipeRepository recipeRepository;
+    @Mock private MemberRepository memberRepository;
     @Mock private RecipeEventRepository recipeEventRepository;
     @Mock private IngredientRepository ingredientRepository;
     @Mock private FollowRepository followRepository;
@@ -60,12 +62,12 @@ class RecipeServiceTest {
     @Mock private MemberStatsService memberStatsService;
     @Mock private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
-    private Member member;
     private RecipeRequestDTO requestDTO;
     private MultipartFile mockMainImage;
     private List<MultipartFile> mockStepImages;
     private Recipe recipe;
-
+    private Member member;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() {
@@ -75,13 +77,23 @@ class RecipeServiceTest {
                 .nickname("testUser")
                 .build();
 
+        pageable = PageRequest.of(0, 10);
+
         requestDTO = createSampleRecipeRequestDTO();
+
+        recipe = Recipe.from(requestDTO, member);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(10L);
+        ingredient.setName("감자");
+
+        RecipeIngredient recipeIngredient = new RecipeIngredient(recipe, ingredient);
+        recipe.setIngredientTags(List.of(recipeIngredient));
     }
 
     private RecipeRequestDTO createSampleRecipeRequestDTO() {
         RecipeRequestDTO dto = new RecipeRequestDTO();
-        dto.setTitle("제목");
-        dto.setDescription("설명");
+        dto.setTitle("감자조림");
+        dto.setDescription("감자조림에 대한 설명");
         dto.setCategoryType(CategoryType.한식);
         dto.setCategorySlowAging(CategorySlowAging.항산화강화);
         dto.setDifficulty(Difficulty.보통);
@@ -219,43 +231,170 @@ class RecipeServiceTest {
         }
     }
 
-    @Test
-    void getRecipe() {
-    }
+    @Nested
+    @DisplayName("레시피 조회 관련 테스트")
+    class RecipeQueryTests {
 
-    @Test
-    void getRecipeDetail() {
-    }
+        @Test
+        @DisplayName("레시피 단건 조회")
+        void getRecipe() {
+            // given
+            Long recipeId = 1L;
+            Recipe recipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe.setId(recipeId);
+            recipe.setIngredientTags(new ArrayList<>());
 
-    @Test
-    void getRecipeList() {
-    }
+            given(recipeRepository.findById(recipeId)).willReturn(Optional.of(recipe));
 
-    @Test
-    void getRecipeListByCategory() {
-    }
+            // when
+            RecipeResponseDTO result = recipeService.getRecipe(recipeId);
 
-    @Test
-    void searchRecipe() {
-    }
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getTitle()).isEqualTo("감자조림");
+            verify(recipeRepository).findById(recipeId);
+        }
 
-    @Test
-    void getPopularSearchKeywords() {
-    }
+        @Test
+        @DisplayName("레시피 상세 조회")
+        void getRecipeDetail() {
+            // given
+            Long recipeId = 1L;
+            Recipe recipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe.setId(recipeId);
+            recipe.setIngredientTags(new ArrayList<>());
 
-    @Test
-    void saveSearchKeyword() {
-    }
+            given(recipeRepository.findWithAllById(recipeId)).willReturn(Optional.of(recipe));
+            given(followRepository.existsByFollowerAndFollowing(member, recipe.getMember())).willReturn(false);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId())).willReturn(false);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId())).willReturn(false);
 
-    @Test
-    void updateRecipe() {
-    }
+            // when
+            RecipeDetailResponseDTO result = recipeService.getRecipeDetail(recipeId, member);
 
-    @Test
-    void deleteRecipe() {
-    }
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getTitle()).isEqualTo("감자조림");
+            verify(recipeRepository).findWithAllById(recipeId);
+            verify(followRepository).existsByFollowerAndFollowing(member, recipe.getMember());
+            verify(recipeEventRepository).existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipeId, member.getId());
+            verify(recipeEventRepository).existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipeId, member.getId());
+        }
 
-    @Test
-    void getMyRecipes() {
+        @Test
+        @DisplayName("전체 레시피 조회")
+        void getRecipeList() {
+            // given
+            Recipe recipe1 = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe1.setId(1L);
+            recipe1.setIngredientTags(new ArrayList<>());
+
+            Recipe recipe2 = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe2.setId(2L);
+            recipe2.setTitle("비빔밥");
+            recipe2.setIngredientTags(new ArrayList<>());
+
+            List<Recipe> recipes = List.of(recipe1, recipe2);
+
+            given(recipeRepository.findAll(pageable)).willReturn(new PageImpl<>(recipes));
+            given(recipeEventRepository.findLikedRecipeIdsByMemberId(member.getId())).willReturn(List.of());
+            given(recipeEventRepository.findScrappedRecipeIdsByMemberId(member.getId())).willReturn(List.of());
+
+            // when
+            Page<RecipeHomeResponseDTO> result = recipeService.getRecipeList(pageable, member);
+
+            // then
+            assertThat(result.getContent()).hasSize(2);
+            assertThat(result.getContent().get(0).getTitle()).isEqualTo("감자조림");
+            verify(recipeRepository).findAll(pageable);
+            verify(recipeEventRepository).findLikedRecipeIdsByMemberId(member.getId());
+            verify(recipeEventRepository).findScrappedRecipeIdsByMemberId(member.getId());
+        }
+
+        @Test
+        @DisplayName("카테고리별 레시피 목록 조회")
+        void getRecipeListByCategory() {
+            // given
+            CategoryType categoryType = CategoryType.한식;
+            CategorySlowAging categorySlowAging = CategorySlowAging.항산화강화;
+
+            Long recipeId = 1L;
+            Recipe recipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe.setId(recipeId);
+            recipe.setIngredientTags(new ArrayList<>());
+
+            List<Recipe> recipeList = List.of(recipe);
+            Page<Recipe> recipePage = new PageImpl<>(recipeList);
+
+            given(recipeRepository.findByCategoryTypeAndCategorySlowAging(categoryType, categorySlowAging, pageable))
+                    .willReturn(recipePage);
+            given(recipeEventRepository.findLikedRecipeIdsByMemberId(member.getId()))
+                    .willReturn(List.of(1L));
+            given(recipeEventRepository.findScrappedRecipeIdsByMemberId(member.getId()))
+                    .willReturn(List.of());
+
+            // when
+            Page<RecipeHomeResponseDTO> result = recipeService.getRecipeListByCategory(categoryType, categorySlowAging, pageable, member);
+
+            // then
+            assertThat(result.getContent()).hasSize(1);
+            RecipeHomeResponseDTO dto = result.getContent().get(0);
+            assertThat(dto.getTitle()).isEqualTo("감자조림");
+            assertThat(dto.getLikedByCurrentUser()).isTrue();
+            assertThat(dto.getScrappedByCurrentUser()).isFalse();
+
+            verify(recipeRepository).findByCategoryTypeAndCategorySlowAging(categoryType, categorySlowAging, pageable);
+            verify(recipeEventRepository).findLikedRecipeIdsByMemberId(member.getId());
+            verify(recipeEventRepository).findScrappedRecipeIdsByMemberId(member.getId());
+        }
+
+        @Test
+        @DisplayName("로그인한 사용자가 작성한 레시피 10개 조회")
+        void getMyRecipes() {
+            // given
+            Long recipeId = 1L;
+            Recipe recipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe.setId(recipeId);
+            recipe.setIngredientTags(new ArrayList<>());
+
+            given(recipeRepository.findTopRecipesByUserId(any(Long.class), anyInt()))
+                    .willReturn(List.of(recipe));
+
+            // when
+            List<RecipeSummaryResponse> result = recipeService.getMyRecipes(member, 10);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getTitle()).isEqualTo("감자조림");
+            verify(recipeRepository).findTopRecipesByUserId(any(Long.class), anyInt());
+        }
+
+        @Test
+        @DisplayName("레시피 검색 결과 조회")
+        void searchRecipe() {
+            // given
+            String keyword = "감자";
+            CategoryType categoryType = null;
+            CategorySlowAging categorySlowAging = null;
+            Long recipeId = 1L;
+            Recipe recipe = Recipe.from(createSampleRecipeRequestDTO(), member);
+            recipe.setId(recipeId);
+            recipe.setIngredientTags(new ArrayList<>());
+
+            List<Recipe> recipeList = List.of(recipe);
+            Page<Recipe> recipePage = new PageImpl<>(recipeList, pageable, recipeList.size());
+
+            given(recipeRepository.findByTitleContaining(keyword, pageable)).willReturn(recipePage);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(recipe.getId(), member.getId())).willReturn(false);
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId())).willReturn(false);
+
+            // when
+            Page<RecipeHomeResponseDTO> result = recipeService.searchRecipe(keyword, pageable, categoryType, categorySlowAging, member);
+
+            // then
+            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getContent().get(0).getTitle()).contains("감자조림");
+            verify(recipeRepository).findByTitleContaining(keyword, pageable);
+        }
     }
 }
