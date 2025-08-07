@@ -36,6 +36,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -554,4 +555,68 @@ class RecipeServiceTest {
                     .hasMessageContaining(ErrorCode.S3_UPLOAD_ERROR.getMessage());
         }
     }
+    @Nested
+    @DisplayName("레시피 삭제 테스트")
+    class DeleteRecipeTests {
+
+        @Test
+        @DisplayName("성공: 레시피 삭제")
+        void deleteRecipe_Success() {
+            // Given
+            Long recipeId = 1L;
+            recipe.setIngredientTags(new ArrayList<>());
+            given(recipeRepository.findWithAllById(recipeId)).willReturn(Optional.of(recipe));
+
+            // When
+            recipeService.deleteRecipe(recipeId, member);
+
+            // Then
+            verify(recipeRepository, times(1)).findWithAllById(recipeId);
+            verify(recipeEventRepository, times(1)).deleteAllByRecipeId(recipeId);
+            verify(recipeRepository, times(1)).delete(recipe);
+        }
+
+        @Test
+        @DisplayName("예외: 존재하지 않는 레시피 삭제 시도")
+        void deleteRecipe_Failure_RecipeNotFound() {
+            // Given
+            Long recipeId = 999L;
+            given(recipeRepository.findWithAllById(recipeId)).willReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> recipeService.deleteRecipe(recipeId, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.RECIPE_NOT_FOUND.getMessage());
+
+            verify(recipeRepository, never()).delete(any(Recipe.class));
+            verify(recipeEventRepository, never()).deleteAllByRecipeId(anyLong());
+        }
+
+        @Test
+        @DisplayName("예외: 레시피 삭제 권한 없음")
+        void deleteRecipe_Failure_ForbiddenAccess() {
+            // Given
+            Long recipeId = 1L;
+            Member otherMember = Member.builder()
+                    .id(2L)
+                    .email("otherMember@test.com")
+                    .nickname("otherMember")
+                    .build();
+
+            Recipe existingRecipe = new Recipe();
+            existingRecipe.setMember(member);
+
+            given(recipeRepository.findWithAllById(recipeId))
+                    .willReturn(Optional.of(existingRecipe));
+
+            // When & Then
+            assertThatThrownBy(() -> recipeService.deleteRecipe(recipeId, otherMember))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+
+            verify(recipeRepository, never()).delete(any(Recipe.class));
+            verify(recipeEventRepository, never()).deleteAllByRecipeId(anyLong());
+        }
+    }
+
 }
