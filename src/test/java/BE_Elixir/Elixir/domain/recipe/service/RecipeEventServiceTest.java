@@ -379,4 +379,112 @@ class RecipeEventServiceTest {
                     .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
         }
     }
+
+    @Nested
+    @DisplayName("좋아요 등록 테스트")
+    class LikeRecipeTests {
+
+        @Test
+        @DisplayName("성공: 레시피 좋아요")
+        void likeRecipe_Success() {
+            // given
+            recipe.setLikes(0);
+            given(recipeRepository.findById(1L)).willReturn(Optional.of(recipe));
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(1L, 1L))
+                    .willReturn(false);
+
+            // when
+            recipeEventService.likeRecipe(1L, member);
+
+            // then
+            assertThat(recipe.getLikes()).isEqualTo(1);
+            verify(recipeEventRepository).save(any(RecipeEvent.class));
+        }
+
+        @Test
+        @DisplayName("예외: 레시피 없음")
+        void likeRecipe_NotFound() {
+            // given
+            given(recipeRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.likeRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.RECIPE_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 이미 좋아요함")
+        void likeRecipe_AlreadyLiked() {
+            // given
+            given(recipeRepository.findById(1L)).willReturn(Optional.of(recipe));
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndLikeFlagTrue(1L, 1L))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.likeRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.ALREADY_LIKED.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("좋아요 취소 테스트")
+    class CancelLikeRecipeTests {
+
+        @Test
+        @DisplayName("성공: 좋아요 취소")
+        void cancelLike_Success() {
+            // given
+            RecipeEvent like = new RecipeEvent();
+            like.setMember(member);
+            like.setLikeFlag(true);
+            like.setRecipe(recipe);
+            recipe.setLikes(1);
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndLikeFlagTrue(1L, 1L))
+                    .willReturn(Optional.of(like));
+
+            // when
+            recipeEventService.cancelLikeRecipe(1L, member);
+
+            // then
+            assertThat(recipe.getLikes()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("예외: 좋아요 내역 없음")
+        void cancelLike_NotFound() {
+            // given
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndLikeFlagTrue(1L, 1L))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.cancelLikeRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.LIKE_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 다른 사용자의 좋아요")
+        void cancelLike_Forbidden() {
+            // given
+            Member otherMember = Member.builder()
+                    .id(2L)
+                    .email("otherMember@test.com")
+                    .nickname("otherMember")
+                    .build();
+            
+            RecipeEvent like = new RecipeEvent();
+            like.setMember(otherMember);
+            like.setLikeFlag(true);
+            like.setRecipe(recipe);
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndLikeFlagTrue(1L, 1L))
+                    .willReturn(Optional.of(like));
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.cancelLikeRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+        }
+    }
 }
