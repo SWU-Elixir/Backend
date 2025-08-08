@@ -322,4 +322,61 @@ class RecipeEventServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("스크랩 취소 테스트")
+    class CancelScrapRecipeTests {
+
+        @Test
+        @DisplayName("성공: 스크랩 취소")
+        void cancelScrap_Success() {
+            // given
+            RecipeEvent scrap = new RecipeEvent();
+            scrap.setMember(member);
+            scrap.setScrapFlag(true);
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndScrapFlagTrue(1L, 1L))
+                    .willReturn(Optional.of(scrap));
+
+            // when
+            recipeEventService.cancelScrapRecipe(1L, member);
+
+            // then
+            verify(recipeEventRepository).delete(scrap);
+            verify(memberStatsService).increaseStat(1L, AchievementType.TOTAL_SCRAPS, -1);
+        }
+
+        @Test
+        @DisplayName("예외: 스크랩 내역 없음")
+        void cancelScrap_NotFound() {
+            // given
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndScrapFlagTrue(1L, 1L))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.cancelScrapRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.SCRAP_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 스크랩 취소할 권한이 없음")
+        void cancelScrap_Forbidden() {
+            // given
+            Member otherMember = Member.builder()
+                    .id(2L)
+                    .email("otherMember@test.com")
+                    .nickname("otherMember")
+                    .build();
+
+            RecipeEvent scrap = new RecipeEvent();
+            scrap.setMember(otherMember);
+            scrap.setScrapFlag(true);
+            given(recipeEventRepository.findByRecipeIdAndMemberIdAndScrapFlagTrue(1L, 1L))
+                    .willReturn(Optional.of(scrap));
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.cancelScrapRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+        }
+    }
 }
