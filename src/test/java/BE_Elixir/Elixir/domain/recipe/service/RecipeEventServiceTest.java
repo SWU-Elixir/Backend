@@ -185,4 +185,49 @@ class RecipeEventServiceTest {
                     .hasMessageContaining(ErrorCode.COMMENT_NOT_FOUND.getMessage());
         }
     }
+
+    @Nested
+    @DisplayName("댓글 삭제 테스트")
+    class DeleteCommentTests {
+
+        @Test
+        @DisplayName("성공: 댓글 삭제")
+        void deleteComment_Success() {
+            // given
+            RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, new RecipeCommentCreateRequestDTO(1L, "내용"), member);
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.of(comment));
+
+            // when
+            recipeEventService.deleteComment(1L, member);
+
+            // then
+            verify(recipeEventRepository).delete(comment);
+        }
+
+        @Test
+        @DisplayName("예외: 댓글 작성자가 아님")
+        void deleteComment_Failure_ForbiddenAccess() {
+            // given
+            Member other = Member.builder().id(2L).email("other@test.com").build();
+            RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, new RecipeCommentCreateRequestDTO(1L, "내용"), member);
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.of(comment));
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.deleteComment(1L, other))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 댓글이 존재하지 않음")
+        void deleteComment_Failure_CommentNotFound() {
+            // given
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.deleteComment(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.COMMENT_NOT_FOUND.getMessage());
+        }
+    }
 }
