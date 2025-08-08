@@ -29,6 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -230,4 +232,46 @@ class RecipeEventServiceTest {
                     .hasMessageContaining(ErrorCode.COMMENT_NOT_FOUND.getMessage());
         }
     }
+
+    @Nested
+    @DisplayName("댓글 조회")
+    class GetCommentsByRecipeId {
+
+        @Test
+        @DisplayName("성공: 레시피 ID로 댓글 목록 조회")
+        void getComments_Success() {
+            // given
+            RecipeEvent comment1 = new RecipeEvent();
+            comment1.setRecipe(recipe);
+            comment1.setMember(member);
+            RecipeEvent comment2 = new RecipeEvent();
+            comment2.setRecipe(recipe);
+            comment2.setMember(member);
+            given(recipeEventRepository.findAllByRecipeId(1L))
+                    .willReturn(Arrays.asList(comment1, comment2));
+
+            // when
+            List<RecipeCommentResponseDTO> result = recipeEventService.getCommentsByRecipeId(1L);
+
+            // then
+            assertThat(result).hasSize(2);
+            verify(recipeEventRepository, times(1)).findAllByRecipeId(1L);
+        }
+
+        @Test
+        @DisplayName("성공: 댓글이 없는 경우 빈 리스트 반환")
+        void getComments_EmptyList() {
+            // given
+            given(recipeEventRepository.findAllByRecipeId(1L))
+                    .willReturn(Collections.emptyList());
+
+            // when
+            List<RecipeCommentResponseDTO> result = recipeEventService.getCommentsByRecipeId(1L);
+
+            // then
+            assertThat(result).isEmpty();
+            verify(recipeEventRepository, times(1)).findAllByRecipeId(1L);
+        }
+    }
+
 }
