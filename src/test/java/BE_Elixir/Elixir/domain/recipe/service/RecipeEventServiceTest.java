@@ -5,6 +5,7 @@ import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.dto.MaterialDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentCreateRequestDTO;
+import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeCommentUpdateRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.request.RecipeRequestDTO;
 import BE_Elixir.Elixir.domain.recipe.dto.response.RecipeCommentResponseDTO;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
@@ -98,20 +99,23 @@ class RecipeEventServiceTest {
 
 
     @Nested
-    @DisplayName("댓글 등록")
+    @DisplayName("댓글 등록 테스트")
     class AddCommentTests {
 
         @Test
         @DisplayName("성공: 댓글 등록")
         void addComment_Success() {
+            // given
             RecipeCommentCreateRequestDTO requestDTO = new RecipeCommentCreateRequestDTO(1L, "내용");
             given(recipeRepository.findById(1L)).willReturn(Optional.of(recipe));
 
             RecipeEvent savedEvent = RecipeEvent.createRecipeComment(recipe, requestDTO, member);
             given(recipeEventRepository.save(any())).willReturn(savedEvent);
 
+            // when
             RecipeCommentResponseDTO result = recipeEventService.addComment(requestDTO, member);
 
+            // then
             assertEquals("내용", result.getContent());
             verify(recipeRepository).findById(1L);
             verify(recipeEventRepository).save(any());
@@ -120,9 +124,11 @@ class RecipeEventServiceTest {
         @Test
         @DisplayName("예외: 존재하지 않는 레시피에 댓글 등록 시도")
         void addComment_Failure_RecipeNotFound() {
+            // given
             RecipeCommentCreateRequestDTO requestDTO = new RecipeCommentCreateRequestDTO(1L, "내용");
             given(recipeRepository.findById(1L)).willReturn(Optional.empty());
 
+            // when & then
             assertThatThrownBy(() -> recipeEventService.addComment(requestDTO, member))
                     .isInstanceOf(CustomException.class)
                     .hasMessageContaining(ErrorCode.RECIPE_NOT_FOUND.getMessage());
@@ -131,4 +137,52 @@ class RecipeEventServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("댓글 수정 테스트")
+    class EditCommentTests {
+
+        @Test
+        @DisplayName("성공: 댓글 수정")
+        void editComment_Success() {
+            // given
+            RecipeCommentUpdateRequestDTO requestDTO = new RecipeCommentUpdateRequestDTO(1L, 1L, "수정된 내용");
+            RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, new RecipeCommentCreateRequestDTO(1L, "원래 내용"), member);
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.of(comment));
+
+            // when
+            RecipeCommentResponseDTO result = recipeEventService.editComment(requestDTO, member);
+
+            // then
+            assertEquals("수정된 내용", result.getContent());
+        }
+
+        @Test
+        @DisplayName("예외: 댓글 작성자가 아님")
+        void editComment_Failure_ForbiddenAccess() {
+            // given
+            Member other = Member.builder().id(2L).email("other@test.com").build();
+            RecipeEvent comment = RecipeEvent.createRecipeComment(recipe, new RecipeCommentCreateRequestDTO(1L, "내용"), member);
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.of(comment));
+
+            RecipeCommentUpdateRequestDTO requestDTO = new RecipeCommentUpdateRequestDTO(1L, 1L, "변경");
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.editComment(requestDTO, other))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.FORBIDDEN_ACCESS.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 댓글이 존재하지 않음")
+        void editComment_Failure_CommentNotFound() {
+            // given
+            given(recipeEventRepository.findById(1L)).willReturn(Optional.empty());
+            RecipeCommentUpdateRequestDTO requestDTO = new RecipeCommentUpdateRequestDTO(1L, 1L, "변경");
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.editComment(requestDTO, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.COMMENT_NOT_FOUND.getMessage());
+        }
+    }
 }
