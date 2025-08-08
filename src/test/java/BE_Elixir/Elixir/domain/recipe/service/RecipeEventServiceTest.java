@@ -13,6 +13,7 @@ import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
 import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
+import BE_Elixir.Elixir.global.enums.AchievementType;
 import BE_Elixir.Elixir.global.enums.CategorySlowAging;
 import BE_Elixir.Elixir.global.enums.CategoryType;
 import BE_Elixir.Elixir.global.enums.Difficulty;
@@ -234,7 +235,7 @@ class RecipeEventServiceTest {
     }
 
     @Nested
-    @DisplayName("댓글 조회")
+    @DisplayName("댓글 조회 테스트")
     class GetCommentsByRecipeId {
 
         @Test
@@ -271,6 +272,53 @@ class RecipeEventServiceTest {
             // then
             assertThat(result).isEmpty();
             verify(recipeEventRepository, times(1)).findAllByRecipeId(1L);
+        }
+    }
+
+    @Nested
+    @DisplayName("스크랩 등록 테스트")
+    class ScrapRecipeTests {
+
+        @Test
+        @DisplayName("성공: 레시피 스크랩")
+        void scrapRecipe_Success() {
+            // given
+            given(recipeRepository.findById(1L)).willReturn(Optional.of(recipe));
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(1L, 1L))
+                    .willReturn(false);
+
+            // when
+            recipeEventService.scrapRecipe(1L, member);
+
+            // then
+            verify(recipeEventRepository).save(any(RecipeEvent.class));
+            verify(memberStatsService).increaseStat(1L, AchievementType.TOTAL_SCRAPS, 1);
+        }
+
+        @Test
+        @DisplayName("예외: 레시피 없음")
+        void scrapRecipe_NotFound() {
+            // given
+            given(recipeRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.scrapRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.RECIPE_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("예외: 이미 스크랩함")
+        void scrapRecipe_AlreadyScrapped() {
+            // given
+            given(recipeRepository.findById(1L)).willReturn(Optional.of(recipe));
+            given(recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(1L, 1L))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> recipeEventService.scrapRecipe(1L, member))
+                    .isInstanceOf(CustomException.class)
+                    .hasMessageContaining(ErrorCode.ALREADY_SCRAPPED.getMessage());
         }
     }
 
