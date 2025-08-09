@@ -1,9 +1,13 @@
 package BE_Elixir.Elixir.domain.challenge.service;
 
 import BE_Elixir.Elixir.domain.challenge.dto.request.ChallengeRequestDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeDetailResponseDTO;
+import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeListResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.dto.response.ChallengeResponseDTO;
 import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
 import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
+import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
+import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import BE_Elixir.Elixir.global.s3.S3Service;
@@ -18,6 +22,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -29,6 +35,7 @@ class ChallengeServiceTest {
     ChallengeService challengeService;
 
     @Mock ChallengeRepository challengeRepository;
+    @Mock IngredientRepository ingredientRepository;
     @Mock S3Service s3Service;
 
     private ChallengeRequestDTO dto;
@@ -110,7 +117,7 @@ class ChallengeServiceTest {
         }
 
         @Test
-        @DisplayName("실패: 이미지 업로드 중 IOException 발생 시 예외 던짐")
+        @DisplayName("예외: 이미지 업로드 중 IOException 발생 시 예외 던짐")
         void registerChallenge_fail_uploadIOException() throws IOException {
             // given
             given(s3Service.upload(imageFile, "challenge/achievement-color")).willThrow(IOException.class);
@@ -123,6 +130,93 @@ class ChallengeServiceTest {
 
             then(s3Service).should(times(1)).upload(imageFile, "challenge/achievement-color");
             then(challengeRepository).should(never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("연도별 챌린지 조회 테스트")
+    class GetChallengesByYearTests {
+
+        @Test
+        @DisplayName("성공: 해당 연도 챌린지 리스트 반환")
+        void getChallengesByYear_success() {
+            // given
+            Challenge challenge1 = new Challenge();
+            Challenge challenge2 = new Challenge();
+            List<Challenge> challenges = List.of(challenge1, challenge2);
+
+            given(challengeRepository.findByYear(2023)).willReturn(challenges);
+
+            // when
+            List<ChallengeListResponseDTO> responses = challengeService.getChallengesByYear(2023);
+
+            // then
+            assertThat(responses).hasSize(2);
+            then(challengeRepository).should(times(1)).findByYear(2023);
+        }
+
+        @Test
+        @DisplayName("성공: 해당 연도 챌린지가 없으면 빈 리스트 반환")
+        void getChallengesByYear_empty() {
+            // given
+            given(challengeRepository.findByYear(2023)).willReturn(List.of());
+
+            // when
+            List<ChallengeListResponseDTO> responses = challengeService.getChallengesByYear(2023);
+
+            // then
+            assertThat(responses).isEmpty();
+            then(challengeRepository).should(times(1)).findByYear(2023);
+        }
+    }
+
+    @Nested
+    @DisplayName("챌린지 상세 조회 테스트")
+    class GetChallengeDetailTests {
+
+        @Test
+        @DisplayName("성공: 챌린지 상세와 제철 식재료 이름 리스트 반환")
+        void getChallengeDetail_success() {
+            // given
+            Challenge challenge = new Challenge();
+            challenge.setId(1L);
+            challenge.setMonth(5);
+            challenge.setName("7월 챌린지");
+
+            Ingredient ingredient1 = new Ingredient();
+            ingredient1.setName("감자");
+            Ingredient ingredient2 = new Ingredient();
+            ingredient2.setName("고구마");
+
+            given(challengeRepository.findById(1L)).willReturn(Optional.of(challenge));
+            given(ingredientRepository.findByChallengeMonth(5)).willReturn(List.of(ingredient1, ingredient2));
+
+            // when
+            ChallengeDetailResponseDTO response = challengeService.getChallengeDetail(1L);
+
+            // then
+            assertThat(response).isNotNull();
+            assertThat(response.getName()).isEqualTo("7월 챌린지");
+            assertThat(response.getIngredients()).containsExactly("감자", "고구마");
+
+            then(challengeRepository).should(times(1)).findById(1L);
+            then(ingredientRepository).should(times(1)).findByChallengeMonth(5);
+        }
+
+        @Test
+        @DisplayName("예외: 챌린지가 없으면 예외 발생")
+        void getChallengeDetail_notFound() {
+            // given
+            given(challengeRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> challengeService.getChallengeDetail(1L))
+                    .isInstanceOf(CustomException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.CHALLENGE_NOT_FOUND);
+
+            then(challengeRepository).should(times(1)).findById(1L);
+            then(ingredientRepository).should(never()).findByChallengeMonth(anyInt());
         }
     }
 }
