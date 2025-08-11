@@ -51,7 +51,7 @@ public class RecipeController implements RecipeApi {
     // 레시피 상세 조회
     @GetMapping("/{recipeId}")
     public ResponseEntity<CommonResponse<RecipeDetailResponseDTO>> getRecipe(
-            @PathVariable Long recipeId,
+            @PathVariable("recipeId") Long recipeId,
             @AuthenticationPrincipal MemberDetails memberDetails
     ) {
         Member member = memberDetails.getMember();

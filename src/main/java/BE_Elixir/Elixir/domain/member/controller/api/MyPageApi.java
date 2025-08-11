@@ -330,6 +330,41 @@ public interface MyPageApi {
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
+    // 다른 사용자가 업로드한 모든 레시피 조회하기
+    @Operation(summary = "다른 사용자가 업로드한 모든 레시피 조회하기", description = "다른 사용자가 업로드한 모든 레시피 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 업로드한 모든 레시피 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "다른 사용자 레시피 조회 성공",
+                                      "data": [
+                                        {
+                                          "recipeId": 1,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
+                                        },
+                                        {
+                                          "recipeId": 2,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
+                                        },
+                                        .
+                                        .
+                                        .
+                                        {
+                                          "recipeId": 9,
+                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00089_1.png"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
+            @PathVariable("memberId") Long memberId
+    );
+
     // 로그인한 사용자의 모든 챌린지 업적 조회
     @Operation(summary = "로그인한 사용자의 모든 챌린지 업적 조회하기", description = "로그인한 사용자의 모든 챌린지 업적을 조회합니다.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -381,7 +416,7 @@ public interface MyPageApi {
                                      }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllChallengeAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
@@ -422,44 +457,10 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3Achievements(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3ChallengeAchievements(
             @AuthenticationPrincipal MemberDetails memberDetails
     );
 
-    // 다른 사용자가 업로드한 모든 레시피 조회하기
-    @Operation(summary = "다른 사용자가 업로드한 모든 레시피 조회하기", description = "다른 사용자가 업로드한 모든 레시피 조회합니다.",
-            security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "다른 사용자가 업로드한 모든 레시피 조회 성공",
-                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "status": 200,
-                                      "code": "200 OK",
-                                      "message": "다른 사용자 레시피 조회 성공",
-                                      "data": [
-                                        {
-                                          "recipeId": 1,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00028_1.png"
-                                        },
-                                        {
-                                          "recipeId": 2,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00029_1.png"
-                                        },
-                                        .
-                                        .
-                                        .
-                                        {
-                                          "recipeId": 9,
-                                          "imageUrl": "http://www.foodsafetykorea.go.kr/uploadimg/cook/10_00089_1.png"
-                                        }
-                                      ]
-                                    }
-                                    """)))
-    })
-    ResponseEntity<CommonResponse<List<RecipeImageResponseDTO>>> getUserRecipes(
-            @PathVariable("memberId") Long memberId
-    );
 
     // 다른 사용자의 모든 챌린지 업적 정보 조회하기
     @Operation(summary = "다른 사용자의 모든 챌린지 업적 조회하기", description = "다른 사용자의 모든 챌린지 업적 조회합니다.",
@@ -494,7 +495,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getAllAchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherAllChallengeAchievements(
             @PathVariable Long memberId
     );
 
@@ -535,7 +536,7 @@ public interface MyPageApi {
                                     }
                                     """)))
     })
-    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getTop3AchievementsByMemberId(
+    ResponseEntity<CommonResponse<List<MemberChallengeResponseDTO>>> getOtherTop3ChallengeAchievements(
             @PathVariable Long memberId
     );
 
@@ -554,6 +555,7 @@ public interface MyPageApi {
                                       "data": [
                                           {
                                             "achievementName": "꾸준함 입문자",
+                                            "description": "총 7일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
                                             "completed": false,
                                             "level": 1,
@@ -562,6 +564,7 @@ public interface MyPageApi {
                                           },
                                           {
                                             "achievementName": "생활 루틴러",
+                                            "description": "총 30일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png",
                                             "completed": false,
                                             "level": 2,
@@ -591,6 +594,7 @@ public interface MyPageApi {
                                       "data": [
                                         {
                                           "achievementName": "요리 탐험가",
+                                          "description": "3개 이상 콘텐츠 스크랩",
                                           "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
                                           "completed": true,
                                           "level": 1,
@@ -619,6 +623,7 @@ public interface MyPageApi {
                                       "data": [
                                           {
                                             "achievementName": "꾸준함 입문자",
+                                            "description": "총 7일 동안 앱에 접속한 사용자",
                                             "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png",
                                             "completed": false,
                                             "level": 1,
@@ -649,6 +654,7 @@ public interface MyPageApi {
                                       "data": [
                                         {
                                           "achievementName": "요리 탐험가",
+                                          "description": "3개 이상 콘텐츠 스크랩",
                                           "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png",
                                           "completed": true,
                                           "level": 1,
@@ -660,6 +666,83 @@ public interface MyPageApi {
                                     """)))
     })
     ResponseEntity<CommonResponse<List<MemberAchievementResponseDTO>>> getTop3StatsAchievementsByMemberId(
+            @PathVariable Long memberId
+    );
+
+    // 로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "achievementName": "초보 요리사",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png",
+                                          "completed": true,
+                                          "completedAt": "2025-07-15T13:37:07"
+                                        },
+                                        {
+                                          "achievementName": "봄기운 충전소",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-04-01T00:00:00"
+                                        },
+                                        {
+                                          "achievementName": "환절기 방어왕",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-03-01T00:00:00"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    );
+
+
+    // 다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회
+    @Operation(summary = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회하기", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사용자가 달성한 일반 업적과 챌린지 업적 통합 최신 3개 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CommonResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "code": "200 OK",
+                                      "message": "사용자의 일반 업적 + 챌린지 업적 통합 최신 3개 조회 성공",
+                                      "data": [
+                                        {
+                                          "achievementName": "초보 요리사",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png",
+                                          "completed": true,
+                                          "completedAt": "2025-07-15T13:37:07"
+                                        },
+                                        {
+                                          "achievementName": "봄기운 충전소",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/4%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-04-01T00:00:00"
+                                        },
+                                        {
+                                          "achievementName": "환절기 방어왕",
+                                          "achievementImageUrl": "https://s3elixir.s3.ap-northeast-2.amazonaws.com/challenge/achievement-color/3%EC%9B%94%EC%B1%8C%EB%A6%B0%EC%A7%80%EC%BB%AC%EB%9F%AC.png",
+                                          "completed": true,
+                                          "completedAt": "2025-03-01T00:00:00"
+                                        }
+                                      ]
+                                    }
+                                    """)))
+    })
+    ResponseEntity<CommonResponse<List<MemberRecentAchievementDTO>>> getTop3RecentAchievements(
             @PathVariable Long memberId
     );
 }

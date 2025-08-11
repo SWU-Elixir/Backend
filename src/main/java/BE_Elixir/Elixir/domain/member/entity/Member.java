@@ -1,6 +1,8 @@
 package BE_Elixir.Elixir.domain.member.entity;
 
 import BE_Elixir.Elixir.domain.follow.entity.Follow;
+import BE_Elixir.Elixir.global.enums.LoginType;
+import BE_Elixir.Elixir.global.enums.LoginTypeConverter;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -21,10 +23,14 @@ public class Member {
     @Column(updatable = false, unique = true, nullable = false)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Setter private LoginType loginType;
+
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // 소셜 로그인 고려
     @Setter private String password;  // 인코딩된 비밀번호
 
     @Column(nullable = false, unique = true)

@@ -1,12 +1,16 @@
 package BE_Elixir.Elixir.domain.member.controller;
 
+import BE_Elixir.Elixir.domain.auth.dto.response.TokenResponseDTO;
 import BE_Elixir.Elixir.domain.follow.service.FollowService;
 import BE_Elixir.Elixir.domain.member.controller.api.MemberApi;
+import BE_Elixir.Elixir.domain.member.dto.SocialSignUpDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.*;
 import BE_Elixir.Elixir.domain.member.dto.response.*;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.entity.MemberDetails;
+import BE_Elixir.Elixir.domain.member.service.MemberAccessService;
 import BE_Elixir.Elixir.domain.member.service.MemberService;
+import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.redis.RedisAuthService;
 import BE_Elixir.Elixir.global.response.CommonResponse;
 import BE_Elixir.Elixir.global.security.JwtProvider;
@@ -32,6 +36,7 @@ public class MemberController implements MemberApi {
     private final FollowService followService;
     private final JwtProvider jwtProvider;
     private final RedisAuthService redisAuthService;
+    private final MemberAccessService memberAccessService;
 
     // 이메일 중복 체크
     @GetMapping("/check-email")
@@ -44,19 +49,35 @@ public class MemberController implements MemberApi {
                         "이메일 중복 체크 성공", isDuplicate));
     }
 
-    // 회원가입
+    // 일반 회원용 회원가입
     @PostMapping(value= "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> signUp(
             @RequestPart("dto") SignUpRequestDTO dto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
-        log.info("회원가입 요청 - 이메일: {}", dto.getEmail());
+        log.info("일반 회원용 회원가입 요청 - 이메일: {}", dto.getEmail());
 
-        Member member = memberService.signUp(dto, profileImage);
-        log.info("회원가입 성공 - 회원 ID: {}", member.getId());
+        Member member = memberService.localSignUp(dto, profileImage);
+        log.info("일반 회원용 회원가입 성공 - 회원 ID: {}", member.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
-                        "회원가입 성공 - memberId: " + member.getId()));
+                        "일반 회원용 회원가입 성공 - memberId: " + member.getId()));
+    }
+
+    // 소셜 회원용 회원가입
+    @PostMapping(value= "/signup/{loginType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<TokenResponseDTO>> socialSignUp(
+            @PathVariable(name="loginType") LoginType loginType,
+            @RequestPart("dto") SocialSignUpRequestDTO dto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    ) {
+        log.info("소셜 회원용 회원가입 요청 - 이메일: {}", dto.getEmail());
+
+        SocialSignUpDTO socialSignUpDTO = memberService.socialSignUp(loginType, dto, profileImage);
+        log.info("소셜 회원용 회원가입 성공 - 회원 ID: {}", socialSignUpDTO.getMember().getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(HttpStatus.CREATED.value(), HttpStatus.CREATED.toString(),
+                        "소셜 회원용 회원가입 성공 - memberId: " + socialSignUpDTO.getMember().getId(), socialSignUpDTO.getTokenResponseDTO()));
     }
 
     // 이메일 인증 요청하기
@@ -201,5 +222,17 @@ public class MemberController implements MemberApi {
         return ResponseEntity.ok(CommonResponse.success(
                 HttpStatus.OK.value(), HttpStatus.OK.toString(),
                 "특정 사용자의 팔로워 목록 조회 성공", dto));
+    }
+
+    // 앱 접속 호출하기
+    @PostMapping("/access")
+    public ResponseEntity<CommonResponse> onAppAccess(
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) {
+        memberAccessService.handleAppAccess(memberDetails.getId(), memberDetails.getUsername());
+        log.info("앱 접속 - email: {}", memberDetails.getUsername());
+        return ResponseEntity.ok(CommonResponse.success(
+                HttpStatus.OK.value(), HttpStatus.OK.toString(),
+                "앱 접속 호출 성공", null));
     }
 }

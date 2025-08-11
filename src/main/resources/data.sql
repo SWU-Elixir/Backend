@@ -1264,10 +1264,11 @@ INSERT INTO ingredient (id, category_group, category, name, is_nova4, challenge_
 INSERT INTO ingredient (id, category_group, category, name, is_nova4, challenge_month) VALUES (1262, '수산물', '해조류', '파래', False, NULL);
 
 -- 회원
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     1,
     'mj@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'mj',
     NULL,
@@ -7152,10 +7153,11 @@ INSERT INTO recipe_step_images (recipe_id, step_image_urls) VALUES (180, 'http:/
 
 -- 회원 .더미 데이터
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
-		2,
+    2,
     'A@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'A',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/A_profile.jpg',
@@ -7172,10 +7174,11 @@ INSERT INTO member_roles (member_id, roles)
 VALUES (2, 'USER');
 
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     3,
     'B@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'B',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/B_profile.jpg',
@@ -7191,10 +7194,11 @@ VALUES (
 INSERT INTO member_roles (member_id, roles)
 VALUES (3, 'USER');
 
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
 VALUES (
     4,
     'C@example.com',
+    'LOCAL',
     '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
     'C',
     'https://s3elixir.s3.ap-northeast-2.amazonaws.com/member/C_profile.jpg',
@@ -7788,64 +7792,65 @@ INSERT INTO challenge_achievement (
 
 
 -- 회원
-INSERT INTO member (id, email, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
-VALUES (
-    83,
-    'mool848777@naver.com',
-    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
-    'sy',
-    NULL,
-    NULL,
-    2002,
-    NULL,
-    false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보 (모두 false로 예시)
-    false, false, false, -- 식사 스타일
-    false, false, false, false, false, false, false, -- 레시피 스타일
-    false, true, false -- 식단 이유
-);
-
-INSERT INTO member_roles (member_id, roles)
-VALUES (83, 'USER');
+--INSERT INTO member (id, email, login_type, password, nickname, profile_url, gender, birth_year, title, allergy_알류, allergy_우유, allergy_각류, allergy_밀류, allergy_유제품, allergy_메밀, allergy_땅콩, allergy_대두, allergy_밀, allergy_고등어, allergy_돼지고기, allergy_복숭아, allergy_토마토, allergy_아황산류, allergy_호두, allergy_닭고기, allergy_쇠고기, allergy_오징어, allergy_조개류, allergy_굴, allergy_전복, allergy_홍합, allergy_잣, meal_style_고기위주, meal_style_채소위주, meal_style_혼합식, recipe_style_한식, recipe_style_중식, recipe_style_일식, recipe_style_양식, recipe_style_디저트, recipe_style_음료_차, recipe_style_양념_소스_잼, reason_항산화강화, reason_혈당조절, reason_염증감소)
+--VALUES (
+--    83,
+--    'mool848777@naver.com',
+--    'NAVER',
+--    '$2a$10$ZaQnkJ7Ajzd4NvD8CC.ZHOZMO4OeBOBr5VAQWWxfxBcLLBVumpdkO',
+--    'sy',
+--    NULL,
+--    NULL,
+--    2002,
+--    NULL,
+--    false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -- 알러지 정보 (모두 false로 예시)
+--    false, false, false, -- 식사 스타일
+--    false, false, false, false, false, false, false, -- 레시피 스타일
+--    false, true, false -- 식단 이유
+--);
+--
+--INSERT INTO member_roles (member_id, roles)
+--VALUES (83, 'USER');
 
 
 -- 총 접속 일수 (TOTAL_LOGIN_DAYS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 7, 'TOTAL_LOGIN_DAYS_LV1', '꾸준함 입문자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png', 'TOTAL_LOGIN_DAYS'),
-(2, 30, 'TOTAL_LOGIN_DAYS_LV2', '생활 루틴러', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png', 'TOTAL_LOGIN_DAYS'),
-(3, 100, 'TOTAL_LOGIN_DAYS_LV3', '엘릭서 수호자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin3_g.png', 'TOTAL_LOGIN_DAYS');
+(1, 7, 'TOTAL_LOGIN_DAYS_LV1', '꾸준함 입문자', '총 7일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin1_g.png', 'TOTAL_LOGIN_DAYS'),
+(2, 30, 'TOTAL_LOGIN_DAYS_LV2', '생활 루틴러', '총 30일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin2_g.png', 'TOTAL_LOGIN_DAYS'),
+(3, 100, 'TOTAL_LOGIN_DAYS_LV3', '엘릭서 수호자', '총 100일 동안 앱에 접속한 사용자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/TotalLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/TotalLogin3_g.png', 'TOTAL_LOGIN_DAYS');
 
 -- 연속 접속 일수 (CONSECUTIVE_LOGIN_DAYS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 3, 'CONSECUTIVE_LOGIN_DAYS_LV1', '새싹신입', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin1_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
-(2, 7, 'CONSECUTIVE_LOGIN_DAYS_LV2', '의지력 수호자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin2_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
-(3, 30, 'CONSECUTIVE_LOGIN_DAYS_LV3', '앱 중독자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin3_g.png', 'CONSECUTIVE_LOGIN_DAYS');
+(1, 3, 'CONSECUTIVE_LOGIN_DAYS_LV1', '새싹신입', '3일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin1_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
+(2, 7, 'CONSECUTIVE_LOGIN_DAYS_LV2', '의지력 수호자', '7일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin2_g.png', 'CONSECUTIVE_LOGIN_DAYS'),
+(3, 30, 'CONSECUTIVE_LOGIN_DAYS_LV3', '앱 중독자', '30일 연속 접속', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/ConsecutiveLogin3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/ConsecutiveLogin3_g.png', 'CONSECUTIVE_LOGIN_DAYS');
 
 -- 식단 기록 수 (TOTAL_DIET_LOGS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 10, 'TOTAL_DIET_LOGS_LV1', '식단 파수꾼', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog1_g.png', 'TOTAL_DIET_LOGS'),
-(2, 30, 'TOTAL_DIET_LOGS_LV2', '밥상 전문자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog2_g.png', 'TOTAL_DIET_LOGS'),
-(3, 100, 'TOTAL_DIET_LOGS_LV3', '쩝쩝박사', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog3_g.png', 'TOTAL_DIET_LOGS');
+(1, 10, 'TOTAL_DIET_LOGS_LV1', '식단 파수꾼', '식단 10개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog1_g.png', 'TOTAL_DIET_LOGS'),
+(2, 30, 'TOTAL_DIET_LOGS_LV2', '밥상 전문자', '식단 30개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog2_g.png', 'TOTAL_DIET_LOGS'),
+(3, 100, 'TOTAL_DIET_LOGS_LV3', '쩝쩝박사', '식단 100개 이상 기록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/DietLog3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/DietLog3_g.png', 'TOTAL_DIET_LOGS');
 
 -- 레시피 등록 수 (TOTAL_RECIPE_LOGS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 1, 'TOTAL_RECIPE_LOGS_LV1', '초보 요리사', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload1_g.png', 'TOTAL_RECIPE_LOGS'),
-(2, 5, 'TOTAL_RECIPE_LOGS_LV2', '맛 연구소', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload2_g.png', 'TOTAL_RECIPE_LOGS'),
-(3, 20, 'TOTAL_RECIPE_LOGS_LV3', '요리 창조자', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload3_g.png', 'TOTAL_RECIPE_LOGS');
+(1, 1, 'TOTAL_RECIPE_LOGS_LV1', '초보 요리사', '레시피 1개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload1_g.png', 'TOTAL_RECIPE_LOGS'),
+(2, 5, 'TOTAL_RECIPE_LOGS_LV2', '맛 연구소', '레시피 5개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload2_g.png', 'TOTAL_RECIPE_LOGS'),
+(3, 20, 'TOTAL_RECIPE_LOGS_LV3', '요리 창조자', '레시피 20개 등록', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/RecipeUpload3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/RecipeUpload3_g.png', 'TOTAL_RECIPE_LOGS');
 
 -- 스크랩 수 (TOTAL_SCRAPS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 3, 'TOTAL_SCRAPS_LV1', '요리 탐험가', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap1_g.png', 'TOTAL_SCRAPS'),
-(2, 10, 'TOTAL_SCRAPS_LV2', '레시피 컬렉터', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap2_g.png', 'TOTAL_SCRAPS'),
-(3, 30, 'TOTAL_SCRAPS_LV3', '엘릭서 아카이브', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap3_g.png', 'TOTAL_SCRAPS');
+(1, 3, 'TOTAL_SCRAPS_LV1', '요리 탐험가', '3개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap1_g.png', 'TOTAL_SCRAPS'),
+(2, 10, 'TOTAL_SCRAPS_LV2', '레시피 컬렉터', '10개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap2_g.png', 'TOTAL_SCRAPS'),
+(3, 30, 'TOTAL_SCRAPS_LV3', '엘릭서 아카이브', '30개 이상 콘텐츠 스크랩', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Scrap3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Scrap3_g.png', 'TOTAL_SCRAPS');
 
 -- 팔로워 수 (TOTAL_FOLLOWERS)
-INSERT INTO achievement (level, target_value, code, achievement_name, achievement_image_url, gray_achievement_image_url, type)
+INSERT INTO achievement (level, target_value, code, achievement_name, description, achievement_image_url, gray_achievement_image_url, type)
 VALUES
-(1, 3, 'TOTAL_FOLLOWERS_LV1', '식단 친구', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower1_g.png', 'TOTAL_FOLLOWERS'),
-(2, 10, 'TOTAL_FOLLOWERS_LV2', '엘릭서 인기인', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower2_g.png', 'TOTAL_FOLLOWERS'),
-(3, 50, 'TOTAL_FOLLOWERS_LV3', '저속노화 리더', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower3_g.png', 'TOTAL_FOLLOWERS');
+(1, 3, 'TOTAL_FOLLOWERS_LV1', '식단 친구', '팔로워 3명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower1.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower1_g.png', 'TOTAL_FOLLOWERS'),
+(2, 10, 'TOTAL_FOLLOWERS_LV2', '엘릭서 인기인', '팔로워 10명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower2.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower2_g.png', 'TOTAL_FOLLOWERS'),
+(3, 50, 'TOTAL_FOLLOWERS_LV3', '저속노화 리더', '팔로워 50명 이상', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/color/Follower3.png', 'https://s3elixir.s3.ap-northeast-2.amazonaws.com/achievement/gray/Follower3_g.png', 'TOTAL_FOLLOWERS');
