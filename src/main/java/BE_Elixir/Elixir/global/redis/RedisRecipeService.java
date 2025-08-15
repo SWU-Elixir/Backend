@@ -32,25 +32,23 @@ public class RedisRecipeService {
                 .toList();
     }
 
-    // 추천 레시피 캐시 저장
-    public void cacheRecommendations(Long userId, List<RecommendationResponseDTO> recommendations, Duration ttl) {
+    // 추천 레시피 캐시 저장 메서드
+    public void cacheRecommendations(String cacheKey, List<RecommendationResponseDTO> recommendations, Duration ttl) {
         if (recommendations == null || recommendations.isEmpty()) {
-            // 빈 리스트면 캐시 저장하지 않음 (혹은 삭제)
-            redisTemplate.delete(RECOMMEND_KEY_PREFIX + userId);
+            redisTemplate.delete(cacheKey);
             return;
         }
         try {
             String json = objectMapper.writeValueAsString(recommendations);
-            redisTemplate.opsForValue().set(RECOMMEND_KEY_PREFIX + userId, json, ttl);
+            redisTemplate.opsForValue().set(cacheKey, json, ttl);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-    // 추천 레시피 캐시 조회
-    public List<RecommendationResponseDTO> getCachedRecommendations(Long userId) {
-        String json = redisTemplate.opsForValue().get(RECOMMEND_KEY_PREFIX + userId);
+    // 추천 레시피 캐시 조회 메서드
+    public List<RecommendationResponseDTO> getCachedRecommendations(String cacheKey) {
+        String json = redisTemplate.opsForValue().get(cacheKey);
         if (json == null) return null;
 
         try {
@@ -60,4 +58,5 @@ public class RedisRecipeService {
             return Collections.emptyList();
         }
     }
+
 }

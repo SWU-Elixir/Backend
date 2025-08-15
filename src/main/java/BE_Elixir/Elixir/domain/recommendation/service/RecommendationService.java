@@ -5,11 +5,10 @@ import BE_Elixir.Elixir.domain.ingredient.entity.Ingredient;
 import BE_Elixir.Elixir.domain.ingredient.repository.IngredientRepository;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
-import BE_Elixir.Elixir.domain.recipe.entity.RecipeIngredient;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
 import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.domain.recommendation.dto.RecommendationResponseDTO;
-import BE_Elixir.Elixir.global.enums.CategoryType;
+import BE_Elixir.Elixir.domain.recommendation.repository.RecommendationRepository;
 import BE_Elixir.Elixir.global.redis.RedisRecipeService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,59 +27,79 @@ public class RecommendationService {
     private final RedisRecipeService redisRecipeService;
     private final RecipeEventRepository recipeEventRepository;
     private final IngredientRepository ingredientRepository;
+    private final RecommendationRepository recommendationRepository;
 
 
     // 사용자 맞춤형 레시피 추천
     @Transactional(readOnly = true)
     public List<RecommendationResponseDTO> getRecommendationsForUser(Member member) {
+        // 동적 캐시 키 생성
+        String cacheKey = createCacheKey(member);
+
         // 캐시 확인
-        List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(member.getId());
+        List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(cacheKey);
         if (cached != null) return cached;
 
-        List<Recipe> allRecipes = recipeRepository.findAll();
+        // 필터링 조건 추출
+        List<String> mealStyles = member.getMealStyles();
+        List<String> recipeStyles = member.getRecipeStyles();
+        List<String> reasons = member.getReasons();
+        List<String> allergies = member.getAllergies();
 
-        // 필터링
-        List<Recipe> filtered = allRecipes.stream()
-                .filter(recipe -> !hasAllergyConflict(member, recipe))
-                .filter(recipe -> matchesMealStyle(member, recipe))
-                .filter(recipe -> matchesRecipeStyle(member, recipe))
-                .filter(recipe -> matchesReason(member, recipe))
+        // Repository에서 필터된 레시피 조회 (필요에 따라 쿼리 수정 필요)
+        List<Recipe> filteredRecipes = recommendationRepository.findFilteredRecipes(recipeStyles, reasons);
+
+        // 알러지 필터링 + 식사 스타일, 이유 조건 필터링 추가 로직 (필요시)
+        filteredRecipes = filteredRecipes.stream()
+                .filter(recipe -> !hasAllergyConflict(allergies, recipe))
+                .filter(recipe -> mealStyles.isEmpty() || mealStyles.contains(recipe.getCategoryType().name()))
                 .limit(3)
                 .collect(Collectors.toList());
 
-        // 필터링된 레시피가 없을 경우 → 랜덤
-        if (filtered.isEmpty()) {
-            Collections.shuffle(allRecipes); // 리스트를 무작위로
-            filtered = allRecipes.stream()
-                    .limit(3)
-                    .collect(Collectors.toList());
+        // 필터링된 결과 없으면 랜덤 3개
+        if (filteredRecipes.isEmpty()) {
+            filteredRecipes = recommendationRepository.findRandom3();
         }
 
-        // 스크랩 여부 확인 및 DTO 변환
-        List<RecommendationResponseDTO> recommendations = filtered.stream()
+        // DTO 변환 및 스크랩 여부 체크
+        List<RecommendationResponseDTO> recommendations = filteredRecipes.stream()
                 .map(recipe -> {
-                    boolean scrappedByCurrentUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
-                    return new RecommendationResponseDTO(recipe, scrappedByCurrentUser);
+                    boolean scrappedByUser = recipeEventRepository.existsByRecipeIdAndMemberIdAndScrapFlagTrue(recipe.getId(), member.getId());
+                    return new RecommendationResponseDTO(recipe, scrappedByUser);
                 })
                 .collect(Collectors.toList());
 
-        // 캐싱 (1시간)
-        redisRecipeService.cacheRecommendations(member.getId(), recommendations, Duration.ofHours(1));
+        // 캐싱
+        redisRecipeService.cacheRecommendations(cacheKey, recommendations, Duration.ofMinutes(15));
+
         return recommendations;
     }
 
-    // 알러지가 포함된 레시피는 제외
-    private boolean hasAllergyConflict(Member member, Recipe recipe) {
-        List<String> userAllergies = member.getAllergies(); // 사용자의 알러지 리스트
-        List<String> recipeAllergies = recipe.getAllergyList(); // 레시피에 포함된 알러지 리스트
+    private String createCacheKey(Member member) {
+        String mealKey = String.join(",", member.getMealStyles());
+        String recipeKey = String.join(",", member.getRecipeStyles());
+        String reasonKey = String.join(",", member.getReasons());
+        String allergyKey = String.join(",", member.getAllergies());
 
+        return "recommendations:"
+                + member.getId()
+                + ":mealStyles=" + mealKey
+                + ":recipeStyles=" + recipeKey
+                + ":reasons=" + reasonKey
+                + ":allergies=" + allergyKey;
+    }
+
+
+    // 알러지가 포함된 레시피는 제외
+    private boolean hasAllergyConflict(List<String> userAllergies, Recipe recipe) {
         for (String allergy : userAllergies) {
-            if (recipeAllergies.contains(allergy)) {
-                return true; // 겹치는 알러지가 있으면 true
+            if (recipe.getAllergyList().contains(allergy)) {
+                return true;
             }
         }
-        return false; // 겹치는 알러지가 없으면 false
+        return false;
     }
+
 
 
     // 식사 스타일(육류기반, 채식기반, 혼합식)에 따라 레시피 필터링
@@ -178,7 +197,7 @@ public class RecommendationService {
     @Transactional(readOnly = true)
     public List<String> getRecommendedKeywords(Member member) {
         // 캐시된 추천 레시피 확인
-        List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(member.getId());
+        List<RecommendationResponseDTO> cached = redisRecipeService.getCachedRecommendations(String.valueOf(member.getId()));
         if (cached == null || cached.isEmpty()) return List.of();
 
         Set<String> keywords = new LinkedHashSet<>(); // 중복 제거 + 순서 유지
