@@ -111,14 +111,14 @@ class RecommendationServiceTest {
             List<RecommendationResponseDTO> cached = List.of(
                     new RecommendationResponseDTO(new Recipe(), false)
             );
-            given(redisRecipeService.getCachedRecommendations(member.getId())).willReturn(cached);
+            given(redisRecipeService.getCachedRecommendations(String.valueOf(member.getId()))).willReturn(cached);
 
             // when
             List<RecommendationResponseDTO> result = recommendationService.getRecommendationsForUser(member);
 
             // then
             assertThat(result).isEqualTo(cached);
-            then(redisRecipeService).should(times(1)).getCachedRecommendations(member.getId());
+            then(redisRecipeService).should(times(1)).getCachedRecommendations(String.valueOf(member.getId()));
             then(recipeRepository).should(never()).findAll();
         }
 
@@ -126,7 +126,7 @@ class RecommendationServiceTest {
         @DisplayName("성공: 캐시 없고, 필터링 후 추천 결과 반환 및 캐싱")
         void returnsFilteredRecommendationsAndCaches() {
             // given
-            given(redisRecipeService.getCachedRecommendations(member.getId())).willReturn(null);
+            given(redisRecipeService.getCachedRecommendations(String.valueOf(member.getId()))).willReturn(null);
 
             Recipe recipe1 = Mockito.mock(Recipe.class);
             given(recipe1.getId()).willReturn(10L);
@@ -147,14 +147,14 @@ class RecommendationServiceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getScrappedByCurrentUser()).isTrue();
 
-            then(redisRecipeService).should().cacheRecommendations(eq(member.getId()), anyList(), eq(Duration.ofHours(1)));
+            then(redisRecipeService).should().cacheRecommendations(eq(String.valueOf(member.getId())), anyList(), eq(Duration.ofHours(1)));
         }
 
         @Test
         @DisplayName("성공: 필터링된 결과 없으면 전체 중 랜덤 3개 추천")
         void returnsRandomWhenNoFiltered() {
             // given
-            given(redisRecipeService.getCachedRecommendations(member.getId())).willReturn(null);
+            given(redisRecipeService.getCachedRecommendations(String.valueOf(member.getId()))).willReturn(null);
 
             Recipe recipe1 = new Recipe();
             recipe1.setCategoryType(CategoryType.한식);
@@ -184,14 +184,14 @@ class RecommendationServiceTest {
 
             // then
             assertThat(result).hasSizeLessThanOrEqualTo(3);
-            then(redisRecipeService).should().cacheRecommendations(eq(member.getId()), anyList(), eq(Duration.ofHours(1)));
+            then(redisRecipeService).should().cacheRecommendations(eq(String.valueOf(member.getId())), anyList(), eq(Duration.ofHours(1)));
         }
 
         @Test
         @DisplayName("예외: 캐시 조회 후 결과가 null 이거나 비어있으면 빈 리스트 반환")
         void getRecommendedKeywords_ReturnsEmptyWhenCacheEmpty() {
             // given
-            given(redisRecipeService.getCachedRecommendations(member.getId())).willReturn(null);
+            given(redisRecipeService.getCachedRecommendations(String.valueOf(member.getId()))).willReturn(null);
 
             // when
             List<String> keywords = recommendationService.getRecommendedKeywords(member);
@@ -214,7 +214,7 @@ class RecommendationServiceTest {
             given(dto.getTitle()).willReturn("감자조림은 맛있다");
             given(dto.getIngredientTagIds()).willReturn(List.of(1L, 2L));
 
-            given(redisRecipeService.getCachedRecommendations(member.getId()))
+            given(redisRecipeService.getCachedRecommendations(String.valueOf(member.getId())))
                     .willReturn(List.of(dto));
 
             Ingredient ing1 = new Ingredient();
