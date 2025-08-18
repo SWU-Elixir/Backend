@@ -4,12 +4,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
+import BE_Elixir.Elixir.domain.achievement.entity.Achievement;
+import BE_Elixir.Elixir.domain.achievement.entity.MemberAchievement;
+import BE_Elixir.Elixir.domain.achievement.repository.AchievementRepository;
+import BE_Elixir.Elixir.domain.achievement.repository.MemberAchievementRepository;
+import BE_Elixir.Elixir.domain.challenge.entity.Challenge;
+import BE_Elixir.Elixir.domain.challenge.entity.ChallengeAchievement;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeAchievementRepository;
+import BE_Elixir.Elixir.domain.challenge.repository.ChallengeRepository;
 import BE_Elixir.Elixir.domain.member.dto.request.MemberProfileRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.request.SurveyRequestDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.MemberResponseDTO;
 import BE_Elixir.Elixir.domain.member.dto.response.SurveyResponseDTO;
 import BE_Elixir.Elixir.domain.member.entity.Member;
 import BE_Elixir.Elixir.domain.member.repository.MemberRepository;
+import BE_Elixir.Elixir.domain.recipe.entity.Recipe;
+import BE_Elixir.Elixir.domain.recipe.entity.RecipeEvent;
+import BE_Elixir.Elixir.domain.recipe.repository.RecipeEventRepository;
+import BE_Elixir.Elixir.domain.recipe.repository.RecipeRepository;
 import BE_Elixir.Elixir.global.enums.LoginType;
 import BE_Elixir.Elixir.global.exception.CustomException;
 import BE_Elixir.Elixir.global.exception.ErrorCode;
@@ -24,8 +36,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @ExtendWith(MockitoExtension.class)
 class MyPageServiceTest {
@@ -34,14 +51,25 @@ class MyPageServiceTest {
     private MyPageService myPageService;
 
     @Mock private MemberRepository memberRepository;
+    @Mock private RecipeRepository recipeRepository;
+    @Mock private RecipeEventRepository recipeEventRepository;
+    @Mock private ChallengeRepository challengeRepository;
+    @Mock private ChallengeAchievementRepository challengeAchievementRepository;
+    @Mock private AchievementRepository achievementRepository;
+    @Mock private MemberAchievementRepository memberAchievementRepository;
     @Mock private S3Service s3Service;
     @Mock private MultipartFile multipartFile;
 
     private Member member;
+    private Challenge challenge;
+    private ChallengeAchievement challengeAchievement;
+    private Achievement achievement;
+    private MemberAchievement memberAchievement;
 
     @BeforeEach
     void setUp() {
         member = Member.builder()
+                .id(1L)
                 .email("test@example.com")
                 .password("encoded-password")
                 .nickname("test")
@@ -59,6 +87,35 @@ class MyPageServiceTest {
                 .reason_항산화강화(true)
                 .reason_혈당조절(true)
                 .build();
+
+        // 기본 Challenge 데이터
+        challenge = new Challenge();
+        challenge.setId(100L);
+        challenge.setYear(2025);
+        challenge.setMonth(8);
+        challenge.setAchievementName("8월 챌린지");
+        challenge.setAchievementImageUrl("color.jpg");
+        challenge.setGrayAchievementImageUrl("gray.jpg");
+
+        // 기본 ChallengeAchievement (미달성)
+        challengeAchievement = new ChallengeAchievement();
+        challengeAchievement.setChallengeId(challenge.getId());
+        challengeAchievement.setMemberId(member.getId());
+        challengeAchievement.setStep4Goal1Achieved(false);
+        challengeAchievement.setStep4Goal2Achieved(false);
+
+        // 일반 업적
+        achievement = new Achievement();
+        achievement.setId(200L);
+        achievement.setAchievementName("첫 업적");
+        achievement.setAchievementImageUrl("achieve.jpg");
+
+        // 일반 업적 달성 정보 (기본: 미달성 상태)
+        memberAchievement = new MemberAchievement();
+        memberAchievement.setAchievement(achievement);
+        memberAchievement.setMember(member);
+        memberAchievement.setCurrentProgress(0);
+        memberAchievement.setCompleted(false);
     }
 
     @Nested
@@ -309,7 +366,7 @@ class MyPageServiceTest {
         }
 
         @Test
-        @DisplayName("실패: 회원이 존재하지 않음")
+        @DisplayName("예외: 회원이 존재하지 않음")
         void updateSurvey_Fail_MemberNotFound() {
             // given
             Long memberId = 999L;
@@ -325,6 +382,266 @@ class MyPageServiceTest {
 
             assertEquals(ErrorCode.MEMBER_NOT_FOUND, exception.getErrorCode());
             verify(memberRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("내가 작성한 레시피 조회 테스트")
+    class GetMyRecipes {
+
+        @Test
+        @DisplayName("성공: 로그인한 사용자의 모든 레시피 조회")
+        void success() {
+            // given
+            Recipe recipe = new Recipe();
+            recipe.setId(1L);
+            recipe.setImageUrl("image.jpg");
+
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(recipeRepository.findAllByMember(member)).willReturn(List.of(recipe));
+
+            // when
+            var result = myPageService.getMyRecipes(1L);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getImageUrl()).isEqualTo("image.jpg");
+        }
+
+        @Test
+        @DisplayName("예외: 회원을 찾을 수 없음")
+        void fail_memberNotFound() {
+            // given
+            given(memberRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> myPageService.getMyRecipes(1L))
+                    .isInstanceOf(CustomException.class)
+                    .extracting(e -> ((CustomException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("나의 레시피 스크랩 테스트")
+    class GetMyScrapRecipes {
+
+        @Test
+        @DisplayName("성공: 스크랩한 레시피 목록 반환")
+        void success() {
+            // given
+            Recipe recipe = new Recipe();
+            recipe.setId(1L);
+            recipe.setImageUrl("scrap.jpg");
+
+            RecipeEvent event = new RecipeEvent();
+            event.setRecipe(recipe);
+
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(recipeEventRepository.findByMemberAndScrapFlagTrue(member))
+                    .willReturn(List.of(event));
+
+            // when
+            var result = myPageService.getMyScrapRecipes(1L);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getImageUrl()).isEqualTo("scrap.jpg");
+        }
+
+        @Test
+        @DisplayName("예외: 회원 없음")
+        void fail_memberNotFound() {
+            // given
+            given(memberRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> myPageService.getMyScrapRecipes(1L))
+                    .isInstanceOf(CustomException.class)
+                    .extracting(e -> ((CustomException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("다른 사용자가 작성한 레시피 조회 테스트")
+    class GetUserRecipes {
+
+        @Test
+        @DisplayName("성공: 다른 사용자의 레시피 최대 9개 반환")
+        void success() {
+            // given
+            List<Recipe> recipes = IntStream.range(0, 12)
+                    .mapToObj(i -> {
+                        Recipe r = new Recipe();
+                        r.setId((long) i);
+                        r.setImageUrl("img" + i);
+                        return r;
+                    })
+                    .toList();
+
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(recipeRepository.findAllByMember(member)).willReturn(recipes);
+
+            // when
+            var result = myPageService.getUserRecipes(1L);
+
+            // then
+            assertThat(result).hasSize(9);
+        }
+
+        @Test
+        @DisplayName("예외: 회원 없음")
+        void fail_memberNotFound() {
+            // given
+            given(memberRepository.findById(1L)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> myPageService.getUserRecipes(1L))
+                    .isInstanceOf(CustomException.class)
+                    .extracting(e -> ((CustomException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("챌린지 업적 조회 테스트")
+    class ChallengeAchievementTests {
+
+        @Test
+        @DisplayName("성공: 모든 챌린지 업적 조회")
+        void getAllChallengeAchievements_success() {
+            // given
+            Long memberId = 1L;
+            // 달성 상태로 변경
+            challengeAchievement.setStep4Goal1Achieved(true);
+            challengeAchievement.setStep4Goal2Achieved(true);
+
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(challengeRepository.findAllOrderedByYearAndMonth()).willReturn(List.of(challenge));
+            given(challengeAchievementRepository.findByMemberId(1L))
+                    .willReturn(List.of(challengeAchievement));
+
+            // when
+            var result = myPageService.getAllChallengeAchievements(1L);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).isChallengeCompleted()).isTrue();
+            assertThat(result.get(0).getAchievementImageUrl()).isEqualTo("color.jpg");
+        }
+
+        @Test
+        @DisplayName("성공: 최신 3개 챌린지 업적 조회")
+        void getTop3ChallengeAchievements_success() {
+            // given
+            Long memberId = 1L;
+            challengeAchievement.setStep4Goal1Achieved(true);
+            challengeAchievement.setStep4Goal2Achieved(true);
+
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(challengeAchievementRepository.findByMemberId(1L))
+                    .willReturn(List.of(challengeAchievement));
+            given(challengeRepository.findAllById(anySet()))
+                    .willReturn(List.of(challenge));
+
+            // when
+            var result = myPageService.getTop3ChallengeAchievements(1L);
+
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getAchievementName()).isEqualTo("8월 챌린지");
+            assertThat(result.get(0).getAchievementImageUrl()).isEqualTo("color.jpg");
+        }
+
+        @Test
+        @DisplayName("예외: 회원 없음")
+        void fail_memberNotFound() {
+            // given
+            given(memberRepository.findById(1L)).willReturn(Optional.empty());
+
+
+            // when & then
+            assertThatThrownBy(() -> myPageService.getAllChallengeAchievements(1L))
+                    .isInstanceOf(CustomException.class)
+                    .extracting(e -> ((CustomException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+    @Nested
+    @DisplayName("일반 업적 조회 테스트")
+    class StatsAchievementTests {
+
+        @Test
+        @DisplayName("성공: 모든 일반 업적 조회")
+        void getAllMyStatsAchievements_success() {
+            // given
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(achievementRepository.findAll()).willReturn(List.of(achievement));
+            given(memberAchievementRepository.findAllByMember(member)).willReturn(List.of());
+
+            // when
+            var result = myPageService.getAllMyStatsAchievements(1L);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getAchievementName()).isEqualTo("첫 업적");
+        }
+
+        @Test
+        @DisplayName("성공: 최신 3개 일반 업적 조회")
+        void getTop3StatsAchievements_success() {
+            // given
+            memberAchievement.setCompleted(true);
+            memberAchievement.setCompletedAt(LocalDateTime.now());
+
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(memberAchievementRepository
+                    .findTop3ByMemberAndCompletedTrueOrderByCompletedAtDescUpdatedAtDesc(member))
+                    .willReturn(List.of(memberAchievement));
+
+            // when
+            var result = myPageService.getTop3StatsAchievements(1L);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getAchievementName()).isEqualTo("첫 업적");
+        }
+    }
+
+    @Nested
+    @DisplayName("통합 업적 조회 테스트")
+    class AllAchievementsTests {
+
+        @Test
+        @DisplayName("성공: 최신 3개 통합 업적 조회")
+        void getTop3AllAchievements_success() {
+            // given
+            // 일반 업적 달성
+            memberAchievement.setCompleted(true);
+            memberAchievement.setCompletedAt(LocalDateTime.now().minusDays(1));
+
+            // 챌린지 업적 달성
+            challengeAchievement.setStep4Goal1Achieved(true);
+            challengeAchievement.setStep4Goal2Achieved(true);
+
+            given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+            given(memberAchievementRepository
+                    .findTop3ByMemberAndCompletedTrueOrderByCompletedAtDescUpdatedAtDesc(member))
+                    .willReturn(List.of(memberAchievement));
+            given(challengeAchievementRepository.findByMemberId(1L))
+                    .willReturn(List.of(challengeAchievement));
+            given(challengeRepository.findAllById(any()))
+                    .willReturn(List.of(challenge));
+
+            // when
+            var result = myPageService.getTop3AllAchievements(1L);
+
+            // then
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).isCompleted()).isTrue();
         }
     }
 }
